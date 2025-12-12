@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glass</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: radial-gradient(circle at 20% 20%, #1f2937 0%, #0b1120 45%, #020617 100%);
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #6366f1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(520px, 100%);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+    h1 { margin: 0 0 12px; letter-spacing: -0.02em; }
+    p { margin: 0 0 16px; color: var(--muted); line-height: 1.5; }
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent), #4f46e5);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .muted { color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Glass Page</h1>
+    <p id="status">Checking session...</p>
+    <div class="muted" id="user"></div>
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <button id="signout">Sign out</button>
+      <button onclick="window.location.href='index.html'">Back to sign in</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/+esm";
+
+    const supabaseUrl = "https://agyjkjyvswqlnrbnjvgi.supabase.co";
+    const supabaseKey = "sb_publishable_rrqlieIKTJ2FlTqN20tgaQ_5BCOqmu-";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const status = document.getElementById("status");
+    const userEl = document.getElementById("user");
+    const signoutBtn = document.getElementById("signout");
+
+    async function load() {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        status.textContent = "Error checking session.";
+        userEl.textContent = error.message;
+        return;
+      }
+      if (!data.session) {
+        status.textContent = "No session found. Redirecting to sign in...";
+        setTimeout(() => window.location.href = "index.html", 900);
+        return;
+      }
+      const user = data.session.user;
+      status.textContent = "You are signed in.";
+      userEl.textContent = user.email ? `Email: ${user.email}` : "";
+    }
+
+    signoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "index.html";
+    });
+
+    load();
+  </script>
+</body>
+</html>
+

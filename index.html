@@ -164,7 +164,10 @@
         return;
       }
 
-      setMessage("Signed in with Supabase! You can now protect routes with the session.", "success");
+      setMessage("Signed in with Supabase! Redirecting...", "success");
+      setTimeout(() => {
+        window.location.href = "glass.html";
+      }, 600);
     });
 
     function setMessage(text, kind) {
