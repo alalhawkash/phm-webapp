@@ -136,36 +136,41 @@
       </div>
     </form>
   </main>
-  <script>
-    (function () {
-      const form = document.getElementById("signin");
-      const message = document.getElementById("message");
-      const demoEmail = "demo@example.com";
-      const demoPassword = "password123";
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/+esm";
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const email = form.email.value.trim();
-        const password = form.password.value;
+    const supabaseUrl = "https://agyjkjyvswqlnrbnjvgi.supabase.co";
+    const supabaseKey = "sb_publishable_rrqlieIKTJ2FlTqN20tgaQ_5BCOqmu-";
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-        if (!email || !password) {
-          setMessage("Please fill in both fields.", "error");
-          return;
-        }
+    const form = document.getElementById("signin");
+    const message = document.getElementById("message");
 
-        const ok = email.toLowerCase() === demoEmail && password === demoPassword;
-        if (ok) {
-          setMessage("Signed in! Replace this with real authentication.", "success");
-        } else {
-          setMessage("Invalid credentials (try demo@example.com / password123).", "error");
-        }
-      });
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = form.email.value.trim();
+      const password = form.password.value;
 
-      function setMessage(text, kind) {
-        message.textContent = text;
-        message.className = "message " + (kind || "");
+      if (!email || !password) {
+        setMessage("Please fill in both fields.", "error");
+        return;
       }
-    })();
+
+      setMessage("Signing in...", "");
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setMessage(error.message, "error");
+        return;
+      }
+
+      setMessage("Signed in with Supabase! You can now protect routes with the session.", "success");
+    });
+
+    function setMessage(text, kind) {
+      message.textContent = text;
+      message.className = "message " + (kind || "");
+    }
   </script>
 </body>
 </html>
