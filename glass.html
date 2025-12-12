@@ -1248,6 +1248,78 @@
                 font-size: 14px;
             }
         }
+        .app-settings-btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #d6dae0;
+            background: linear-gradient(90deg, #6366f1, #4f46e5);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+        .app-settings-panel {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: min(420px, 95%);
+            max-height: 80vh;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+            overflow: hidden;
+            z-index: 2000;
+        }
+        .app-settings-panel.dark-mode {
+            background: #121822;
+            border-color: #2a323d;
+        }
+        .app-settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .app-settings-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .app-settings-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+        }
+        .app-settings-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 60vh;
+            overflow: auto;
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .user-item {
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafbfc;
+        }
+        .user-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -1276,8 +1348,23 @@
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
                 <span class="visually-hidden">Toggle theme</span>
             </button>
+            <!-- Temporarily visible for all to debug admin view -->
+            <button id="appSettingsBtn" class="app-settings-btn" type="button">App Settings</button>
         </div>
     </header>
+    <div class="app-settings-panel" id="appSettingsPanel" role="dialog" aria-modal="true" aria-label="App Settings">
+        <div class="app-settings-header">
+            <h3>App Settings (Admin)</h3>
+            <button class="app-settings-close" id="closeAppSettings" aria-label="Close settings">×</button>
+        </div>
+        <div class="app-settings-body">
+            <div style="display:flex; justify-content: space-between; align-items:center; gap:8px;">
+                <div id="usersMessage" class="muted">Load users to view list.</div>
+                <button id="loadUsersBtn" class="app-settings-btn" type="button" style="padding:8px 12px; font-size:13px;">Load users</button>
+            </div>
+            <ul class="user-list" id="userList"></ul>
+        </div>
+    </div>
     <div class="container">
         <div class="main-view" id="mainView">
             <div class="carousel-wrapper">
@@ -2974,6 +3061,102 @@
             });
         }
     })();
+    </script>
+
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/+esm";
+
+        const supabaseUrl = "https://agyjkjyvswqlnrbnjvgi.supabase.co";
+        const supabaseKey = "sb_publishable_rrqlieIKTJ2FlTqN20tgaQ_5BCOqmu-";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const appSettingsBtn = document.getElementById('appSettingsBtn');
+        const appSettingsPanel = document.getElementById('appSettingsPanel');
+        const closeAppSettings = document.getElementById('closeAppSettings');
+        const loadUsersBtn = document.getElementById('loadUsersBtn');
+        const usersMessage = document.getElementById('usersMessage');
+        const userList = document.getElementById('userList');
+        const themeToggle = document.getElementById('themeToggle');
+
+        let session = null;
+
+        async function ensureSession() {
+            const { data, error } = await supabase.auth.getSession();
+            if (error || !data?.session) {
+                window.location.href = "index.html";
+                return null;
+            }
+            session = data.session;
+            return session;
+        }
+
+        function updatePanelTheme() {
+            if (!appSettingsPanel) return;
+            if (document.body.classList.contains('dark-mode')) {
+                appSettingsPanel.classList.add('dark-mode');
+            } else {
+                appSettingsPanel.classList.remove('dark-mode');
+            }
+        }
+
+        function showAdminUI() {
+            if (appSettingsBtn) {
+                appSettingsBtn.classList.remove('hidden');
+            }
+        }
+
+        async function loadUsers() {
+            if (!session) return;
+            if (usersMessage) usersMessage.textContent = "Loading users...";
+            if (userList) userList.innerHTML = "";
+            try {
+                const resp = await fetch("/api/users", {
+                    headers: { Authorization: `Bearer ${session.access_token}` }
+                });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    usersMessage.textContent = data.error || "Failed to load users.";
+                    return;
+                }
+                const users = data.users || [];
+                if (!users.length) {
+                    usersMessage.textContent = "No users found.";
+                    return;
+                }
+                usersMessage.textContent = `Found ${users.length} users.`;
+                userList.innerHTML = users.map(u => {
+                    const joined = u.created_at ? new Date(u.created_at).toLocaleString() : '';
+                    return `<li class="user-item"><strong>${u.email || 'N/A'}</strong><div class="muted">Role: ${u.role || 'member'}${joined ? ` • ${joined}` : ''}</div></li>`;
+                }).join("");
+            } catch (err) {
+                usersMessage.textContent = "Error loading users.";
+            }
+        }
+
+        (async () => {
+            const currentSession = await ensureSession();
+            if (!currentSession) return;
+            const role = currentSession.user?.app_metadata?.role || 'member';
+            // Temporarily show settings for all to verify UI visibility
+            showAdminUI(role);
+
+            appSettingsBtn?.addEventListener('click', () => {
+                if (appSettingsPanel) {
+                    appSettingsPanel.style.display = 'block';
+                    updatePanelTheme();
+                }
+            });
+            closeAppSettings?.addEventListener('click', () => {
+                if (appSettingsPanel) {
+                    appSettingsPanel.style.display = 'none';
+                }
+            });
+            loadUsersBtn?.addEventListener('click', loadUsers);
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', updatePanelTheme);
+            }
+        })();
     </script>
 </body>
 </html>
