@@ -10,11 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="nhc-logo.png">
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAMklEQVR42u3MMQ0AIAzDsP6v7SPl8gWQEG1zkRCX9PqygwAAAADgMfhWcAAAgIADwDfAV71YqyCAAAAAElFTkSuQmCC">
     <title>PHM</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ============================================
-           CSS RESET & BASE STYLES
-           ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -31,9 +27,7 @@
             overflow: hidden;
         }
 
-        /* ============================================
-           HEADER STYLES
-           ============================================ */
+
         header {
             background: #ffffff;
             border-bottom: 1px solid #e0e0e0;
@@ -142,303 +136,6 @@
             gap: 10px;
         }
 
-        .logout-button {
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: 1px solid #dcdcdc;
-            background: #ffffff;
-            color: #1a1a1a;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-        }
-
-        .logout-button:hover {
-            background: #f6f8ff;
-            border-color: #c5d0ff;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-        }
-
-        .logout-button:active {
-            transform: translateY(1px);
-        }
-
-        .dark-mode .logout-button {
-            background: #1a1f27;
-            color: #e8e8e8;
-            border-color: #303b4d;
-        }
-
-        .dark-mode .logout-button:hover {
-            background: #252c38;
-            border-color: #3a4a61;
-        }
-
-        .settings-button {
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: 1px solid #dcdcdc;
-            background: #ffffff;
-            color: #1a1a1a;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-            display: none;
-        }
-
-        .settings-button.show {
-            display: block;
-        }
-
-        .settings-button:hover {
-            background: #f6f8ff;
-            border-color: #c5d0ff;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-        }
-
-        .settings-button:active {
-            transform: translateY(1px);
-        }
-
-        .dark-mode .settings-button {
-            background: #1a1f27;
-            color: #e8e8e8;
-            border-color: #303b4d;
-        }
-
-        .dark-mode .settings-button:hover {
-            background: #252c38;
-            border-color: #3a4a61;
-        }
-
-        /* ============================================
-           USERS MODAL STYLES (Admin Only)
-           ============================================ */
-        .users-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10001;
-            padding: 24px;
-        }
-
-        .users-modal.active {
-            display: flex;
-        }
-
-        .users-modal-content {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 600px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .dark-mode .users-modal-content {
-            background: #1a1f27;
-        }
-
-        .users-modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dark-mode .users-modal-header {
-            border-bottom-color: #303b4d;
-        }
-
-        .users-modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin: 0;
-        }
-
-        .dark-mode .users-modal-title {
-            color: #e8e8e8;
-        }
-
-        .users-modal-close {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: background 0.2s ease;
-        }
-
-        .users-modal-close:hover {
-            background: #f0f0f0;
-        }
-
-        .dark-mode .users-modal-close {
-            color: #999;
-        }
-
-        .dark-mode .users-modal-close:hover {
-            background: #2a2f3a;
-        }
-
-        .users-modal-body {
-            padding: 24px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .users-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .user-item {
-            padding: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            background: #fafafa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dark-mode .user-item {
-            background: #252c38;
-            border-color: #303b4d;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-email {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 4px;
-        }
-
-        .dark-mode .user-email {
-            color: #e8e8e8;
-        }
-
-        .user-meta {
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .dark-mode .user-meta {
-            color: #999;
-        }
-
-        .user-role-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .user-role-badge.admin {
-            background: #eef2ff;
-            color: #1f2a44;
-        }
-
-        .user-role-badge.cluster {
-            background: #f0f9ff;
-            color: #0c4a6e;
-        }
-
-        .user-role-badge.zone {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .user-role-badge.phc {
-            background: #f3e8ff;
-            color: #6b21a8;
-        }
-
-        .dark-mode .user-role-badge.admin {
-            background: #1f2937;
-            color: #cbd5f5;
-        }
-
-        .dark-mode .user-role-badge.cluster {
-            background: #1e3a5f;
-            color: #bae6fd;
-        }
-
-        .dark-mode .user-role-badge.zone {
-            background: #78350f;
-            color: #fde68a;
-        }
-
-        .dark-mode .user-role-badge.phc {
-            background: #4c1d95;
-            color: #e9d5ff;
-        }
-
-        .users-loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .dark-mode .users-loading {
-            color: #999;
-        }
-
-        .users-error {
-            text-align: center;
-            padding: 40px;
-            color: #b00020;
-        }
-
-        .dark-mode .users-error {
-            color: #f6d7d4;
-        }
-
-        .user-role-pill {
-            padding: 6px 12px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #1f2a44;
-            border: 1px solid #d8e0ff;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: capitalize;
-            letter-spacing: 0.02em;
-        }
-
-        .dark-mode .user-role-pill {
-            background: #1f2937;
-            color: #cbd5f5;
-            border-color: #303b4d;
-        }
-
         .theme-toggle {
             position: relative;
             width: 52px;
@@ -493,9 +190,6 @@
             border: 0;
         }
 
-        /* ============================================
-           DARK MODE STYLES
-           ============================================ */
         .dark-mode {
             background: #0f1115;
             color: #e8e8e8;
@@ -615,9 +309,6 @@
             color: #f2f4f8 !important;
         }
 
-        /* ============================================
-           FOOTER STYLES
-           ============================================ */
         footer {
             background: #ffffff;
             border-top: 1px solid #e0e0e0;
@@ -632,9 +323,6 @@
             text-align: center;
         }
 
-        /* ============================================
-           CONTAINER & LAYOUT STYLES
-           ============================================ */
         .container {
             flex: 1;
             position: relative;
@@ -749,10 +437,7 @@
             min-height: 0;
         }
 
-        /* ============================================
-           CARD TEMPLATE STYLES
-           ============================================ */
-        /* Screen Count Template */
+        /* Screen Count Template Styles */
         .screen-count-template {
             display: flex;
             flex-direction: column;
@@ -872,147 +557,6 @@
 
         .dark-mode .loading-text {
             color: #e8e8e8;
-        }
-
-        /* ============================================
-           LOGIN SCREEN STYLES
-           ============================================ */
-        .login-screen {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(0, 0, 0, 0.25));
-            backdrop-filter: blur(6px);
-            z-index: 10000;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s linear 0.2s, opacity 0.2s ease;
-        }
-
-        .login-screen.show {
-            visibility: visible;
-            opacity: 1;
-            transition: visibility 0s linear 0s, opacity 0.2s ease;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e6e6e6;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            backdrop-filter: blur(12px);
-        }
-
-        .login-brand {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .login-logo {
-            width: 64px;
-            height: 64px;
-            object-fit: contain;
-        }
-
-        .login-eyebrow {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #555;
-            margin: 0 0 4px 0;
-        }
-
-        .login-title {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a1a1a;
-            line-height: 1.2;
-        }
-
-        .login-subtitle {
-            margin: 4px 0 0 0;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 4px;
-        }
-
-        .login-label {
-            font-size: 13px;
-            color: #444;
-            font-weight: 600;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid #dcdcdc;
-            background: #fff;
-            font-size: 14px;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
-        }
-
-        .login-button {
-            margin-top: 4px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, #007aff, #0051c7);
-            color: #fff;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.15s ease;
-        }
-
-        .login-button:hover {
-            box-shadow: 0 10px 26px rgba(0, 122, 255, 0.25);
-        }
-
-        .login-button:active {
-            transform: translateY(1px);
-        }
-
-        .login-error {
-            display: none;
-            color: #b00020;
-            background: #ffe8e6;
-            border: 1px solid #f5c1bc;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 13px;
-        }
-
-        /* Login screen visibility is now controlled by .show class */
-
-        body:not(.authenticated) header,
-        body:not(.authenticated) .container,
-        body:not(.authenticated) footer,
-        body:not(.authenticated) #loadError {
-            display: none !important;
         }
 
         .target-value {
@@ -1311,9 +855,7 @@
             color: #999;
         }
 
-        /* ============================================
-           ZONE DETAIL PAGE STYLES
-           ============================================ */
+        /* Zone Detail Page Styles */
         .zone-detail-page {
             display: none;
             flex-direction: column;
@@ -1383,11 +925,6 @@
         .dark-mode #zoneDetailView .zone-detail-header {
             background: #161a20 !important;
             border-bottom-color: #262c36 !important;
-        }
-
-        /* Hide back navigation for zone-restricted users */
-        .zone-restricted .back-button {
-            display: none !important;
         }
 
         .zone-detail-title {
@@ -1477,7 +1014,7 @@
             padding-top: 10px;
         }
 
-        /* DM Patients Template */
+        /* DM Patients Template Styles */
         .dm-template {
             display: flex;
             flex-direction: column;
@@ -1549,7 +1086,7 @@
             margin-left: 8px;
         }
 
-        /* Pre-DM Template */
+        /* Pre-DM Template Styles */
         .predm-template {
             display: flex;
             flex-direction: column;
@@ -1599,9 +1136,7 @@
             margin-left: 8px;
         }
 
-        /* ============================================
-           RESPONSIVE STYLES (Mobile)
-           ============================================ */
+        /* iPhone and Android specific adjustments */
         @media screen and (max-width: 480px) {
             header {
                 padding: 10px 16px;
@@ -1726,40 +1261,6 @@
     <div id="loadError" class="error-banner" role="alert" aria-live="polite">
         Unable to load data. Please check your connection and try again.
     </div>
-    <div id="loginScreen" class="login-screen" aria-labelledby="loginTitle">
-        <div class="login-card">
-            <div class="login-brand">
-                <img src="nhc-logo.png" alt="Najran Health Cluster Logo" class="login-logo">
-                <div>
-                    <p class="login-eyebrow">Population Health Management</p>
-                    <h1 class="login-title" id="loginTitle">Sign in</h1>
-                    <p class="login-subtitle">Enter your credentials to continue.</p>
-                </div>
-            </div>
-            <form id="loginForm" class="login-form" novalidate>
-                <label class="login-label" for="loginUsername">Email</label>
-                <input id="loginUsername" class="login-input" name="email" type="email" autocomplete="email" required placeholder="e.g. user@gmail.com, user@icloud.com">
-                <label class="login-label" for="loginPassword">Password</label>
-                <input id="loginPassword" class="login-input" name="password" type="password" autocomplete="current-password" required placeholder="Enter password">
-                <p id="loginError" class="login-error" role="alert" aria-live="assertive"></p>
-                <button type="submit" class="login-button">Sign in</button>
-            </form>
-        </div>
-    </div>
-    <!-- Users Modal (Admin Only) -->
-    <div id="usersModal" class="users-modal">
-        <div class="users-modal-content">
-            <div class="users-modal-header">
-                <h2 class="users-modal-title">Users Management</h2>
-                <button class="users-modal-close" id="usersModalClose" aria-label="Close">×</button>
-            </div>
-            <div class="users-modal-body">
-                <div id="usersListContainer">
-                    <div class="users-loading">Loading users...</div>
-                </div>
-            </div>
-        </div>
-    </div>
     <header>
         <div class="header-brand">
             <img src="nhc-logo.png" alt="Najran Health Cluster Logo" class="header-logo">
@@ -1772,9 +1273,6 @@
             </div>
         </div>
         <div class="header-actions">
-            <div class="user-role-pill" id="userRoleBadge" role="status" aria-live="polite">Admin</div>
-            <button class="settings-button" id="settingsButton" type="button" style="display: none;">Settings</button>
-            <button class="logout-button" id="logoutButton" type="button">Logout</button>
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
                 <span class="visually-hidden">Toggle theme</span>
             </button>
@@ -2009,9 +1507,6 @@
         <p>2025 Alhaalha</p>
     </footer>
     <script>
-        /* ============================================
-           CAROUSEL INITIALIZATION
-           ============================================ */
         (function() {
             const carousel = document.getElementById('carousel');
             const dotsContainer = document.getElementById('carouselDots');
@@ -2058,615 +1553,6 @@
         })();
     </script>
     <script>
-        /* ============================================
-           SUPABASE CONFIGURATION & INITIALIZATION
-           ============================================ */
-        const SUPABASE_URL = 'https://owuahvmckhcyruggxuxx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dWFodm1ja2hjeXJ1Z2d4dXh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MDM5OTYsImV4cCI6MjA4MTE3OTk5Nn0.LQw2xkNe7X-o78FfpAObQbh64wLCTAlKsipWRwsYxPc';
-        
-        // Initialize Supabase client
-        let supabaseClient = null;
-        function initSupabase() {
-            if (typeof supabase !== 'undefined' && !supabaseClient) {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        }
-        
-        // Try to initialize immediately, or wait for DOM
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initSupabase);
-        } else {
-            initSupabase();
-        }
-        
-        // Current user data (cached after login)
-        let currentUserData = null;
-        
-        let dataLoadStarted = false;
-        let zoneNavScheduled = false;
-
-        /* ============================================
-           AUTHENTICATION FUNCTIONS
-           ============================================ */
-        
-        // Quick check for existing session to prevent login screen flash
-        function checkSessionQuickly() {
-            // Supabase stores session in localStorage with key pattern: sb-<project-ref>-auth-token
-            const projectRef = 'owuahvmckhcyruggxuxx';
-            const sessionKey = `sb-${projectRef}-auth-token`;
-            const hasSession = localStorage.getItem(sessionKey);
-            
-            const loginScreen = document.getElementById('loginScreen');
-            if (loginScreen) {
-                if (hasSession) {
-                    // Hide login screen immediately if session exists
-                    loginScreen.classList.remove('show');
-                } else {
-                    // Show login screen if no session
-                    loginScreen.classList.add('show');
-                }
-            }
-        }
-
-        // Run immediately when script loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkSessionQuickly);
-        } else {
-            checkSessionQuickly();
-        }
-
-        function startDataLoadOnce() {
-            if (dataLoadStarted) return;
-            dataLoadStarted = true;
-            if (typeof window.loadDataFromGoogleSheets === 'function') {
-                window.loadDataFromGoogleSheets();
-            } else {
-                console.error('Data loader is not available.');
-            }
-        }
-
-        /* ============================================
-           USER ROLE & PERMISSION FUNCTIONS
-           ============================================ */
-        
-        function formatRoleLabel(role) {
-            if (!role) return '';
-            return role.charAt(0).toUpperCase() + role.slice(1);
-        }
-
-        function getStoredRole() {
-            return currentUserData?.role || '';
-        }
-
-        function getStoredZone() {
-            return (currentUserData?.zone || '').toUpperCase();
-        }
-
-        function getStoredPHC() {
-            return currentUserData?.phc_name || '';
-        }
-
-        function isZoneRestricted() {
-            return getStoredRole() === 'zone' && !!getStoredZone();
-        }
-
-        function isPHCRestricted() {
-            return getStoredRole() === 'phc' && !!getStoredPHC();
-        }
-
-        function isZoneAllowed(zoneName) {
-            const normalized = (zoneName || '').trim().toUpperCase();
-            if (isZoneRestricted()) {
-                return normalized === getStoredZone();
-            }
-            if (isPHCRestricted()) {
-                const phcZone = findZoneForPHC(getStoredPHC());
-                return phcZone ? normalized === phcZone.toUpperCase() : true;
-            }
-            return true;
-        }
-
-        function isPHCAllowed(phcName) {
-            if (!isPHCRestricted()) return true;
-            const normalizedPhc = normalizePHC(phcName || '');
-            const storedPhcNorm = normalizePHC(getStoredPHC());
-            return normalizedPhc === storedPhcNorm;
-        }
-
-        function updateZoneRestrictionUI() {
-            const body = document.body;
-            if (!body) return;
-            if (isZoneRestricted() || isPHCRestricted()) {
-                body.classList.add('zone-restricted');
-            } else {
-                body.classList.remove('zone-restricted');
-            }
-        }
-
-        function findZoneForPHC(phcName) {
-            if (!phcName) return '';
-            // Guard in case PHC_ZONE_MAP is ever missing
-            const zoneMap = typeof PHC_ZONE_MAP === 'undefined' ? {} : PHC_ZONE_MAP;
-            const normalizedPhc = normalizePHC(phcName);
-            // direct
-            if (zoneMap[phcName]) return zoneMap[phcName];
-            const directKey = Object.keys(zoneMap).find(key => normalizePHC(key) === normalizedPhc);
-            if (directKey) return zoneMap[directKey];
-            return '';
-        }
-
-        function findPHCByAnyName(name) {
-            const norm = normalizePHC(name);
-            if (!norm) return '';
-            const zoneMap = typeof PHC_ZONE_MAP === 'undefined' ? {} : PHC_ZONE_MAP;
-            // Match against canonical PHC map keys
-            const keyMatch = Object.keys(zoneMap).find(k => normalizePHC(k) === norm);
-            if (keyMatch) return keyMatch;
-            // Match against display names
-            const displayMatch = Object.entries(PHC_DISPLAY_NAMES || {}).find(([, display]) => normalizePHC(display) === norm);
-            if (displayMatch) return displayMatch[0];
-            return '';
-        }
-
-        function ensureZoneNavigationForRestrictedZone() {
-            const restrictedZone = getStoredZone();
-            const phcName = getStoredPHC();
-            const effectiveZone = restrictedZone || findZoneForPHC(phcName);
-            if (!(isZoneRestricted() || isPHCRestricted())) return;
-            if (!effectiveZone) return;
-            // Zone is already stored in currentUserData, no need to update localStorage
-
-            if (!globalSheetData) {
-                if (!zoneNavScheduled) {
-                    zoneNavScheduled = true;
-                    setTimeout(() => {
-                        zoneNavScheduled = false;
-                        ensureZoneNavigationForRestrictedZone();
-                    }, 200);
-                }
-                return;
-            }
-
-            navigateToZone(effectiveZone, 'screening');
-        }
-
-        function showAuthenticatedUI(role, zone) {
-            document.body.classList.add('authenticated');
-            const loginScreen = document.getElementById('loginScreen');
-            const loginError = document.getElementById('loginError');
-            if (loginScreen) loginScreen.classList.remove('show');
-            if (loginError) {
-                loginError.textContent = '';
-                loginError.style.display = 'none';
-            }
-            const resolvedRole = role || getStoredRole();
-            const resolvedZone = (zone || getStoredZone() || '').toUpperCase();
-            const resolvedPHC = getStoredPHC();
-            const roleBadge = document.getElementById('userRoleBadge');
-            if (roleBadge) {
-                if (resolvedRole === 'zone' && resolvedZone) {
-                    roleBadge.textContent = `${formatRoleLabel(resolvedRole)} - ${resolvedZone}`;
-                } else if (resolvedRole === 'phc' && resolvedPHC) {
-                    roleBadge.textContent = `${formatRoleLabel(resolvedRole)} - ${resolvedPHC}`;
-                } else {
-                    roleBadge.textContent = `${formatRoleLabel(resolvedRole)} access`;
-                }
-                roleBadge.setAttribute('data-role', resolvedRole);
-            }
-
-            updateZoneRestrictionUI();
-
-            // Show settings button only for admin users
-            const settingsButton = document.getElementById('settingsButton');
-            if (settingsButton) {
-                if (resolvedRole === 'admin') {
-                    settingsButton.style.display = 'block';
-                } else {
-                    settingsButton.style.display = 'none';
-                }
-            }
-
-            // For non-zone users, ensure cluster overview is visible
-            if (!isZoneRestricted()) {
-                const mainView = document.getElementById('mainView');
-                const zoneDetailView = document.getElementById('zoneDetailView');
-                if (mainView) mainView.classList.remove('hidden');
-                if (zoneDetailView) zoneDetailView.style.display = 'none';
-            }
-        }
-
-        async function handleLoginSubmit(event) {
-            event.preventDefault();
-            
-            // Ensure Supabase is initialized
-            if (!supabaseClient) {
-                initSupabase();
-                if (!supabaseClient) {
-                    const errorEl = document.getElementById('loginError');
-                    if (errorEl) {
-                        errorEl.textContent = 'Authentication system not ready. Please refresh the page.';
-                        errorEl.style.display = 'block';
-                        errorEl.style.color = '#b00020';
-                    }
-                    return;
-                }
-            }
-            
-            const email = (document.getElementById('loginUsername')?.value || '').trim();
-            const password = document.getElementById('loginPassword')?.value || '';
-            const errorEl = document.getElementById('loginError');
-
-            if (!email) {
-                if (errorEl) {
-                    errorEl.textContent = 'Please enter your email address.';
-                    errorEl.style.display = 'block';
-                    errorEl.style.color = '#b00020';
-                }
-                return;
-            }
-
-            // Validate email format
-            if (!email.includes('@')) {
-                if (errorEl) {
-                    errorEl.textContent = 'Please enter a valid email address.';
-                    errorEl.style.display = 'block';
-                    errorEl.style.color = '#b00020';
-                }
-                return;
-            }
-
-            // Show loading state
-            if (errorEl) {
-                errorEl.textContent = 'Signing in...';
-                errorEl.style.display = 'block';
-                errorEl.style.color = '#666';
-            }
-
-            try {
-                // Sign in with Supabase using the email as-is (supports any email domain)
-                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (authError) {
-                    if (errorEl) {
-                        errorEl.textContent = 'Invalid email or password.';
-                        errorEl.style.display = 'block';
-                        errorEl.style.color = '#b00020';
-                    }
-                    return;
-                }
-
-                // Fetch user data from users table
-                const { data: userData, error: userError } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', authData.user.id)
-                    .single();
-
-                if (userError || !userData) {
-                    console.error('Error fetching user data:', userError);
-                    console.error('User ID:', authData.user.id);
-                    console.error('User Email:', authData.user.email);
-                    if (errorEl) {
-                        errorEl.textContent = 'User data not found. Please contact administrator.';
-                        errorEl.style.display = 'block';
-                        errorEl.style.color = '#b00020';
-                    }
-                    // Sign out if user data not found
-                    await supabaseClient.auth.signOut();
-                    return;
-                }
-
-                // Store user data
-                currentUserData = {
-                    id: userData.id,
-                    email: userData.email,
-                    role: userData.role,
-                    zone: userData.zone || '',
-                    phc_name: userData.phc_name || ''
-                };
-
-                // Show authenticated UI
-                showAuthenticatedUI(userData.role, userData.zone);
-                startDataLoadOnce();
-                ensureZoneNavigationForRestrictedZone();
-            } catch (err) {
-                console.error('Login error:', err);
-                if (errorEl) {
-                    errorEl.textContent = 'An error occurred. Please try again.';
-                    errorEl.style.display = 'block';
-                    errorEl.style.color = '#b00020';
-                }
-            }
-        }
-
-        async function handleLogout() {
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.auth.signOut();
-                } catch (err) {
-                    console.error('Logout error:', err);
-                }
-            }
-            
-            currentUserData = null;
-            zoneNavScheduled = false;
-            document.body.classList.remove('authenticated');
-            document.body.classList.remove('zone-restricted');
-            const loginScreen = document.getElementById('loginScreen');
-            if (loginScreen) loginScreen.classList.add('show');
-            const mainView = document.getElementById('mainView');
-            const zoneDetailView = document.getElementById('zoneDetailView');
-            if (mainView) mainView.classList.remove('hidden');
-            if (zoneDetailView) zoneDetailView.style.display = 'none';
-            const loginError = document.getElementById('loginError');
-            if (loginError) {
-                loginError.textContent = '';
-                loginError.style.display = 'none';
-            }
-            const usernameInput = document.getElementById('loginUsername');
-            const passwordInput = document.getElementById('loginPassword');
-            if (usernameInput) usernameInput.value = '';
-            if (passwordInput) passwordInput.value = '';
-            usernameInput?.focus();
-        }
-
-        /* ============================================
-           USERS MANAGEMENT (Admin Only)
-           ============================================ */
-        async function fetchUsers() {
-            if (!supabaseClient) {
-                console.error('Supabase client not initialized');
-                return [];
-            }
-
-            // Only allow admin users to fetch users
-            if (getStoredRole() !== 'admin') {
-                console.error('Only admin users can view users list');
-                return [];
-            }
-
-            try {
-                const { data: users, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .order('email', { ascending: true });
-
-                if (error) {
-                    console.error('Error fetching users:', error);
-                    return [];
-                }
-
-                return users || [];
-            } catch (err) {
-                console.error('Error fetching users:', err);
-                return [];
-            }
-        }
-
-        function renderUsersList(users) {
-            const container = document.getElementById('usersListContainer');
-            if (!container) return;
-
-            if (users.length === 0) {
-                container.innerHTML = '<div class="users-loading">No users found</div>';
-                return;
-            }
-
-            let html = '<div class="users-list">';
-            users.forEach(user => {
-                const roleClass = user.role || 'unknown';
-                html += `
-                    <div class="user-item">
-                        <div class="user-info">
-                            <div class="user-email">${user.email || 'N/A'}</div>
-                            <div class="user-meta">
-                                <span class="user-role-badge ${roleClass}">${user.role || 'N/A'}</span>
-                                ${user.zone ? `<span>Zone: ${user.zone}</span>` : ''}
-                                ${user.phc_name ? `<span>PHC: ${user.phc_name}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        async function populateUsersList() {
-            const container = document.getElementById('usersListContainer');
-            if (container) {
-                container.innerHTML = '<div class="users-loading">Loading users...</div>';
-            }
-
-            try {
-                const users = await fetchUsers();
-                renderUsersList(users);
-            } catch (err) {
-                console.error('Error populating users list:', err);
-                if (container) {
-                    container.innerHTML = '<div class="users-error">Error loading users. Please try again.</div>';
-                }
-            }
-        }
-
-        async function openUsersModal() {
-            // Double-check user is admin
-            if (getStoredRole() !== 'admin') {
-                console.error('Access denied: Admin only');
-                return;
-            }
-
-            const modal = document.getElementById('usersModal');
-            if (!modal) return;
-
-            modal.classList.add('active');
-            await populateUsersList();
-        }
-
-        function closeUsersModal() {
-            const modal = document.getElementById('usersModal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        }
-
-        function initializeUsersModal() {
-            const settingsButton = document.getElementById('settingsButton');
-            const usersModalClose = document.getElementById('usersModalClose');
-            const usersModal = document.getElementById('usersModal');
-
-            if (settingsButton) {
-                settingsButton.addEventListener('click', openUsersModal);
-            }
-
-            if (usersModalClose) {
-                usersModalClose.addEventListener('click', closeUsersModal);
-            }
-
-            // Close modal when clicking outside
-            if (usersModal) {
-                usersModal.addEventListener('click', (e) => {
-                    if (e.target === usersModal) {
-                        closeUsersModal();
-                    }
-                });
-            }
-
-            // Close modal with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeUsersModal();
-                }
-            });
-        }
-
-        async function initializeLogin() {
-            // Ensure Supabase is initialized
-            if (!supabaseClient) {
-                initSupabase();
-                // Wait a bit if still not ready
-                if (!supabaseClient) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    initSupabase();
-                }
-            }
-
-            const loginForm = document.getElementById('loginForm');
-            const loginError = document.getElementById('loginError');
-            const usernameInput = document.getElementById('loginUsername');
-            const passwordInput = document.getElementById('loginPassword');
-            const logoutButton = document.getElementById('logoutButton');
-
-            [usernameInput, passwordInput].forEach(input => {
-                if (input) {
-                    input.addEventListener('input', () => {
-                        if (loginError) {
-                            loginError.textContent = '';
-                            loginError.style.display = 'none';
-                        }
-                    });
-                }
-            });
-
-            if (loginForm) {
-                loginForm.addEventListener('submit', handleLoginSubmit);
-            }
-
-            if (logoutButton) {
-                logoutButton.addEventListener('click', handleLogout);
-            }
-
-            // Check for existing session
-            if (!supabaseClient) {
-                console.error('Supabase client not initialized');
-                return;
-            }
-
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                const loginScreen = document.getElementById('loginScreen');
-                
-                if (session && !error) {
-                    // Fetch user data from users table
-                    const { data: userData, error: userError } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('id', session.user.id)
-                        .single();
-
-                    if (!userError && userData) {
-                        currentUserData = {
-                            id: userData.id,
-                            email: userData.email,
-                            role: userData.role,
-                            zone: userData.zone || '',
-                            phc_name: userData.phc_name || ''
-                        };
-                        showAuthenticatedUI(userData.role, userData.zone);
-                        startDataLoadOnce();
-                        ensureZoneNavigationForRestrictedZone();
-                        updateZoneRestrictionUI();
-                        // Hide login screen
-                        if (loginScreen) loginScreen.classList.remove('show');
-                    } else {
-                        console.error('Error fetching user data on session check:', userError);
-                        console.error('User ID:', session?.user?.id);
-                        // Show login screen if user data not found
-                        if (loginScreen) loginScreen.classList.add('show');
-                    }
-                } else {
-                    // Show login screen if no session
-                    if (loginScreen) loginScreen.classList.add('show');
-                }
-            } catch (err) {
-                console.error('Session check error:', err);
-            }
-
-            // Listen for auth state changes
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                const loginScreen = document.getElementById('loginScreen');
-                
-                if (event === 'SIGNED_OUT') {
-                    currentUserData = null;
-                    document.body.classList.remove('authenticated');
-                    document.body.classList.remove('zone-restricted');
-                    // Show login screen
-                    if (loginScreen) loginScreen.classList.add('show');
-                } else if (event === 'SIGNED_IN' && session) {
-                    // Fetch user data when signed in
-                    const { data: userData } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('id', session.user.id)
-                        .single();
-
-                    if (userData) {
-                        currentUserData = {
-                            id: userData.id,
-                            email: userData.email,
-                            role: userData.role,
-                            zone: userData.zone || '',
-                            phc_name: userData.phc_name || ''
-                        };
-                        showAuthenticatedUI(userData.role, userData.zone);
-                        startDataLoadOnce();
-                        ensureZoneNavigationForRestrictedZone();
-                        updateZoneRestrictionUI();
-                        // Hide login screen
-                        if (loginScreen) loginScreen.classList.remove('show');
-                    }
-                }
-            });
-        }
-
-        /* ============================================
-           DATA CONSTANTS & MAPPINGS
-           ============================================ */
-        
         // Zone full names
         const ZONE_FULL_NAMES = {
             BGH: 'Bader Aljanoob General Hospital',
@@ -2885,9 +1771,6 @@
         const PREDM_ZONE_INDICATOR_COL = 37; // 7-Day Indicator PRE-DM
         const PREDM_ZONE_LIMIT = 10;
 
-        /* ============================================
-           GLOBAL DATA VARIABLES
-           ============================================ */
         let screeningTargetTotal = null;
         let screeningCurrentTotal = null;
         let screeningOpportunitiesTotal = null;
@@ -2991,7 +1874,6 @@
                 }
 
                 if (!zoneName) break;
-                if (!isZoneAllowed(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 html += `
@@ -3065,7 +1947,6 @@
                 }
 
                 if (!zoneName) break;
-                if (!isZoneAllowed(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 html += `
@@ -3168,9 +2049,6 @@
             container.innerHTML = html;
         }
 
-        /* ============================================
-           GOOGLE SHEETS DATA LOADING
-           ============================================ */
         // Load data from Google Sheets
         (function() {
             const SHEET_ID = '1v5hh2tu53eVMPRLE3tCk_Gf39Rb2Rt1sseZHCdyGzvE';
@@ -3310,9 +2188,6 @@
                 trySource(0);
             }
             
-            // Expose for login gate
-            window.loadDataFromGoogleSheets = loadDataFromGoogleSheets;
-            
         function updateMobileAppData(data) {
         // Update last updated timestamp (now in B6 -> row index 5, col index 1). Fallback to old I1 if missing.
         const lastUpdatedCell =
@@ -3329,7 +2204,6 @@
 
                 // Store data globally for zone detail view
                 globalSheetData = data;
-                ensureZoneNavigationForRestrictedZone();
                 
                 // Find sections in the data
                 let currentSection = '';
@@ -3603,16 +2477,10 @@
                 updateDMPercentages();
             }
             
-            // Initialize login gate before loading data
-            initializeLogin();
-            // Initialize users modal
-            initializeUsersModal();
+            // Load data when page loads
+            loadDataFromGoogleSheets();
         })();
 
-        /* ============================================
-           PHC & ZONE DATA PROCESSING FUNCTIONS
-           ============================================ */
-        
         // Helper function to normalize PHC names for matching
         function normalizePHC(phc) {
             if (!phc) return '';
@@ -3843,7 +2711,7 @@
             
             if (context === 'screening') {
                 html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Opps</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
-                phcs.filter(phc => isPHCAllowed(phc.name)).forEach(phc => {
+                phcs.forEach(phc => {
                     const indicatorNum = phc.indicator || 0;
                     let indicatorArrow = '-';
                     let indicatorClass = 'zone-arrow zone-arrow-neutral';
@@ -3875,7 +2743,7 @@
                 });
             } else if (context === 'dm') {
                 html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div><div class="zone-header-item">Weekly</div></div>';
-                phcs.filter(phc => isPHCAllowed(phc.name)).forEach(phc => {
+                phcs.forEach(phc => {
                     const indicatorNum = phc.indicator || 0;
                     let indicatorArrow = '-';
                     let indicatorClass = 'zone-arrow zone-arrow-neutral';
@@ -3910,7 +2778,7 @@
                 });
             } else if (context === 'predm') {
                 html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div><div class="zone-header-item">Weekly</div></div>';
-                phcs.filter(phc => isPHCAllowed(phc.name)).forEach(phc => {
+                phcs.forEach(phc => {
                     const indicatorNum = phc.indicator || 0;
                     let indicatorArrow = '-';
                     let indicatorClass = 'zone-arrow zone-arrow-neutral';
@@ -3952,17 +2820,8 @@
             container.innerHTML = html;
         }
 
-        /* ============================================
-           ZONE NAVIGATION FUNCTIONS
-           ============================================ */
-        
         // Zone navigation functions
         function navigateToZone(zoneName, context) {
-            if (!isZoneAllowed(zoneName)) {
-                return;
-            }
-            
-            const normalizedZone = (zoneName || '').trim();
             // Hide main view and show zone detail view
             const mainView = document.getElementById('mainView');
             const zoneDetailView = document.getElementById('zoneDetailView');
@@ -3971,7 +2830,7 @@
             if (zoneDetailView) zoneDetailView.style.display = 'flex';
 
             // Update zone detail page title (use full name if available)
-            const fullZoneName = ZONE_FULL_NAMES[normalizedZone] || ZONE_FULL_NAMES[normalizedZone?.toUpperCase?.()] || normalizedZone;
+            const fullZoneName = ZONE_FULL_NAMES[zoneName] || ZONE_FULL_NAMES[zoneName?.toUpperCase?.()] || zoneName;
 
             const titleEl = document.getElementById('zoneDetailTitle');
             if (titleEl) titleEl.textContent = fullZoneName;
@@ -4016,9 +2875,9 @@
 
             // Populate PHCs for the selected zone
             if (globalSheetData) {
-                const screeningPHCs = populateZonePHCs(globalSheetData, normalizedZone, 'screening');
-                const dmPHCs = populateZonePHCs(globalSheetData, normalizedZone, 'dm');
-                const predmPHCs = populateZonePHCs(globalSheetData, normalizedZone, 'predm');
+                const screeningPHCs = populateZonePHCs(globalSheetData, zoneName, 'screening');
+                const dmPHCs = populateZonePHCs(globalSheetData, zoneName, 'dm');
+                const predmPHCs = populateZonePHCs(globalSheetData, zoneName, 'predm');
                 
                 // Calculate and display zone overview metrics for Screening
                 let zoneTargetTotal = 0;
@@ -4075,7 +2934,6 @@
         }
 
         function goBackToMain() {
-            if (isZoneRestricted() || isPHCRestricted()) return;
             const mainView = document.getElementById('mainView');
             const zoneDetailView = document.getElementById('zoneDetailView');
             
@@ -4083,11 +2941,8 @@
             if (zoneDetailView) zoneDetailView.style.display = 'none';
         }
 
-        /* ============================================
-           THEME TOGGLE FUNCTIONALITY
-           ============================================ */
-        // Theme toggle (light / dark)
-        (function() {
+    // Theme toggle (light / dark)
+    (function() {
         const body = document.body;
         const themeToggle = document.getElementById('themeToggle');
         const THEME_KEY = 'phm-theme';

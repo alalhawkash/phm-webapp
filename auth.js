@@ -1,0 +1,117 @@
+// Authentication Logic
+
+let currentUser = null;
+let userProfile = null;
+
+// Check if user is logged in
+async function checkAuth() {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        currentUser = session.user;
+        await loadUserProfile();
+        showApp();
+    } else {
+        showLogin();
+    }
+}
+
+// Load user profile from app_users table
+async function loadUserProfile() {
+    const { data, error } = await supabase
+        .from('app_users')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+    
+    if (error) {
+        console.error('Error loading user profile:', error);
+        return;
+    }
+    
+    userProfile = data;
+    
+    // Check if user is active
+    if (!userProfile.active) {
+        await supabase.auth.signOut();
+        alert('Your account has been disabled. Please contact an administrator.');
+        showLogin();
+        return;
+    }
+    
+    console.log('✅ User profile loaded:', userProfile);
+}
+
+// Handle login with email (magic link)
+async function handleLogin(email) {
+    const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+            emailRedirectTo: window.location.origin
+        }
+    });
+    
+    if (error) {
+        alert('Login error: ' + error.message);
+        return false;
+    }
+    
+    return true;
+}
+
+// Handle logout
+async function handleLogout() {
+    await supabase.auth.signOut();
+    currentUser = null;
+    userProfile = null;
+    showLogin();
+}
+
+// Show login screen
+function showLogin() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+}
+
+// Show app screen
+function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'flex';
+    
+    // Show/hide admin button
+    if (userProfile && userProfile.is_admin) {
+        document.getElementById('admin-button').style.display = 'block';
+    } else {
+        document.getElementById('admin-button').style.display = 'none';
+    }
+    
+    // Display user info
+    if (userProfile) {
+        document.getElementById('user-email-display').textContent = userProfile.email;
+        document.getElementById('user-scope-display').textContent = 
+            userProfile.scope === 'cluster' ? 'Full Access' :
+            userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
+            `PHC: ${userProfile.phc_id || 'N/A'}`;
+    }
+}
+
+// Listen for auth state changes
+supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state changed:', event);
+    
+    if (event === 'SIGNED_IN') {
+        currentUser = session.user;
+        await loadUserProfile();
+        showApp();
+    } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        userProfile = null;
+        showLogin();
+    }
+});
+
+// Initialize auth on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+});
+

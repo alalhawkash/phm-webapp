@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHM - Primary Healthcare Management</title>
+    
+    <!-- Auth Styles -->
+    <link rel="stylesheet" href="auth-styles.css">
+    
+    <!-- Supabase JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-container">
+            <h2>PHM Login</h2>
+            <p>Primary Healthcare Management System</p>
+            
+            <form class="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="login-email" 
+                        placeholder="your.email@example.com" 
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn-primary">Send Magic Link</button>
+                
+                <div id="login-success" style="display: none;" class="login-success">
+                    ✅ Check your email! We sent you a magic link to sign in.
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- App Screen -->
+    <div id="app-screen">
+        <div class="app-header">
+            <h1>PHM Dashboard</h1>
+            
+            <div class="user-info">
+                <button id="admin-button" onclick="showAdminPanel()">👤 User Management</button>
+                
+                <div class="user-details">
+                    <div class="user-email" id="user-email-display">-</div>
+                    <div class="user-scope" id="user-scope-display">-</div>
+                </div>
+                
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+        
+        <div style="padding: 24px; flex: 1; overflow-y: auto;">
+            <!-- Your existing app content goes here -->
+            <!-- You can integrate your glass.html content here -->
+            <h2>Welcome to PHM!</h2>
+            <p>Your app content will appear here based on your access level.</p>
+            
+            <!-- Placeholder for your actual dashboard -->
+            <div id="dashboard-content">
+                <!-- Your existing dashboard from glass.html can be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Panel -->
+    <div id="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2>👤 User Management</h2>
+                <button class="btn-secondary" onclick="hideAdminPanel()">Close</button>
+            </div>
+            
+            <div class="admin-sections">
+                
+                <!-- Invite User Section -->
+                <div class="admin-section">
+                    <h3>📧 Invite New User</h3>
+                    
+                    <form id="invite-form" class="modal-form" onsubmit="inviteUser(event)">
+                        <div class="form-group">
+                            <label for="invite-email">Email Address *</label>
+                            <input type="email" id="invite-email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="invite-scope">Access Scope *</label>
+                            <select id="invite-scope" onchange="updateInviteScopeFields()" required>
+                                <option value="">Select Scope</option>
+                                <option value="cluster">Cluster (Full Access)</option>
+                                <option value="zone">Zone (Single Zone)</option>
+                                <option value="phc">PHC (Single PHC)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="invite-zone-field" class="form-group" style="display: none;">
+                            <label for="invite-zone">Zone *</label>
+                            <select id="invite-zone" class="zone-select" onchange="filterPHCsByZone(this.value, 'invite-phc')">
+                                <option value="">Select Zone</option>
+                            </select>
+                        </div>
+                        
+                        <div id="invite-phc-field" class="form-group" style="display: none;">
+                            <label for="invite-phc">PHC *</label>
+                            <select id="invite-phc" class="phc-select">
+                                <option value="">Select PHC</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group-inline">
+                            <input type="checkbox" id="invite-is-admin">
+                            <label for="invite-is-admin">Make Admin</label>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">Send Invitation</button>
+                    </form>
+                </div>
+                
+                <!-- Users List Section -->
+                <div class="admin-section">
+                    <h3>👥 All Users</h3>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Scope</th>
+                                    <th>Zone</th>
+                                    <th>PHC</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-list-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 20px;">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit User</h3>
+                <button class="btn-close" onclick="closeEditUserModal()">&times;</button>
+            </div>
+            
+            <form class="modal-form" onsubmit="updateUserRole(event)">
+                <input type="hidden" id="edit-user-id">
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <p id="edit-email-display" style="margin: 0; font-weight: 600;">-</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-scope">Access Scope *</label>
+                    <select id="edit-scope" onchange="updateEditScopeFields()" required>
+                        <option value="cluster">Cluster (Full Access)</option>
+                        <option value="zone">Zone (Single Zone)</option>
+                        <option value="phc">PHC (Single PHC)</option>
+                    </select>
+                </div>
+                
+                <div id="edit-zone-field" class="form-group" style="display: none;">
+                    <label for="edit-zone">Zone *</label>
+                    <select id="edit-zone" class="zone-select" onchange="filterPHCsByZone(this.value, 'edit-phc')">
+                        <option value="">Select Zone</option>
+                    </select>
+                </div>
+                
+                <div id="edit-phc-field" class="form-group" style="display: none;">
+                    <label for="edit-phc">PHC *</label>
+                    <select id="edit-phc" class="phc-select">
+                        <option value="">Select PHC</option>
+                    </select>
+                </div>
+                
+                <div class="form-group-inline">
+                    <input type="checkbox" id="edit-is-admin">
+                    <label for="edit-is-admin">Admin User</label>
+                </div>
+                
+                <div class="form-group-inline">
+                    <input type="checkbox" id="edit-active">
+                    <label for="edit-active">Account Active</label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="supabaseClient.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        // Handle login form submission
+        async function handleLoginSubmit(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const successMsg = document.getElementById('login-success');
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            const success = await handleLogin(email);
+            
+            if (success) {
+                successMsg.style.display = 'block';
+                event.target.reset();
+            }
+            
+            submitBtn.textContent = 'Send Magic Link';
+            submitBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
+
