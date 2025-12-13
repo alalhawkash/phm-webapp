@@ -42,21 +42,18 @@ async function loadUserProfile() {
     console.log('✅ User profile loaded:', userProfile);
 }
 
-// Handle login with email (magic link)
-async function handleLogin(email) {
-    const { error } = await supabase.auth.signInWithOtp({
+// Handle login with email and password
+async function handleLogin(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
-        options: {
-            emailRedirectTo: window.location.origin
-        }
+        password: password
     });
     
     if (error) {
-        alert('Login error: ' + error.message);
-        return false;
+        return { success: false, error: error.message };
     }
     
-    return true;
+    return { success: true };
 }
 
 // Handle logout

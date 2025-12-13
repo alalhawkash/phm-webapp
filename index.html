@@ -30,11 +30,19 @@
                     >
                 </div>
                 
-                <button type="submit" class="btn-primary">Send Magic Link</button>
-                
-                <div id="login-success" style="display: none;" class="login-success">
-                    ✅ Check your email! We sent you a magic link to sign in.
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        placeholder="Enter your password" 
+                        required
+                    >
                 </div>
+                
+                <button type="submit" class="btn-primary">Login</button>
+                
+                <div id="login-error" style="display: none; color: #dc3545; margin-top: 10px; text-align: center;"></div>
             </form>
         </div>
     </div>
@@ -221,21 +229,23 @@
             event.preventDefault();
             
             const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
             const submitBtn = event.target.querySelector('button[type="submit"]');
-            const successMsg = document.getElementById('login-success');
+            const errorMsg = document.getElementById('login-error');
             
-            submitBtn.textContent = 'Sending...';
+            submitBtn.textContent = 'Logging in...';
             submitBtn.disabled = true;
+            errorMsg.style.display = 'none';
             
-            const success = await handleLogin(email);
+            const result = await handleLogin(email, password);
             
-            if (success) {
-                successMsg.style.display = 'block';
-                event.target.reset();
+            if (!result.success) {
+                errorMsg.textContent = result.error;
+                errorMsg.style.display = 'block';
+                submitBtn.textContent = 'Login';
+                submitBtn.disabled = false;
             }
-            
-            submitBtn.textContent = 'Send Magic Link';
-            submitBtn.disabled = false;
+            // If successful, auth.js will automatically redirect to app
         }
     </script>
 </body>
