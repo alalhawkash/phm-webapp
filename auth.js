@@ -18,14 +18,28 @@ async function checkAuth() {
 
 // Load user profile from app_users table
 async function loadUserProfile() {
+    // Get the current session to ensure we have the latest user info
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+        console.error('No active session');
+        return;
+    }
+    
     const { data, error } = await supabase
         .from('app_users')
         .select('*')
-        .eq('id', currentUser.id)
+        .eq('id', session.user.id)
         .single();
     
     if (error) {
         console.error('Error loading user profile:', error);
+        console.error('Error details:', error.message, error.code, error.details);
+        
+        // If user profile doesn't exist, show an alert
+        if (error.code === 'PGRST116') {
+            alert('User profile not found. Please contact an administrator.');
+        }
         return;
     }
     
