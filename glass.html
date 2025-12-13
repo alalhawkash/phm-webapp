@@ -305,166 +305,6 @@
             flex: 1;
         }
 
-        .users-modal-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .users-modal-tab {
-            padding: 10px 16px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: #666;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: -2px;
-        }
-
-        .users-modal-tab.active {
-            color: #007aff;
-            border-bottom-color: #007aff;
-        }
-
-        .users-modal-tab:hover {
-            color: #007aff;
-        }
-
-        .dark-mode .users-modal-tabs {
-            border-bottom-color: #303b4d;
-        }
-
-        .dark-mode .users-modal-tab {
-            color: #999;
-        }
-
-        .dark-mode .users-modal-tab.active {
-            color: #007aff;
-            border-bottom-color: #007aff;
-        }
-
-        .users-tab-content {
-            display: none;
-        }
-
-        .users-tab-content.active {
-            display: block;
-        }
-
-        .create-user-form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .create-user-form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .create-user-form-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .dark-mode .create-user-form-label {
-            color: #e8e8e8;
-        }
-
-        .create-user-form-input,
-        .create-user-form-select {
-            padding: 10px 12px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            font-size: 14px;
-            background: #fff;
-            color: #333;
-        }
-
-        .dark-mode .create-user-form-input,
-        .dark-mode .create-user-form-select {
-            background: #252c38;
-            border-color: #303b4d;
-            color: #e8e8e8;
-        }
-
-        .create-user-form-input:focus,
-        .create-user-form-select:focus {
-            outline: none;
-            border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-        }
-
-        .create-user-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .create-user-button {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #007aff, #0051c7);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.15s;
-        }
-
-        .create-user-button:hover {
-            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-        }
-
-        .create-user-button:active {
-            transform: translateY(1px);
-        }
-
-        .create-user-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .create-user-message {
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            display: none;
-        }
-
-        .create-user-message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        .create-user-message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .dark-mode .create-user-message.success {
-            background: #1a3a2a;
-            color: #c3e6cb;
-            border-color: #2a5a3a;
-        }
-
-        .dark-mode .create-user-message.error {
-            background: #3a1a1a;
-            color: #f6d7d4;
-            border-color: #5a2a2a;
-        }
-
         .users-list {
             display: flex;
             flex-direction: column;
@@ -1914,66 +1754,8 @@
                 <button class="users-modal-close" id="usersModalClose" aria-label="Close">×</button>
             </div>
             <div class="users-modal-body">
-                <div class="users-modal-tabs">
-                    <button class="users-modal-tab active" data-tab="list">Users List</button>
-                    <button class="users-modal-tab" data-tab="create">Create User</button>
-                </div>
-                
-                <div id="usersListTab" class="users-tab-content active">
-                    <div id="usersListContainer">
-                        <div class="users-loading">Loading users...</div>
-                    </div>
-                </div>
-                
-                <div id="createUserTab" class="users-tab-content">
-                    <form id="createUserForm" class="create-user-form">
-                        <div class="create-user-message" id="createUserMessage"></div>
-                        
-                        <div class="create-user-form-group">
-                            <label class="create-user-form-label" for="createUserEmail">Email <span style="color: #b00020;">*</span></label>
-                            <input type="email" id="createUserEmail" class="create-user-form-input" required placeholder="user@example.com">
-                        </div>
-                        
-                        <div class="create-user-form-group">
-                            <label class="create-user-form-label" for="createUserPassword">Password <span style="color: #b00020;">*</span></label>
-                            <input type="password" id="createUserPassword" class="create-user-form-input" required placeholder="Minimum 6 characters" minlength="6">
-                        </div>
-                        
-                        <div class="create-user-form-group">
-                            <label class="create-user-form-label" for="createUserRole">Role <span style="color: #b00020;">*</span></label>
-                            <select id="createUserRole" class="create-user-form-select" required>
-                                <option value="">Select Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="cluster">Cluster</option>
-                                <option value="zone">Zone</option>
-                                <option value="phc">PHC</option>
-                            </select>
-                        </div>
-                        
-                        <div class="create-user-form-group" id="createUserZoneGroup" style="display: none;">
-                            <label class="create-user-form-label" for="createUserZone">Zone</label>
-                            <select id="createUserZone" class="create-user-form-select">
-                                <option value="">Select Zone</option>
-                                <option value="BGH">BGH</option>
-                                <option value="HGH">HGH</option>
-                                <option value="KGH">KGH</option>
-                                <option value="KKH">KKH</option>
-                                <option value="MCH">MCH</option>
-                                <option value="WNH">WNH</option>
-                                <option value="NNGH">NNGH</option>
-                                <option value="SGH">SGH</option>
-                                <option value="TGH">TGH</option>
-                                <option value="YGH">YGH</option>
-                            </select>
-                        </div>
-                        
-                        <div class="create-user-form-group" id="createUserPHCGroup" style="display: none;">
-                            <label class="create-user-form-label" for="createUserPHC">PHC Name</label>
-                            <input type="text" id="createUserPHC" class="create-user-form-input" placeholder="e.g. Alhadan PHCC">
-                        </div>
-                        
-                        <button type="submit" class="create-user-button" id="createUserSubmitBtn">Create User</button>
-                    </form>
+                <div id="usersListContainer">
+                    <div class="users-loading">Loading users...</div>
                 </div>
             </div>
         </div>
@@ -2403,19 +2185,22 @@
 
         function findZoneForPHC(phcName) {
             if (!phcName) return '';
+            // Guard in case PHC_ZONE_MAP is ever missing
+            const zoneMap = typeof PHC_ZONE_MAP === 'undefined' ? {} : PHC_ZONE_MAP;
             const normalizedPhc = normalizePHC(phcName);
             // direct
-            if (PHC_ZONE_MAP[phcName]) return PHC_ZONE_MAP[phcName];
-            const directKey = Object.keys(PHC_ZONE_MAP).find(key => normalizePHC(key) === normalizedPhc);
-            if (directKey) return PHC_ZONE_MAP[directKey];
+            if (zoneMap[phcName]) return zoneMap[phcName];
+            const directKey = Object.keys(zoneMap).find(key => normalizePHC(key) === normalizedPhc);
+            if (directKey) return zoneMap[directKey];
             return '';
         }
 
         function findPHCByAnyName(name) {
             const norm = normalizePHC(name);
             if (!norm) return '';
+            const zoneMap = typeof PHC_ZONE_MAP === 'undefined' ? {} : PHC_ZONE_MAP;
             // Match against canonical PHC map keys
-            const keyMatch = Object.keys(PHC_ZONE_MAP).find(k => normalizePHC(k) === norm);
+            const keyMatch = Object.keys(zoneMap).find(k => normalizePHC(k) === norm);
             if (keyMatch) return keyMatch;
             // Match against display names
             const displayMatch = Object.entries(PHC_DISPLAY_NAMES || {}).find(([, display]) => normalizePHC(display) === norm);
@@ -2690,6 +2475,23 @@
             container.innerHTML = html;
         }
 
+        async function populateUsersList() {
+            const container = document.getElementById('usersListContainer');
+            if (container) {
+                container.innerHTML = '<div class="users-loading">Loading users...</div>';
+            }
+
+            try {
+                const users = await fetchUsers();
+                renderUsersList(users);
+            } catch (err) {
+                console.error('Error populating users list:', err);
+                if (container) {
+                    container.innerHTML = '<div class="users-error">Error loading users. Please try again.</div>';
+                }
+            }
+        }
+
         async function openUsersModal() {
             // Double-check user is admin
             if (getStoredRole() !== 'admin') {
@@ -2701,21 +2503,7 @@
             if (!modal) return;
 
             modal.classList.add('active');
-            const container = document.getElementById('usersListContainer');
-            if (container) {
-                container.innerHTML = '<div class="users-loading">Loading users...</div>';
-            }
-
-            try {
-                const users = await fetchUsers();
-                renderUsersList(users);
-            } catch (err) {
-                const container = document.getElementById('usersListContainer');
-                if (container) {
-                    container.innerHTML = '<div class="users-error">Error loading users. Please try again.</div>';
-                }
-                console.error('Error loading users:', err);
-            }
+            await populateUsersList();
         }
 
         function closeUsersModal() {
@@ -2738,69 +2526,6 @@
                 usersModalClose.addEventListener('click', closeUsersModal);
             }
 
-            // Tab switching
-            const tabButtons = document.querySelectorAll('.users-modal-tab');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.getAttribute('data-tab');
-                    
-                    // Update active tab button
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    // Update active tab content
-                    document.querySelectorAll('.users-tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    if (tabName === 'list') {
-                        document.getElementById('usersListTab')?.classList.add('active');
-                        populateUsersList();
-                    } else if (tabName === 'create') {
-                        document.getElementById('createUserTab')?.classList.add('active');
-                    }
-                });
-            });
-
-            // Role change handler - show/hide zone and PHC fields
-            const roleSelect = document.getElementById('createUserRole');
-            const zoneGroup = document.getElementById('createUserZoneGroup');
-            const phcGroup = document.getElementById('createUserPHCGroup');
-            const zoneSelect = document.getElementById('createUserZone');
-            const phcInput = document.getElementById('createUserPHC');
-
-            if (roleSelect) {
-                roleSelect.addEventListener('change', (e) => {
-                    const role = e.target.value;
-                    
-                    if (role === 'zone') {
-                        zoneGroup.style.display = 'flex';
-                        phcGroup.style.display = 'none';
-                        zoneSelect.required = true;
-                        phcInput.required = false;
-                        phcInput.value = '';
-                    } else if (role === 'phc') {
-                        zoneGroup.style.display = 'flex';
-                        phcGroup.style.display = 'flex';
-                        zoneSelect.required = true;
-                        phcInput.required = true;
-                    } else {
-                        zoneGroup.style.display = 'none';
-                        phcGroup.style.display = 'none';
-                        zoneSelect.required = false;
-                        phcInput.required = false;
-                        zoneSelect.value = '';
-                        phcInput.value = '';
-                    }
-                });
-            }
-
-            // Form submission
-            const createUserForm = document.getElementById('createUserForm');
-            if (createUserForm) {
-                createUserForm.addEventListener('submit', handleCreateUser);
-            }
-
             // Close modal when clicking outside
             if (usersModal) {
                 usersModal.addEventListener('click', (e) => {
@@ -2816,123 +2541,6 @@
                     closeUsersModal();
                 }
             });
-        }
-
-        async function handleCreateUser(event) {
-            event.preventDefault();
-            
-            if (getStoredRole() !== 'admin') {
-                showCreateUserMessage('Only admin users can create new users.', 'error');
-                return;
-            }
-
-            const email = document.getElementById('createUserEmail')?.value.trim();
-            const password = document.getElementById('createUserPassword')?.value;
-            const role = document.getElementById('createUserRole')?.value;
-            const zone = document.getElementById('createUserZone')?.value || null;
-            const phcName = document.getElementById('createUserPHC')?.value.trim() || null;
-
-            if (!email || !password || !role) {
-                showCreateUserMessage('Please fill in all required fields.', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showCreateUserMessage('Password must be at least 6 characters.', 'error');
-                return;
-            }
-
-            if (role === 'zone' && !zone) {
-                showCreateUserMessage('Zone is required for zone users.', 'error');
-                return;
-            }
-
-            if (role === 'phc' && (!zone || !phcName)) {
-                showCreateUserMessage('Zone and PHC name are required for PHC users.', 'error');
-                return;
-            }
-
-            const submitBtn = document.getElementById('createUserSubmitBtn');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Creating...';
-            }
-
-            try {
-                // Get current session for authentication
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                
-                if (sessionError || !session) {
-                    throw new Error('You must be logged in to create users.');
-                }
-
-                // Call Supabase Edge Function to create user
-                const { data, error } = await supabaseClient.functions.invoke('create-user', {
-                    body: {
-                        email,
-                        password,
-                        role,
-                        zone,
-                        phc_name: phcName
-                    },
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    }
-                });
-
-                if (error) {
-                    throw new Error(error.message || 'Failed to create user');
-                }
-
-                if (data?.error) {
-                    throw new Error(data.error);
-                }
-
-                showCreateUserMessage(`User ${email} created successfully!`, 'success');
-                
-                // Reset form
-                document.getElementById('createUserForm')?.reset();
-                document.getElementById('createUserZoneGroup').style.display = 'none';
-                document.getElementById('createUserPHCGroup').style.display = 'none';
-                
-                // Refresh users list
-                setTimeout(() => {
-                    populateUsersList();
-                    // Switch to list tab
-                    document.querySelector('.users-modal-tab[data-tab="list"]')?.click();
-                }, 1500);
-
-            } catch (err) {
-                console.error('Error creating user:', err);
-                let errorMessage = err.message || 'Failed to create user. Please try again.';
-                
-                // Check if it's a function not found error
-                if (err.message?.includes('Function not found') || err.message?.includes('404')) {
-                    errorMessage = 'Edge Function not deployed. Please deploy the create-user function first. See supabase/README.md for instructions.';
-                }
-                
-                showCreateUserMessage(errorMessage, 'error');
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Create User';
-                }
-            }
-        }
-
-        function showCreateUserMessage(message, type) {
-            const messageEl = document.getElementById('createUserMessage');
-            if (messageEl) {
-                messageEl.textContent = message;
-                messageEl.className = `create-user-message ${type}`;
-                messageEl.style.display = 'block';
-                
-                if (type === 'success') {
-                    setTimeout(() => {
-                        messageEl.style.display = 'none';
-                    }, 5000);
-                }
-            }
         }
 
         async function initializeLogin() {

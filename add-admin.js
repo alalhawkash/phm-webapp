@@ -34,7 +34,7 @@ async function addAdminUser() {
       process.exit(1);
     }
 
-    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    let existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
     if (existingUser) {
       console.log(`✓ User ${email} already exists in Supabase Auth`);
