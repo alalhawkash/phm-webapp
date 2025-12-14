@@ -5,27 +5,13 @@ let userProfile = null;
 
 // Check if user is logged in
 async function checkAuth() {
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        console.log('Session check:', session ? 'Found' : 'None', error);
-        
-        if (session && session.user) {
-            currentUser = session.user;
-            await loadUserProfile();
-            
-            // Only show app if profile loaded successfully
-            if (userProfile && userProfile.active) {
-                showApp();
-                return;
-            }
-        }
-        
-        // No valid session or profile
-        showLogin();
-        
-    } catch (error) {
-        console.error('Auth check error:', error);
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        currentUser = session.user;
+        await loadUserProfile();
+        showApp();
+    } else {
         showLogin();
     }
 }
@@ -138,12 +124,6 @@ function showApp() {
             userProfile.scope === 'cluster' ? 'Full Access' :
             userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
             `PHC: ${userProfile.phc_id || 'N/A'}`;
-        
-        // Reload iframe with user scope to ensure it gets fresh data
-        const iframe = document.getElementById('dashboard-iframe');
-        if (iframe) {
-            iframe.src = `glass.html?_t=${Date.now()}`;
-        }
     }
 }
 

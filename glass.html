@@ -1840,24 +1840,12 @@
             
             // Apply scope filtering
             const shouldShowZone = (zoneName) => {
-                console.log('🔍 Checking zone:', zoneName, 'User scope:', userScopeData);
-                if (!userScopeData) {
-                    console.log('  → No scope data, showing all');
-                    return true;
-                }
-                if (userScopeData.scope === 'cluster') {
-                    console.log('  → Cluster scope, showing all');
-                    return true;
-                }
-                if (userScopeData.scope === 'zone') {
-                    const show = zoneName === userScopeData.zone_id;
-                    console.log('  → Zone scope, show:', show);
-                    return show;
-                }
+                if (!userScopeData) return true; // If no scope data, show all
+                if (userScopeData.scope === 'cluster') return true; // Cluster sees all
+                if (userScopeData.scope === 'zone') return zoneName === userScopeData.zone_id; // Zone sees only their zone
                 if (userScopeData.scope === 'phc') {
-                    const show = zoneName === userScopeData.zone_id;
-                    console.log('  → PHC scope, zone match:', show, `(${zoneName} === ${userScopeData.zone_id})`);
-                    return show;
+                    // PHC users see only their zone
+                    return zoneName === userScopeData.zone_id;
                 }
                 return true;
             };
@@ -2102,29 +2090,13 @@
             container.innerHTML = html;
         }
 
-        // Load user scope from parent window's localStorage (since we're in an iframe)
+        // Load user scope from parent window or localStorage
         let userScopeData = null;
         try {
-            // Try to read from parent window first (when in iframe)
-            let scopeJson = null;
-            if (window.parent && window.parent !== window) {
-                try {
-                    scopeJson = window.parent.localStorage.getItem('userScope');
-                } catch (e) {
-                    console.log('Cannot access parent localStorage, trying own:', e);
-                }
-            }
-            
-            // Fallback to own localStorage
-            if (!scopeJson) {
-                scopeJson = localStorage.getItem('userScope');
-            }
-            
+            const scopeJson = localStorage.getItem('userScope');
             if (scopeJson) {
                 userScopeData = JSON.parse(scopeJson);
-                console.log('✅ User scope loaded:', userScopeData);
-            } else {
-                console.log('⚠️ No user scope found - showing all data');
+                console.log('User scope loaded:', userScopeData);
             }
         } catch (e) {
             console.error('Error loading user scope:', e);
@@ -2138,13 +2110,7 @@
             // Supabase client (same config as main app)
             const SUPABASE_URL = 'https://zobmqwncusqkbmyzmvxi.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYm1xd25jdXNxa2JteXptdnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2NTA1MjcsImV4cCI6MjA4MTIyNjUyN30.dISVd9GJ6ITsfIt-41b4lRtO2oYs9XSS768bdATLoVk';
-            const supabaseDashboard = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    storage: window.localStorage
-                }
-            });
+            const supabaseDashboard = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
             function parseCSV(csvText) {
                 const rows = [];
@@ -2214,50 +2180,65 @@
                 errorEl.classList.remove('active');
             }
 
-            async function loadDataFromSupabase() {
+            function loadDataFromGoogleSheets() {
                 showLoading();
                 hideLoadError();
                 
-                try {
-                    // Load ONLY from Supabase
-                    const { data, error } = await supabaseDashboard
-                        .from('dashboard_data')
-                        .select('data_content')
-                        .eq('is_active', true)
-                        .order('uploaded_at', { ascending: false })
-                        .limit(1)
-                        .single();
-                    
-                    if (error) {
-                        console.error('Supabase load error:', error);
-                        showLoadError('No data uploaded yet. Admin: Please upload dashboard data.');
+                // Use CSV export which is more reliable for CORS
+                const publishedUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+                const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+                
+                // Try direct fetch first, then fall back to proxies
+                const sources = [
+                    publishedUrl,
+                    gvizUrl,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(publishedUrl)}`,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(gvizUrl)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(publishedUrl)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(gvizUrl)}`
+                ];
+                
+                function trySource(index) {
+                    if (index >= sources.length) {
+                        console.error('All fetch methods failed.');
+                        showLoadError('Unable to load data. Please check your connection and try again.');
                         hideLoading();
                         return;
                     }
-                    
-                    if (data && data.data_content) {
-                        console.log('✓ Data loaded from Supabase (uploaded data)');
-                        const sheetData = parseCSV(data.data_content);
-                        if (sheetData.length > 0) {
-                            hideLoadError();
-                            updateMobileAppData(sheetData);
-                            hideLoading();
-                            return;
-                        }
-                    }
-                    
-                    // No data available
-                    showLoadError('No data available. Admin: Please upload dashboard data.');
-                    hideLoading();
-                    
-                } catch (err) {
-                    console.error('Error loading data:', err);
-                    showLoadError('Error loading data. Please contact administrator.');
-                    hideLoading();
+            
+                    fetch(sources[index], { mode: 'cors' })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            if (!text || text.trim().length === 0) {
+                                throw new Error('Empty response');
+                            }
+                            const sheetData = parseCSV(text);
+                            if (sheetData.length > 0) {
+                                hideLoadError();
+                                updateMobileAppData(sheetData);
+                                console.log('✓ Data loaded successfully from Google Sheets');
+                                hideLoading();
+                            } else {
+                                throw new Error('No data parsed');
+                            }
+                        })
+                        .catch(() => {
+                            // Silently try next source
+                            if (index + 1 >= sources.length) {
+                                showLoadError('Unable to load data. Please check your connection and try again.');
+                                hideLoading();
+                            }
+                            trySource(index + 1);
+                        });
                 }
+                
+                trySource(0);
             }
-
-            // Google Sheets function removed - using only Supabase uploaded data
             
         function updateMobileAppData(data) {
         // Update last updated timestamp (now in B6 -> row index 5, col index 1). Fallback to old I1 if missing.
@@ -2549,7 +2530,7 @@
             }
             
             // Load data when page loads
-            loadDataFromSupabase();
+            loadDataFromGoogleSheets();
         })();
 
         // Helper function to normalize PHC names for matching
