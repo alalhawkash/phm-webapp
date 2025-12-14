@@ -145,20 +145,25 @@ function showApp() {
 supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('Auth state changed:', event);
     
-    if (event === 'SIGNED_IN') {
-        currentUser = session.user;
-        await loadUserProfile();
-        showApp();
+    if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile();
+            showApp();
+        } else {
+            showLogin();
+        }
     } else if (event === 'SIGNED_OUT') {
         currentUser = null;
         userProfile = null;
+        localStorage.removeItem('userScope');
         showLogin();
     }
 });
 
-// Initialize auth on page load
-document.addEventListener('DOMContentLoaded', async () => {
-    // Wait a moment for Supabase to initialize
-    await checkAuth();
+// Initialize - just show a loading state, let onAuthStateChange handle the rest
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('App loading...');
+    // Don't call checkAuth - let onAuthStateChange handle it
 });
 
