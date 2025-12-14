@@ -48,19 +48,19 @@
     </div>
     
     <!-- App Screen -->
-    <div id="app-screen">
-        <div class="app-header">
+    <div id="app-screen" style="display: none; flex-direction: column; height: 100vh;">
+        <div class="app-header" style="position: relative; z-index: 100;">
             <h1>PHM Dashboard</h1>
             
             <div class="user-info">
-                <button id="admin-button" onclick="showAdminPanel()">👤 User Management</button>
+                <button id="admin-button" style="display: none;" onclick="showAdminPanel()">👤 User Management</button>
                 
                 <div class="user-details">
                     <div class="user-email" id="user-email-display">-</div>
                     <div class="user-scope" id="user-scope-display">-</div>
                 </div>
                 
-                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                <button class="btn-logout" onclick="handleLogout()" style="z-index: 101;">Logout</button>
             </div>
         </div>
         
