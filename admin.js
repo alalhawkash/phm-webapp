@@ -159,15 +159,21 @@ function hideAdminPanel() {
     document.getElementById('admin-panel').style.display = 'none';
 }
 
-// Invite new user
+// Invite new user (simplified version)
 async function inviteUser(event) {
     event.preventDefault();
     
+    const userId = document.getElementById('invite-user-id').value.trim();
     const email = document.getElementById('invite-email').value.trim();
     const scope = document.getElementById('invite-scope').value;
     const zoneId = document.getElementById('invite-zone').value || null;
     const phcId = document.getElementById('invite-phc').value || null;
     const isAdmin = document.getElementById('invite-is-admin').checked;
+    
+    if (!userId) {
+        alert('Please enter the User ID from Supabase');
+        return;
+    }
     
     if (!email) {
         alert('Please enter an email address');
@@ -192,18 +198,27 @@ async function inviteUser(event) {
     // Show loading
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Sending...';
+    submitBtn.textContent = 'Creating Profile...';
     submitBtn.disabled = true;
     
     try {
-        // Call edge function to invite user
-        const { data, error } = await supabase.functions.invoke('invite-user', {
-            body: { email, scope, zone_id: zoneId, phc_id: phcId, is_admin: isAdmin }
+        // Call database function to create user profile
+        const { data, error } = await supabase.rpc('create_user_profile', {
+            p_user_id: userId,
+            p_email: email,
+            p_scope: scope,
+            p_zone_id: zoneId,
+            p_phc_id: phcId,
+            p_is_admin: isAdmin
         });
         
         if (error) throw error;
         
-        alert('✅ Invitation sent successfully! The user will receive an email with a magic link to sign in.');
+        if (!data.success) {
+            throw new Error(data.error);
+        }
+        
+        alert('✅ User profile created successfully! The user can now log in with their email and password.');
         
         // Reset form
         document.getElementById('invite-form').reset();
@@ -213,8 +228,8 @@ async function inviteUser(event) {
         loadAllUsers();
         
     } catch (error) {
-        console.error('Error inviting user:', error);
-        alert('Error inviting user: ' + error.message);
+        console.error('Error creating user profile:', error);
+        alert('Error: ' + error.message);
     } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
@@ -246,7 +261,7 @@ function closeEditUserModal() {
     document.getElementById('edit-user-modal').style.display = 'none';
 }
 
-// Update user role
+// Update user role (simplified version)
 async function updateUserRole(event) {
     event.preventDefault();
     
@@ -274,19 +289,21 @@ async function updateUserRole(event) {
     submitBtn.disabled = true;
     
     try {
-        // Call edge function to update user
-        const { data, error } = await supabase.functions.invoke('update-user-role', {
-            body: { 
-                user_id: userId, 
-                scope, 
-                zone_id: zoneId, 
-                phc_id: phcId, 
-                is_admin: isAdmin,
-                active 
-            }
+        // Call database function to update user profile
+        const { data, error } = await supabase.rpc('update_user_profile', {
+            p_user_id: userId,
+            p_scope: scope,
+            p_zone_id: zoneId,
+            p_phc_id: phcId,
+            p_is_admin: isAdmin,
+            p_active: active
         });
         
         if (error) throw error;
+        
+        if (!data.success) {
+            throw new Error(data.error);
+        }
         
         alert('✅ User updated successfully!');
         
@@ -298,7 +315,7 @@ async function updateUserRole(event) {
         
     } catch (error) {
         console.error('Error updating user:', error);
-        alert('Error updating user: ' + error.message);
+        alert('Error: ' + error.message);
     } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;

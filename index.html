@@ -91,7 +91,18 @@
                 <div class="admin-section">
                     <h3>📧 Invite New User</h3>
                     
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+                        <strong>📝 Step 1:</strong> Create the user in Supabase first:<br>
+                        Go to Supabase → Authentication → Users → Add user → Create new user<br>
+                        <strong>📋 Step 2:</strong> Copy the User ID and paste it below
+                    </div>
+                    
                     <form id="invite-form" class="modal-form" onsubmit="inviteUser(event)">
+                        <div class="form-group">
+                            <label for="invite-user-id">User ID * (from Supabase)</label>
+                            <input type="text" id="invite-user-id" placeholder="abc12345-6789-..." required>
+                        </div>
+                        
                         <div class="form-group">
                             <label for="invite-email">Email Address *</label>
                             <input type="email" id="invite-email" required>
