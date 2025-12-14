@@ -1,6 +1,6 @@
 -- =====================================================
--- DASHBOARD DATA TABLE
--- Stores uploaded Excel/CSV data
+-- DASHBOARD DATA TABLE (Simple Version)
+-- Creates table and function only
 -- =====================================================
 
 -- Create table to store dashboard data
@@ -17,42 +17,6 @@ CREATE INDEX IF NOT EXISTS idx_dashboard_data_active ON public.dashboard_data(is
 
 -- Enable RLS
 ALTER TABLE public.dashboard_data ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Authenticated users can read active dashboard data" ON public.dashboard_data;
-DROP POLICY IF EXISTS "Admins can insert dashboard data" ON public.dashboard_data;
-DROP POLICY IF EXISTS "Admins can update dashboard data" ON public.dashboard_data;
-
--- Policy: All authenticated users can read active data
-CREATE POLICY "Authenticated users can read active dashboard data"
-ON public.dashboard_data
-FOR SELECT
-TO authenticated
-USING (is_active = TRUE);
-
--- Policy: Only admins can insert new data
-CREATE POLICY "Admins can insert dashboard data"
-ON public.dashboard_data
-FOR INSERT
-TO authenticated
-WITH CHECK (
-    EXISTS (
-        SELECT 1 FROM public.app_users
-        WHERE id = auth.uid() AND is_admin = TRUE
-    )
-);
-
--- Policy: Only admins can update data
-CREATE POLICY "Admins can update dashboard data"
-ON public.dashboard_data
-FOR UPDATE
-TO authenticated
-USING (
-    EXISTS (
-        SELECT 1 FROM public.app_users
-        WHERE id = auth.uid() AND is_admin = TRUE
-    )
-);
 
 -- Function to deactivate old data and insert new
 CREATE OR REPLACE FUNCTION public.upload_new_dashboard_data(
