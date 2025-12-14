@@ -5,13 +5,27 @@ let userProfile = null;
 
 // Check if user is logged in
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-        currentUser = session.user;
-        await loadUserProfile();
-        showApp();
-    } else {
+    try {
+        // Give Supabase time to restore session from storage
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+            console.error('Session error:', error);
+            showLogin();
+            return;
+        }
+        
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile();
+            showApp();
+        } else {
+            showLogin();
+        }
+    } catch (err) {
+        console.error('Auth check error:', err);
         showLogin();
     }
 }
@@ -143,7 +157,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 });
 
 // Initialize auth on page load
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait a moment for Supabase to initialize
+    await checkAuth();
 });
 
