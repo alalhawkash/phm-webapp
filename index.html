@@ -64,16 +64,14 @@
             </div>
         </div>
         
-        <div style="padding: 24px; flex: 1; overflow-y: auto;">
-            <!-- Your existing app content goes here -->
-            <!-- You can integrate your glass.html content here -->
-            <h2>Welcome to PHM!</h2>
-            <p>Your app content will appear here based on your access level.</p>
-            
-            <!-- Placeholder for your actual dashboard -->
-            <div id="dashboard-content">
-                <!-- Your existing dashboard from glass.html can be loaded here -->
-            </div>
+        <div style="flex: 1; overflow: hidden; position: relative;">
+            <!-- PHM Dashboard from glass.html -->
+            <iframe 
+                id="dashboard-iframe" 
+                src="glass.html" 
+                style="width: 100%; height: 100%; border: none; display: block;"
+                title="PHM Dashboard">
+            </iframe>
         </div>
     </div>
     
