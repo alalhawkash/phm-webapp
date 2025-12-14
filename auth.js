@@ -124,6 +124,12 @@ function showApp() {
             userProfile.scope === 'cluster' ? 'Full Access' :
             userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
             `PHC: ${userProfile.phc_id || 'N/A'}`;
+        
+        // Reload iframe with user scope to ensure it gets fresh data
+        const iframe = document.getElementById('dashboard-iframe');
+        if (iframe) {
+            iframe.src = `glass.html?_t=${Date.now()}`;
+        }
     }
 }
 
