@@ -32,50 +32,62 @@ async function checkAuth() {
 
 // Load user profile from app_users table
 async function loadUserProfile() {
-    // Get the current session to ensure we have the latest user info
-    const { data: { session } } = await supabase.auth.getSession();
+    console.log('🔍 loadUserProfile() started');
     
-    if (!session) {
-        console.error('No active session');
-        return;
-    }
-    
-    const { data, error } = await supabase
-        .from('app_users')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-    
-    if (error) {
-        console.error('Error loading user profile:', error);
-        console.error('Error details:', error.message, error.code, error.details);
+    try {
+        // Get the current session to ensure we have the latest user info
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔍 Got session:', session ? 'Yes' : 'No');
         
-        // If user profile doesn't exist, show an alert
-        if (error.code === 'PGRST116') {
-            alert('User profile not found. Please contact an administrator.');
+        if (!session) {
+            console.error('No active session');
+            return;
         }
-        return;
+        
+        console.log('🔍 Querying app_users for user:', session.user.id);
+        
+        const { data, error } = await supabase
+            .from('app_users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+        
+        console.log('🔍 Query result:', { data, error });
+        
+        if (error) {
+            console.error('❌ Error loading user profile:', error);
+            console.error('Error details:', error.message, error.code, error.details);
+            
+            // If user profile doesn't exist, show an alert
+            if (error.code === 'PGRST116') {
+                alert('User profile not found. Please contact an administrator.');
+            }
+            return;
+        }
+        
+        userProfile = data;
+        console.log('🔍 User profile set:', userProfile);
+        
+        // Check if user is active
+        if (!userProfile.active) {
+            await supabase.auth.signOut();
+            alert('Your account has been disabled. Please contact an administrator.');
+            showLogin();
+            return;
+        }
+        
+        // Store user scope in localStorage for the dashboard to use
+        localStorage.setItem('userScope', JSON.stringify({
+            scope: userProfile.scope,
+            zone_id: userProfile.zone_id,
+            phc_id: userProfile.phc_id,
+            is_admin: userProfile.is_admin
+        }));
+        
+        console.log('✅ User profile loaded successfully!', userProfile);
+    } catch (err) {
+        console.error('❌ Exception in loadUserProfile:', err);
     }
-    
-    userProfile = data;
-    
-    // Check if user is active
-    if (!userProfile.active) {
-        await supabase.auth.signOut();
-        alert('Your account has been disabled. Please contact an administrator.');
-        showLogin();
-        return;
-    }
-    
-    // Store user scope in localStorage for the dashboard to use
-    localStorage.setItem('userScope', JSON.stringify({
-        scope: userProfile.scope,
-        zone_id: userProfile.zone_id,
-        phc_id: userProfile.phc_id,
-        is_admin: userProfile.is_admin
-    }));
-    
-    console.log('✅ User profile loaded:', userProfile);
 }
 
 // Handle login with email and password
