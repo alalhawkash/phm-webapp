@@ -102,10 +102,6 @@ async function handleLogout() {
 
 // Show login screen
 function showLogin() {
-    // Hide loading screen
-    const loadingScreen = document.getElementById('auth-loading');
-    if (loadingScreen) loadingScreen.style.display = 'none';
-    
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
     
@@ -125,10 +121,6 @@ function showLogin() {
 
 // Show app screen
 function showApp() {
-    // Hide loading screen
-    const loadingScreen = document.getElementById('auth-loading');
-    if (loadingScreen) loadingScreen.style.display = 'none';
-    
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     
@@ -169,9 +161,9 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     }
 });
 
-// Initialize - just show a loading state, let onAuthStateChange handle the rest
+// Initialize - let onAuthStateChange handle everything
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('App loading...');
-    // Don't call checkAuth - let onAuthStateChange handle it
+    console.log('App loading... waiting for session check');
+    // Don't call checkAuth - onAuthStateChange will handle it automatically
 });
 
