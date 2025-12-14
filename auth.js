@@ -5,13 +5,27 @@ let userProfile = null;
 
 // Check if user is logged in
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-        currentUser = session.user;
-        await loadUserProfile();
-        showApp();
-    } else {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        console.log('Session check:', session ? 'Found' : 'None', error);
+        
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile();
+            
+            // Only show app if profile loaded successfully
+            if (userProfile && userProfile.active) {
+                showApp();
+                return;
+            }
+        }
+        
+        // No valid session or profile
+        showLogin();
+        
+    } catch (error) {
+        console.error('Auth check error:', error);
         showLogin();
     }
 }
