@@ -147,10 +147,14 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     
     if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session && session.user) {
+            console.log('📱 Session detected, loading profile...');
             currentUser = session.user;
             await loadUserProfile();
+            console.log('📱 Profile loaded, showing app...');
             showApp();
+            console.log('📱 showApp() called!');
         } else {
+            console.log('⚠️ No session, showing login');
             showLogin();
         }
     } else if (event === 'SIGNED_OUT') {
