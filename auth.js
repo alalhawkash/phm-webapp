@@ -53,6 +53,14 @@ async function loadUserProfile() {
         return;
     }
     
+    // Store user scope in localStorage for the dashboard to use
+    localStorage.setItem('userScope', JSON.stringify({
+        scope: userProfile.scope,
+        zone_id: userProfile.zone_id,
+        phc_id: userProfile.phc_id,
+        is_admin: userProfile.is_admin
+    }));
+    
     console.log('✅ User profile loaded:', userProfile);
 }
 

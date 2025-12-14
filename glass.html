@@ -10,6 +10,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="nhc-logo.png">
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAMklEQVR42u3MMQ0AIAzDsP6v7SPl8gWQEG1zkRCX9PqygwAAAADgMfhWcAAAgIADwDfAV71YqyCAAAAAElFTkSuQmCC">
     <title>PHM</title>
+    <!-- Supabase JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -1835,6 +1837,18 @@
 
             let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Opps</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
             let rank = 1;
+            
+            // Apply scope filtering
+            const shouldShowZone = (zoneName) => {
+                if (!userScopeData) return true; // If no scope data, show all
+                if (userScopeData.scope === 'cluster') return true; // Cluster sees all
+                if (userScopeData.scope === 'zone') return zoneName === userScopeData.zone_id; // Zone sees only their zone
+                if (userScopeData.scope === 'phc') {
+                    // PHC users see only their zone
+                    return zoneName === userScopeData.zone_id;
+                }
+                return true;
+            };
 
             // Find the "SCREENING Zone" header row
             let startRow = SCREENING_ZONE_START_ROW;
@@ -1874,6 +1888,9 @@
                 }
 
                 if (!zoneName) break;
+                
+                // Apply scope filter for screening
+                if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 html += `
@@ -1908,6 +1925,15 @@
 
             let html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div><div class="zone-header-item">Weekly</div></div>';
             let rank = 1;
+            
+            // Apply scope filtering
+            const shouldShowZone = (zoneName) => {
+                if (!userScopeData) return true;
+                if (userScopeData.scope === 'cluster') return true;
+                if (userScopeData.scope === 'zone') return zoneName === userScopeData.zone_id;
+                if (userScopeData.scope === 'phc') return zoneName === userScopeData.zone_id;
+                return true;
+            };
 
             // Find the "DM Zone" header row
             let startRow = DM_ZONE_START_ROW;
@@ -1947,6 +1973,9 @@
                 }
 
                 if (!zoneName) break;
+                
+                // Apply scope filter for DM
+                if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 html += `
@@ -1981,6 +2010,15 @@
 
             let html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div><div class="zone-header-item">Weekly</div></div>';
             let rank = 1;
+            
+            // Apply scope filtering
+            const shouldShowZone = (zoneName) => {
+                if (!userScopeData) return true;
+                if (userScopeData.scope === 'cluster') return true;
+                if (userScopeData.scope === 'zone') return zoneName === userScopeData.zone_id;
+                if (userScopeData.scope === 'phc') return zoneName === userScopeData.zone_id;
+                return true;
+            };
 
             // Find the "PRE-DM Zone" header row
             let startRow = PREDM_ZONE_START_ROW;
@@ -2021,6 +2059,9 @@
                 }
 
                 if (!zoneName) break;
+                
+                // Apply scope filter for Pre-DM
+                if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 html += `
@@ -2049,10 +2090,27 @@
             container.innerHTML = html;
         }
 
-        // Load data from Google Sheets
+        // Load user scope from parent window or localStorage
+        let userScopeData = null;
+        try {
+            const scopeJson = localStorage.getItem('userScope');
+            if (scopeJson) {
+                userScopeData = JSON.parse(scopeJson);
+                console.log('User scope loaded:', userScopeData);
+            }
+        } catch (e) {
+            console.error('Error loading user scope:', e);
+        }
+
+        // Load data from Supabase (or fallback to Google Sheets)
         (function() {
             const SHEET_ID = '1v5hh2tu53eVMPRLE3tCk_Gf39Rb2Rt1sseZHCdyGzvE';
             const SHEET_NAME = 'Summary';
+            
+            // Supabase client (same config as main app)
+            const SUPABASE_URL = 'https://zobmqwncusqkbmyzmvxi.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYm1xd25jdXNxa2JteXptdnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2NTA1MjcsImV4cCI6MjA4MTIyNjUyN30.dISVd9GJ6ITsfIt-41b4lRtO2oYs9XSS768bdATLoVk';
+            const supabaseDashboard = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
             function parseCSV(csvText) {
                 const rows = [];
@@ -2120,6 +2178,42 @@
                 const errorEl = document.getElementById('loadError');
                 if (!errorEl) return;
                 errorEl.classList.remove('active');
+            }
+
+            async function loadDataFromSupabase() {
+                showLoading();
+                hideLoadError();
+                
+                try {
+                    // Try to load from Supabase first
+                    const { data, error } = await supabaseDashboard
+                        .from('dashboard_data')
+                        .select('data_content')
+                        .eq('is_active', true)
+                        .order('uploaded_at', { ascending: false })
+                        .limit(1)
+                        .single();
+                    
+                    if (!error && data && data.data_content) {
+                        console.log('✓ Data loaded from Supabase');
+                        const sheetData = parseCSV(data.data_content);
+                        if (sheetData.length > 0) {
+                            hideLoadError();
+                            updateMobileAppData(sheetData);
+                            hideLoading();
+                            return;
+                        }
+                    }
+                    
+                    // If no data in Supabase, fall back to Google Sheets
+                    console.log('No data in Supabase, loading from Google Sheets...');
+                    loadDataFromGoogleSheets();
+                    
+                } catch (err) {
+                    console.error('Supabase load error:', err);
+                    // Fall back to Google Sheets
+                    loadDataFromGoogleSheets();
+                }
             }
 
             function loadDataFromGoogleSheets() {
@@ -2478,7 +2572,7 @@
             }
             
             // Load data when page loads
-            loadDataFromGoogleSheets();
+            loadDataFromSupabase();
         })();
 
         // Helper function to normalize PHC names for matching
@@ -2706,6 +2800,12 @@
         function renderZonePHCList(containerId, phcs, context) {
             const container = document.getElementById(containerId);
             if (!container) return;
+            
+            // Filter PHCs based on user scope
+            if (userScopeData && userScopeData.scope === 'phc') {
+                // PHC users should only see their own PHC
+                phcs = phcs.filter(phc => phc.name === userScopeData.phc_id);
+            }
             
             let html = '';
             

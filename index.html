@@ -85,6 +85,26 @@
             
             <div class="admin-sections">
                 
+                <!-- Upload Dashboard Data Section -->
+                <div class="admin-section">
+                    <h3>📤 Upload Dashboard Data</h3>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
+                        Upload your Excel file (exported as CSV). Each upload replaces the previous data.
+                    </p>
+                    
+                    <form id="upload-form" onsubmit="uploadDashboardData(event)">
+                        <div class="form-group">
+                            <label for="data-file">CSV File *</label>
+                            <input type="file" id="data-file" accept=".csv,.xlsx,.xls" required>
+                            <small style="color: #888; font-size: 12px;">Export your Excel as CSV first</small>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">📤 Upload Data</button>
+                    </form>
+                    
+                    <div id="upload-status" style="margin-top: 16px;"></div>
+                </div>
+                
                 <!-- Invite User Section -->
                 <div class="admin-section">
                     <h3>📧 Invite New User</h3>
