@@ -19,7 +19,7 @@ async function checkAuth() {
         
         if (session && session.user) {
             currentUser = session.user;
-            await loadUserProfile();
+            await loadUserProfile(session); // Pass session directly
             showApp();
         } else {
             showLogin();
@@ -30,16 +30,15 @@ async function checkAuth() {
     }
 }
 
-// Load user profile from app_users table
-async function loadUserProfile() {
+// Load user profile from app_users table  
+async function loadUserProfile(session) {
     console.log('🔍 loadUserProfile() started');
     
     try {
-        // Get the current session to ensure we have the latest user info
-        const { data: { session } } = await supabase.auth.getSession();
+        // Use the session passed from onAuthStateChange (more reliable than calling getSession again)
         console.log('🔍 Got session:', session ? 'Yes' : 'No');
         
-        if (!session) {
+        if (!session || !session.user) {
             console.error('No active session');
             return;
         }
@@ -161,7 +160,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
         if (session && session.user) {
             console.log('📱 Session detected, loading profile...');
             currentUser = session.user;
-            await loadUserProfile();
+            await loadUserProfile(session); // Pass session directly
             console.log('📱 Profile loaded, showing app...');
             showApp();
             console.log('📱 showApp() called!');
