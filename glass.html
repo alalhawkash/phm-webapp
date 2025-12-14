@@ -2185,7 +2185,7 @@
                 hideLoadError();
                 
                 try {
-                    // Try to load from Supabase first
+                    // Load ONLY from Supabase
                     const { data, error } = await supabaseDashboard
                         .from('dashboard_data')
                         .select('data_content')
@@ -2194,8 +2194,15 @@
                         .limit(1)
                         .single();
                     
-                    if (!error && data && data.data_content) {
-                        console.log('✓ Data loaded from Supabase');
+                    if (error) {
+                        console.error('Supabase load error:', error);
+                        showLoadError('No data uploaded yet. Admin: Please upload dashboard data.');
+                        hideLoading();
+                        return;
+                    }
+                    
+                    if (data && data.data_content) {
+                        console.log('✓ Data loaded from Supabase (uploaded data)');
                         const sheetData = parseCSV(data.data_content);
                         if (sheetData.length > 0) {
                             hideLoadError();
@@ -2205,82 +2212,18 @@
                         }
                     }
                     
-                    // If no data in Supabase, fall back to Google Sheets
-                    console.log('No data in Supabase, loading from Google Sheets...');
-                    loadDataFromGoogleSheets();
+                    // No data available
+                    showLoadError('No data available. Admin: Please upload dashboard data.');
+                    hideLoading();
                     
                 } catch (err) {
-                    console.error('Supabase load error:', err);
-                    // Fall back to Google Sheets
-                    loadDataFromGoogleSheets();
+                    console.error('Error loading data:', err);
+                    showLoadError('Error loading data. Please contact administrator.');
+                    hideLoading();
                 }
             }
 
-            function loadDataFromGoogleSheets() {
-                showLoading();
-                hideLoadError();
-                // Use CSV export which is more reliable for CORS
-                const publishedUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-                const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-                
-                // Try direct fetch first, then fall back to proxies
-                const sources = [
-                    publishedUrl,
-                    gvizUrl,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(publishedUrl)}`,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(gvizUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(publishedUrl)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(gvizUrl)}`
-                ];
-                
-                function trySource(index) {
-                    if (index >= sources.length) {
-                        console.error('All fetch methods failed.');
-                        const errorMsg = 'Unable to load data from Google Sheets due to CORS restrictions.\n\n' +
-                            'SOLUTION: Run a local web server:\n' +
-                            '1. Double-click "start_server.bat" in this folder, OR\n' +
-                            '2. Open PowerShell in this folder and run: python -m http.server 8000\n' +
-                            '3. Then open: http://localhost:8000/mobile_app.html\n\n' +
-                            'Make sure the Google Sheet is set to "Anyone with the link can view"';
-                        console.log(errorMsg);
-                        showLoadError('Unable to load data from Google Sheets. Check your connection or try again.');
-                        hideLoading();
-                        return;
-                    }
-            
-                    fetch(sources[index], { mode: 'cors' })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.text();
-                        })
-                        .then(text => {
-                            if (!text || text.trim().length === 0) {
-                                throw new Error('Empty response');
-                            }
-                            const sheetData = parseCSV(text);
-                            if (sheetData.length > 0) {
-                                hideLoadError();
-                                updateMobileAppData(sheetData);
-                                console.log('✓ Data loaded successfully from Google Sheets');
-                                hideLoading();
-                            } else {
-                                throw new Error('No data parsed');
-                            }
-                        })
-                        .catch(() => {
-                            // Silently try next source
-                            if (index + 1 >= sources.length) {
-                                showLoadError('Unable to load data from Google Sheets. Check your connection or try again.');
-                                hideLoading();
-                            }
-                            trySource(index + 1);
-                        });
-                }
-                
-                trySource(0);
-            }
+            // Google Sheets function removed - using only Supabase uploaded data
             
         function updateMobileAppData(data) {
         // Update last updated timestamp (now in B6 -> row index 5, col index 1). Fallback to old I1 if missing.
