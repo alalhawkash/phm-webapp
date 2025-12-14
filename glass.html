@@ -1840,12 +1840,24 @@
             
             // Apply scope filtering
             const shouldShowZone = (zoneName) => {
-                if (!userScopeData) return true; // If no scope data, show all
-                if (userScopeData.scope === 'cluster') return true; // Cluster sees all
-                if (userScopeData.scope === 'zone') return zoneName === userScopeData.zone_id; // Zone sees only their zone
+                console.log('🔍 Checking zone:', zoneName, 'User scope:', userScopeData);
+                if (!userScopeData) {
+                    console.log('  → No scope data, showing all');
+                    return true;
+                }
+                if (userScopeData.scope === 'cluster') {
+                    console.log('  → Cluster scope, showing all');
+                    return true;
+                }
+                if (userScopeData.scope === 'zone') {
+                    const show = zoneName === userScopeData.zone_id;
+                    console.log('  → Zone scope, show:', show);
+                    return show;
+                }
                 if (userScopeData.scope === 'phc') {
-                    // PHC users see only their zone
-                    return zoneName === userScopeData.zone_id;
+                    const show = zoneName === userScopeData.zone_id;
+                    console.log('  → PHC scope, zone match:', show, `(${zoneName} === ${userScopeData.zone_id})`);
+                    return show;
                 }
                 return true;
             };
