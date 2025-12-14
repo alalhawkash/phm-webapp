@@ -212,10 +212,17 @@ async function inviteUser(event) {
             p_is_admin: isAdmin
         });
         
-        if (error) throw error;
+        console.log('RPC Response:', { data, error });
         
-        if (!data.success) {
-            throw new Error(data.error);
+        if (error) {
+            console.error('RPC Error:', error);
+            throw error;
+        }
+        
+        if (!data || !data.success) {
+            const errorMsg = data?.error || 'Unknown error occurred';
+            console.error('Function returned error:', errorMsg);
+            throw new Error(errorMsg);
         }
         
         alert('✅ User profile created successfully! The user can now log in with their email and password.');
@@ -299,10 +306,17 @@ async function updateUserRole(event) {
             p_active: active
         });
         
-        if (error) throw error;
+        console.log('RPC Response:', { data, error });
         
-        if (!data.success) {
-            throw new Error(data.error);
+        if (error) {
+            console.error('RPC Error:', error);
+            throw error;
+        }
+        
+        if (!data || !data.success) {
+            const errorMsg = data?.error || 'Unknown error occurred';
+            console.error('Function returned error:', errorMsg);
+            throw new Error(errorMsg);
         }
         
         alert('✅ User updated successfully!');
