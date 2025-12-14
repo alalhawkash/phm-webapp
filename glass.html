@@ -2090,13 +2090,29 @@
             container.innerHTML = html;
         }
 
-        // Load user scope from parent window or localStorage
+        // Load user scope from parent window's localStorage (since we're in an iframe)
         let userScopeData = null;
         try {
-            const scopeJson = localStorage.getItem('userScope');
+            // Try to read from parent window first (when in iframe)
+            let scopeJson = null;
+            if (window.parent && window.parent !== window) {
+                try {
+                    scopeJson = window.parent.localStorage.getItem('userScope');
+                } catch (e) {
+                    console.log('Cannot access parent localStorage, trying own:', e);
+                }
+            }
+            
+            // Fallback to own localStorage
+            if (!scopeJson) {
+                scopeJson = localStorage.getItem('userScope');
+            }
+            
             if (scopeJson) {
                 userScopeData = JSON.parse(scopeJson);
-                console.log('User scope loaded:', userScopeData);
+                console.log('✅ User scope loaded:', userScopeData);
+            } else {
+                console.log('⚠️ No user scope found - showing all data');
             }
         } catch (e) {
             console.error('Error loading user scope:', e);
