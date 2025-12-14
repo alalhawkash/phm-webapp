@@ -82,6 +82,19 @@ async function handleLogout() {
 function showLogin() {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
+    
+    // Reset login button
+    const loginBtn = document.querySelector('#login-screen button[type="submit"]');
+    if (loginBtn) {
+        loginBtn.textContent = 'Login';
+        loginBtn.disabled = false;
+    }
+    
+    // Clear any error messages
+    const errorMsg = document.getElementById('login-error');
+    if (errorMsg) {
+        errorMsg.style.display = 'none';
+    }
 }
 
 // Show app screen
