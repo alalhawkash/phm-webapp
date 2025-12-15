@@ -164,19 +164,8 @@ function showApp() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     
-    if (userProfile && userProfile.is_admin) {
-        document.getElementById('admin-button').style.display = 'block';
-    } else {
-        document.getElementById('admin-button').style.display = 'none';
-    }
-    
-    if (userProfile) {
-        document.getElementById('user-email-display').textContent = userProfile.email;
-        document.getElementById('user-scope-display').textContent = 
-            userProfile.scope === 'cluster' ? 'Full Access' :
-            userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
-            `PHC: ${userProfile.phc_id || 'N/A'}`;
-    }
+    // User info is now displayed in glass.html header
+    // No need to update index.html elements
 }
 
 // Listen for auth state changes
