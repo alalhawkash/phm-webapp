@@ -28,6 +28,44 @@ console.log('✅ Supabase client initialized');
 
 let currentUser = null;
 let userProfile = null;
+const THEME_STORAGE_KEY = 'phm-theme';
+
+// UI helpers
+function toggleSidebar(force) {
+    const appScreen = document.getElementById('app-screen');
+    if (!appScreen) return;
+    const shouldOpen = typeof force === 'boolean'
+        ? force
+        : !appScreen.classList.contains('sidebar-open');
+    appScreen.classList.toggle('sidebar-open', shouldOpen);
+}
+
+function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('dark-mode', isDark);
+    
+    const label = isDark ? '☀️ Light mode' : '🌙 Dark mode';
+    const icon = isDark ? '☀️' : '🌙';
+    
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+        const variant = btn.getAttribute('data-theme-toggle');
+        btn.textContent = variant === 'header' ? icon : label;
+        btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    });
+}
+
+function toggleTheme() {
+    const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+}
+
+function initTheme() {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+    applyTheme(theme);
+}
 
 // Check if user is logged in
 async function checkAuth() {
@@ -142,6 +180,10 @@ async function handleLogout() {
 
 // Show login screen
 function showLogin() {
+    const appScreen = document.getElementById('app-screen');
+    if (appScreen) {
+        appScreen.classList.remove('sidebar-open');
+    }
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
     
@@ -159,6 +201,10 @@ function showLogin() {
 
 // Show app screen
 function showApp() {
+    const appScreen = document.getElementById('app-screen');
+    if (appScreen) {
+        appScreen.classList.remove('sidebar-open');
+    }
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     
@@ -175,6 +221,47 @@ function showApp() {
             userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
             `PHC: ${userProfile.phc_id || 'N/A'}`;
     }
+}
+
+// Toggle sidebar
+function toggleSidebar(open) {
+    const appScreen = document.getElementById('app-screen');
+    if (appScreen) {
+        if (open) {
+            appScreen.classList.add('sidebar-open');
+        } else {
+            appScreen.classList.remove('sidebar-open');
+        }
+    }
+}
+
+// Toggle theme
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeToggle();
+}
+
+// Update theme toggle buttons
+function updateThemeToggle() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const toggles = document.querySelectorAll('[data-theme-toggle]');
+    toggles.forEach(toggle => {
+        if (toggle.dataset.themeToggle === 'sidebar') {
+            toggle.textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
+        } else if (toggle.dataset.themeToggle === 'header') {
+            toggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    });
+}
+
+// Initialize theme
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    updateThemeToggle();
 }
 
 // Listen for auth state changes
@@ -197,6 +284,12 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    document.addEventListener('keyup', (event) => {
+        if (event.key === 'Escape') {
+            toggleSidebar(false);
+        }
+    });
     // onAuthStateChange handles session check automatically
 });
 
