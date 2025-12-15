@@ -1,4 +1,208 @@
-// Admin User Management Logic
+// =====================================================
+// PHM Authentication System - Complete JavaScript
+// =====================================================
+
+// =====================================================
+// SUPABASE CONNECTION
+// =====================================================
+
+const SUPABASE_URL = 'https://zobmqwncusqkbmyzmvxi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYm1xd25jdXNxa2JteXptdnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2NTA1MjcsImV4cCI6MjA4MTIyNjUyN30.dISVd9GJ6ITsfIt-41b4lRtO2oYs9XSS768bdATLoVk';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage,
+        storageKey: 'supabase.auth.token',
+        flowType: 'pkce'
+    }
+});
+
+console.log('✅ Supabase client initialized');
+
+// =====================================================
+// AUTHENTICATION LOGIC
+// =====================================================
+
+let currentUser = null;
+let userProfile = null;
+
+// Check if user is logged in
+async function checkAuth() {
+    try {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+            console.error('Session error:', error);
+            showLogin();
+            return;
+        }
+        
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile(session);
+            showApp();
+        } else {
+            showLogin();
+        }
+    } catch (err) {
+        console.error('Auth check error:', err);
+        showLogin();
+    }
+}
+
+// Load user profile
+async function loadUserProfile(session) {
+    try {
+        // Try localStorage cache first (fast!)
+        const cachedScope = localStorage.getItem('userScope');
+        if (cachedScope) {
+            try {
+                const scopeData = JSON.parse(cachedScope);
+                userProfile = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    scope: scopeData.scope,
+                    zone_id: scopeData.zone_id,
+                    phc_id: scopeData.phc_id,
+                    is_admin: scopeData.is_admin,
+                    active: true
+                };
+                console.log('✅ User profile loaded');
+                return;
+            } catch (e) {
+                // Cache error, load from database
+            }
+        }
+        
+        // Load from database
+        const { data, error } = await supabase
+            .from('app_users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (error) {
+            console.error('Error loading user profile:', error);
+            if (error.code === 'PGRST116') {
+                alert('User profile not found. Please contact an administrator.');
+            }
+            return;
+        }
+        
+        userProfile = data;
+        
+        // Check if user is active
+        if (!userProfile.active) {
+            await supabase.auth.signOut();
+            alert('Your account has been disabled. Please contact an administrator.');
+            showLogin();
+            return;
+        }
+        
+        // Cache for next time
+        localStorage.setItem('userScope', JSON.stringify({
+            scope: userProfile.scope,
+            zone_id: userProfile.zone_id,
+            phc_id: userProfile.phc_id,
+            is_admin: userProfile.is_admin
+        }));
+        
+        console.log('✅ User profile loaded');
+    } catch (err) {
+        console.error('Error in loadUserProfile:', err);
+    }
+}
+
+// Handle login
+async function handleLogin(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+    
+    if (error) {
+        return { success: false, error: error.message };
+    }
+    
+    return { success: true };
+}
+
+// Handle logout
+async function handleLogout() {
+    await supabase.auth.signOut();
+    currentUser = null;
+    userProfile = null;
+    showLogin();
+}
+
+// Show login screen
+function showLogin() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+    
+    const loginBtn = document.querySelector('#login-screen button[type="submit"]');
+    if (loginBtn) {
+        loginBtn.textContent = 'Login';
+        loginBtn.disabled = false;
+    }
+    
+    const errorMsg = document.getElementById('login-error');
+    if (errorMsg) {
+        errorMsg.style.display = 'none';
+    }
+}
+
+// Show app screen
+function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'flex';
+    
+    if (userProfile && userProfile.is_admin) {
+        document.getElementById('admin-button').style.display = 'block';
+    } else {
+        document.getElementById('admin-button').style.display = 'none';
+    }
+    
+    if (userProfile) {
+        document.getElementById('user-email-display').textContent = userProfile.email;
+        document.getElementById('user-scope-display').textContent = 
+            userProfile.scope === 'cluster' ? 'Full Access' :
+            userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
+            `PHC: ${userProfile.phc_id || 'N/A'}`;
+    }
+}
+
+// Listen for auth state changes
+supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        if (session && session.user) {
+            currentUser = session.user;
+            await loadUserProfile(session);
+            showApp();
+        } else {
+            showLogin();
+        }
+    } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        userProfile = null;
+        localStorage.removeItem('userScope');
+        showLogin();
+    }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // onAuthStateChange handles session check automatically
+});
+
+// =====================================================
+// ADMIN USER MANAGEMENT
+// =====================================================
 
 let allUsers = [];
 let zones = [];
@@ -6,7 +210,6 @@ let phcs = [];
 
 // Load zones and PHCs for dropdowns
 async function loadZonesAndPHCs() {
-    // Load zones
     const { data: zonesData, error: zonesError } = await supabase
         .from('zones')
         .select('*')
@@ -18,7 +221,6 @@ async function loadZonesAndPHCs() {
         zones = zonesData || [];
     }
     
-    // Load PHCs
     const { data: phcsData, error: phcsError } = await supabase
         .from('phcs')
         .select('*')
@@ -67,7 +269,7 @@ function filterPHCsByZone(zoneId, phcSelectId) {
     });
 }
 
-// Show/hide zone and PHC fields based on scope
+// Show/hide fields based on scope (invite form)
 function updateInviteScopeFields() {
     const scope = document.getElementById('invite-scope').value;
     const zoneField = document.getElementById('invite-zone-field');
@@ -85,7 +287,7 @@ function updateInviteScopeFields() {
     }
 }
 
-// Update edit scope fields
+// Show/hide fields based on scope (edit form)
 function updateEditScopeFields() {
     const scope = document.getElementById('edit-scope').value;
     const zoneField = document.getElementById('edit-zone-field');
@@ -103,7 +305,7 @@ function updateEditScopeFields() {
     }
 }
 
-// Load all users (admin only)
+// Load all users
 async function loadAllUsers() {
     const { data, error } = await supabase
         .from('app_users')
@@ -159,7 +361,7 @@ function hideAdminPanel() {
     document.getElementById('admin-panel').style.display = 'none';
 }
 
-// Invite new user (simplified version)
+// Invite new user
 async function inviteUser(event) {
     event.preventDefault();
     
@@ -195,14 +397,12 @@ async function inviteUser(event) {
         return;
     }
     
-    // Show loading
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Creating Profile...';
     submitBtn.disabled = true;
     
     try {
-        // Call database function to create user profile
         const { data, error } = await supabase.rpc('create_user_profile', {
             p_user_id: userId,
             p_email: email,
@@ -212,26 +412,16 @@ async function inviteUser(event) {
             p_is_admin: isAdmin
         });
         
-        console.log('RPC Response:', { data, error });
-        
-        if (error) {
-            console.error('RPC Error:', error);
-            throw error;
-        }
+        if (error) throw error;
         
         if (!data || !data.success) {
-            const errorMsg = data?.error || 'Unknown error occurred';
-            console.error('Function returned error:', errorMsg);
-            throw new Error(errorMsg);
+            throw new Error(data?.error || 'Unknown error occurred');
         }
         
         alert('✅ User profile created successfully! The user can now log in with their email and password.');
         
-        // Reset form
         document.getElementById('invite-form').reset();
         updateInviteScopeFields();
-        
-        // Reload users list
         loadAllUsers();
         
     } catch (error) {
@@ -248,7 +438,6 @@ function openEditUserModal(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (!user) return;
     
-    // Fill form
     document.getElementById('edit-user-id').value = user.id;
     document.getElementById('edit-email-display').textContent = user.email;
     document.getElementById('edit-scope').value = user.scope;
@@ -258,8 +447,6 @@ function openEditUserModal(userId) {
     document.getElementById('edit-active').checked = user.active;
     
     updateEditScopeFields();
-    
-    // Show modal
     document.getElementById('edit-user-modal').style.display = 'flex';
 }
 
@@ -268,7 +455,7 @@ function closeEditUserModal() {
     document.getElementById('edit-user-modal').style.display = 'none';
 }
 
-// Update user role (simplified version)
+// Update user role
 async function updateUserRole(event) {
     event.preventDefault();
     
@@ -289,14 +476,12 @@ async function updateUserRole(event) {
         return;
     }
     
-    // Show loading
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Updating...';
     submitBtn.disabled = true;
     
     try {
-        // Call database function to update user profile
         const { data, error } = await supabase.rpc('update_user_profile', {
             p_user_id: userId,
             p_scope: scope,
@@ -306,25 +491,15 @@ async function updateUserRole(event) {
             p_active: active
         });
         
-        console.log('RPC Response:', { data, error });
-        
-        if (error) {
-            console.error('RPC Error:', error);
-            throw error;
-        }
+        if (error) throw error;
         
         if (!data || !data.success) {
-            const errorMsg = data?.error || 'Unknown error occurred';
-            console.error('Function returned error:', errorMsg);
-            throw new Error(errorMsg);
+            throw new Error(data?.error || 'Unknown error occurred');
         }
         
         alert('✅ User updated successfully!');
         
-        // Close modal
         closeEditUserModal();
-        
-        // Reload users list
         loadAllUsers();
         
     } catch (error) {
