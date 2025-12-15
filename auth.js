@@ -32,8 +32,6 @@ async function checkAuth() {
 
 // Load user profile from app_users table  
 async function loadUserProfile(session) {
-    console.log('🔍 loadUserProfile() started');
-    
     try {
         // First, try to load from localStorage (fast!)
         const cachedScope = localStorage.getItem('userScope');
@@ -48,29 +46,24 @@ async function loadUserProfile(session) {
                     zone_id: scopeData.zone_id,
                     phc_id: scopeData.phc_id,
                     is_admin: scopeData.is_admin,
-                    active: true // Assume active if they're logged in
+                    active: true
                 };
-                console.log('✅ User profile loaded from cache!', userProfile);
-                return; // Skip database query
+                console.log('✅ User profile loaded');
+                return;
             } catch (e) {
-                console.log('Cache parse error, loading from database...');
+                // Cache error, fall through to database query
             }
         }
         
         // If no cache, load from database
-        console.log('🔍 No cache, querying database for user:', session.user.id);
-        
         const { data, error } = await supabase
             .from('app_users')
             .select('*')
             .eq('id', session.user.id)
             .single();
         
-        console.log('🔍 Query result:', { data, error });
-        
         if (error) {
-            console.error('❌ Error loading user profile:', error);
-            console.error('Error details:', error.message, error.code, error.details);
+            console.error('Error loading user profile:', error);
             
             if (error.code === 'PGRST116') {
                 alert('User profile not found. Please contact an administrator.');
@@ -96,9 +89,9 @@ async function loadUserProfile(session) {
             is_admin: userProfile.is_admin
         }));
         
-        console.log('✅ User profile loaded from database!', userProfile);
+        console.log('✅ User profile loaded');
     } catch (err) {
-        console.error('❌ Exception in loadUserProfile:', err);
+        console.error('Error in loadUserProfile:', err);
     }
 }
 
@@ -167,18 +160,12 @@ function showApp() {
 
 // Listen for auth state changes
 supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event);
-    
     if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session && session.user) {
-            console.log('📱 Session detected, loading profile...');
             currentUser = session.user;
-            await loadUserProfile(session); // Pass session directly
-            console.log('📱 Profile loaded, showing app...');
+            await loadUserProfile(session);
             showApp();
-            console.log('📱 showApp() called!');
         } else {
-            console.log('⚠️ No session, showing login');
             showLogin();
         }
     } else if (event === 'SIGNED_OUT') {
@@ -191,7 +178,6 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // Initialize - let onAuthStateChange handle everything
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('App loading... waiting for session check');
-    // Don't call checkAuth - onAuthStateChange will handle it automatically
+    // onAuthStateChange will handle session check automatically
 });
 
