@@ -52,12 +52,13 @@ body.dark-mode #login-screen {
 
 .login-container {
     background: #ffffff;
-    padding: 40px 32px;
-    border-radius: 12px;
+    padding: 32px 24px;
+    border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8e8e8;
     width: 100%;
-    max-width: 420px;
+    max-width: 100%;
+    margin: 0 16px;
 }
 
 body.dark-mode .login-container {
@@ -72,8 +73,8 @@ body.dark-mode .login-container {
 }
 
 .login-logo img {
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
     object-fit: contain;
 }
 
@@ -85,15 +86,15 @@ body.dark-mode .login-container {
 .login-container h2 {
     margin: 0 0 6px 0;
     color: var(--text-primary);
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     text-align: center;
 }
 
 .login-container p {
-    margin: 0 0 28px 0;
+    margin: 0 0 24px 0;
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     text-align: center;
     line-height: 1.4;
@@ -191,13 +192,14 @@ body.dark-mode .login-container {
 .form-group input,
 .form-group select,
 .form-group textarea {
-    padding: 14px 16px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
     transition: all 0.2s;
     background: var(--surface);
     color: var(--text-primary);
+    -webkit-appearance: none;
 }
 
 body.dark-mode .form-group input,
@@ -233,14 +235,15 @@ body.dark-mode .form-group select:focus {
 .btn-primary {
     background: #007aff;
     color: white;
-    padding: 14px 24px;
+    padding: 16px 24px;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 1px 3px rgba(0, 122, 255, 0.2);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary:hover {
@@ -585,13 +588,14 @@ body:not(.dark-mode) .sidebar-user {
 .btn-logout {
     background: var(--danger);
     color: white;
-    padding: 8px 16px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-logout:hover {
@@ -607,13 +611,14 @@ body:not(.dark-mode) .sidebar-user {
     display: none;
     background: #28a745;
     color: white;
-    padding: 8px 16px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #admin-button:hover {
