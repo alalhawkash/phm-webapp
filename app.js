@@ -109,8 +109,10 @@ async function loadUserProfile(session) {
             scope: userProfile.scope,
             zone_id: userProfile.zone_id,
             phc_id: userProfile.phc_id,
-            is_admin: userProfile.is_admin
+            is_admin: userProfile.is_admin,
+            email: userProfile.email
         }));
+        localStorage.setItem('userEmail', userProfile.email);
         
         console.log('✅ User profile loaded');
     } catch (err) {

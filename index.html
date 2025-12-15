@@ -60,22 +60,7 @@
     
     <!-- App Screen -->
     <div id="app-screen">
-        <div class="app-header">
-            <h1>PHM Dashboard</h1>
-            
-            <div class="user-info">
-                <button id="admin-button" onclick="showAdminPanel()">👤 User Management</button>
-                
-                <div class="user-details">
-                    <div class="user-email" id="user-email-display">-</div>
-                    <div class="user-scope" id="user-scope-display">-</div>
-                </div>
-                
-                <button class="btn-logout" onclick="handleLogout()">Logout</button>
-            </div>
-        </div>
-        
-        <div style="flex: 1; overflow: hidden; position: relative;">
+        <div style="flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column;">
             <!-- PHM Dashboard from glass.html -->
             <iframe 
                 id="dashboard-iframe" 
