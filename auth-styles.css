@@ -43,7 +43,7 @@ body.dark-mode {
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    padding: 20px;
+    padding: 24px;
 }
 
 body.dark-mode #login-screen {
@@ -52,13 +52,12 @@ body.dark-mode #login-screen {
 
 .login-container {
     background: #ffffff;
-    padding: 28px 22px;
+    padding: 26px 20px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8e8e8;
-    width: 90%;
-    max-width: 360px;
-    margin: 0 auto;
+    width: 85%;
+    max-width: 320px;
 }
 
 body.dark-mode .login-container {
