@@ -1263,22 +1263,9 @@
     <div id="loadError" class="error-banner" role="alert" aria-live="polite">
         Unable to load data. Please check your connection and try again.
     </div>
-    <header>
-        <div class="header-brand">
-            <img src="nhc-logo.png" alt="Najran Health Cluster Logo" class="header-logo">
-            <div class="header-text">
-                <div class="header-title">Najran Health Cluster</div>
-                <div class="header-meta">
-                    <div class="subtitle">Population Health Management</div>
-                    <div class="last-updated" id="lastUpdated">Last update: <span class="last-updated-date" id="lastUpdatedValue">--</span></div>
-                </div>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
-                <span class="visually-hidden">Toggle theme</span>
-            </button>
-        </div>
+    <header style="display: none;">
+        <!-- Header hidden when in iframe - controlled by parent index.html -->
+        <div class="last-updated" id="lastUpdated">Last update: <span class="last-updated-date" id="lastUpdatedValue">--</span></div>
     </header>
     <div class="container">
         <div class="main-view" id="mainView">

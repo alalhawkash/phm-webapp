@@ -408,8 +408,27 @@ body.dark-mode .login-error {
     line-height: 1.3;
 }
 
+.last-updated {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.3;
+}
+
+.last-updated-date {
+    color: #f6a623;
+    font-weight: 600;
+}
+
 body.dark-mode .subtitle {
     color: #bfc7d1;
+}
+
+body.dark-mode .last-updated {
+    color: #bfc7d1;
+}
+
+body.dark-mode .last-updated-date {
+    color: #f6a623;
 }
 
 .user-info-meta {
@@ -423,6 +442,64 @@ body.dark-mode .subtitle {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.theme-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    border: 1px solid #dcdcdc;
+    background: #e9e9e9;
+    border-radius: 999px;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    font-size: 0;
+    line-height: 0;
+}
+
+.theme-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: #f1f1f1;
+    border-color: #cfcfcf;
+}
+
+body.dark-mode .theme-toggle {
+    background: #2a323d;
+    border-color: #3a4351;
+}
+
+body.dark-mode .theme-toggle::after {
+    transform: translateX(24px);
+    background: #0f1115;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: #1d222b;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 .header-left {

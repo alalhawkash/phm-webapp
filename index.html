@@ -67,6 +67,7 @@
                     <div class="header-title">Najran Health Cluster</div>
                     <div class="header-meta">
                         <div class="subtitle">Population Health Management</div>
+                        <div class="last-updated">Last update: <span class="last-updated-date" id="lastUpdatedDisplay">--</span></div>
                         <div class="user-info-meta">
                             <span class="user-email" id="user-email-display">-</span>
                             <span class="user-scope" id="user-scope-display">-</span>
@@ -75,6 +76,9 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="theme-toggle" id="themeToggleMain" onclick="toggleDashboardTheme()" aria-label="Toggle dark mode">
+                    <span class="visually-hidden">Toggle theme</span>
+                </button>
                 <button id="admin-button" onclick="showAdminPanel()">👤</button>
                 <button class="btn-logout" onclick="handleLogout()">Logout</button>
             </div>
@@ -267,8 +271,44 @@
                 submitBtn.textContent = 'Login';
                 submitBtn.disabled = false;
             }
-            // If successful, auth.js will automatically redirect to app
         }
+        
+        // Toggle dark mode in iframe (glass.html)
+        function toggleDashboardTheme() {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe && iframe.contentWindow) {
+                // Toggle theme in glass.html
+                const iframeDoc = iframe.contentWindow.document;
+                const iframeBody = iframeDoc.body;
+                iframeBody.classList.toggle('dark-mode');
+                
+                // Save preference
+                const isDark = iframeBody.classList.contains('dark-mode');
+                localStorage.setItem('phm-theme', isDark ? 'dark' : 'light');
+                
+                // Toggle parent theme too
+                document.body.classList.toggle('dark-mode', isDark);
+            }
+        }
+        
+        // Sync "Last update" from iframe
+        function syncLastUpdated() {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    const iframeDoc = iframe.contentWindow.document;
+                    const lastUpdatedEl = iframeDoc.getElementById('lastUpdatedValue');
+                    if (lastUpdatedEl && lastUpdatedEl.textContent !== '--') {
+                        document.getElementById('lastUpdatedDisplay').textContent = lastUpdatedEl.textContent;
+                    }
+                } catch (e) {
+                    // Cross-origin issue, ignore
+                }
+            }
+        }
+        
+        // Check last updated every 2 seconds
+        setInterval(syncLastUpdated, 2000);
     </script>
 </body>
 </html>
