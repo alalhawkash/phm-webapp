@@ -7,7 +7,6 @@
     
     <!-- Auth Styles -->
     <link rel="stylesheet" href="auth-styles.css">
-    <link rel="stylesheet" href="dashboard-styles.css">
     
     <!-- Supabase JS from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,10 +14,8 @@
     <style>
         /* Prevent white page flash */
         body {
-            background: var(--bg, #f5f5f5);
-            color: var(--text-primary, #1a1a1a);
+            background: #f5f5f5;
             min-height: 100vh;
-            transition: background 0.2s ease, color 0.2s ease;
         }
     </style>
 </head>
@@ -27,14 +24,8 @@
     <!-- Login Screen -->
     <div id="login-screen">
         <div class="login-container">
-            <div class="login-logo">
-                <img src="nhc-logo.png" alt="NHC Logo">
-            </div>
-            
-            <div class="login-header">
-                <h2>PHM Login</h2>
-                <p>Primary Healthcare Management System</p>
-            </div>
+            <h2>PHM Login</h2>
+            <p>Primary Healthcare Management System</p>
             
             <form class="login-form" onsubmit="handleLoginSubmit(event)">
                 <div class="form-group">
@@ -59,111 +50,36 @@
                 
                 <button type="submit" class="btn-primary">Login</button>
                 
-                <div id="login-error" class="login-error"></div>
+                <div id="login-error" style="display: none; color: #dc3545; margin-top: 10px; text-align: center;"></div>
             </form>
         </div>
     </div>
     
     <!-- App Screen -->
     <div id="app-screen">
-        <div class="app-shell">
-            <aside id="user-sidebar" class="user-sidebar">
-                <div class="sidebar-header">
-                    <div class="sidebar-title">
-                        <span class="sidebar-logo">PHM</span>
-                        <span class="sidebar-subtitle">Dashboard</span>
-                    </div>
-                    <button class="icon-button" onclick="toggleSidebar(false)" aria-label="Close menu">&times;</button>
-                </div>
-                <div class="sidebar-user">
-                    <div class="avatar-circle">👤</div>
-                    <div class="sidebar-user-details">
-                        <div class="user-email" id="user-email-display">-</div>
-                        <div class="user-scope" id="user-scope-display">-</div>
-                    </div>
-                </div>
-                <div class="sidebar-actions">
-                    <button id="admin-button" class="btn-secondary full-width" onclick="showAdminPanel()">👤 User Management</button>
-                    <button class="btn-ghost full-width" data-theme-toggle="sidebar" type="button" onclick="toggleTheme()">🌙 Dark mode</button>
-                    <button class="btn-logout full-width" onclick="handleLogout()">Logout</button>
-                </div>
-            </aside>
-            <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+        <div class="app-header">
+            <h1>PHM Dashboard</h1>
             
-            <div class="app-main">
-                <div class="app-header">
-                    <div class="header-left">
-                        <button class="icon-button" id="sidebar-toggle" onclick="toggleSidebar(true)" aria-label="Open menu">☰</button>
-                        <h1>PHM Dashboard</h1>
-                    </div>
-                    <div class="header-actions">
-                        <button class="mode-chip" data-theme-toggle="header" type="button" onclick="toggleTheme()">🌙</button>
-                    </div>
+            <div class="user-info">
+                <button id="admin-button" onclick="showAdminPanel()">👤 User Management</button>
+                
+                <div class="user-details">
+                    <div class="user-email" id="user-email-display">-</div>
+                    <div class="user-scope" id="user-scope-display">-</div>
                 </div>
                 
-                <div class="app-body">
-                    <!-- Loading Overlay -->
-                    <div id="loadingOverlay" class="loading-overlay">
-                        <div class="loading-spinner">
-                            <img src="loading-logo.gif" alt="Loading" class="loading-logo">
-                            <p class="loading-text">Loading data...</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Dashboard Content -->
-                    <div class="dashboard-container">
-                        <div class="main-view" id="mainView">
-                            <div class="carousel-wrapper">
-                                <div class="carousel" id="carousel">
-                                    <!-- Cards will be populated by JavaScript -->
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="screen-count-template">
-                                                <div class="template-header">
-                                                    <h2>Screen Count</h2>
-                                                    <div class="subtitle">Performance Overview</div>
-                                                </div>
-                                                <div class="metrics-section">
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Target</span>
-                                                        <span class="metric-value target-value" id="targetValue">134,278</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Screened</span>
-                                                        <span class="metric-value percentage-value" id="currentValue">57,098</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Remaining</span>
-                                                        <span class="metric-value percentage-value" id="percentageValue">77,180</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Opportunities</span>
-                                                        <span class="metric-value" id="opportunitiesValue">432</span>
-                                                    </div>
-                                                </div>
-                                                <div class="zones-ranking" id="zonesRanking">
-                                                    <div class="zones-title">Zones Performance</div>
-                                                    <div class="zone-header">
-                                                        <div class="zone-header-item">Zone</div>
-                                                        <div class="zone-header-item">Screened</div>
-                                                        <div class="zone-header-item">Missed</div>
-                                                        <div class="zone-header-item">Weekly</div>
-                                                    </div>
-                                                    <!-- Zone items populated by JS -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="carousel-dots" id="carouselDots"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Zone Detail View (populated dynamically) -->
-                        <div id="zoneDetailView" style="display: none;"></div>
-                    </div>
-                </div>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
             </div>
+        </div>
+        
+        <div style="flex: 1; overflow: hidden; position: relative;">
+            <!-- PHM Dashboard from glass.html -->
+            <iframe 
+                id="dashboard-iframe" 
+                src="glass.html" 
+                style="width: 100%; height: 100%; border: none; display: block;"
+                title="PHM Dashboard">
+            </iframe>
         </div>
     </div>
     
@@ -320,7 +236,6 @@
     
     <!-- Scripts -->
     <script src="app.js"></script>
-    <script src="dashboard.js"></script>
     
     <script>
         // Handle login form submission
