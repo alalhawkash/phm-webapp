@@ -38,7 +38,7 @@ body.dark-mode {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #f5f5f5;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -47,37 +47,34 @@ body.dark-mode {
 }
 
 body.dark-mode #login-screen {
-    background: linear-gradient(135deg, #1a2332 0%, #2d1b3d 100%);
+    background: #0f1115;
 }
 
 .login-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: #ffffff;
     padding: 40px 32px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8e8e8;
     width: 100%;
     max-width: 420px;
 }
 
 body.dark-mode .login-container {
-    background: rgba(15, 23, 42, 0.95);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    background: rgba(24, 28, 36, 0.9);
+    border: 1px solid #2a323d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .login-logo {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .login-logo img {
-    max-width: 120px;
-    height: auto;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-}
-
-body.dark-mode .login-logo img {
-    filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.1));
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
 }
 
 .login-header {
@@ -86,17 +83,20 @@ body.dark-mode .login-logo img {
 }
 
 .login-container h2 {
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     color: var(--text-primary);
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
+    text-align: center;
 }
 
 .login-container p {
-    margin: 0;
+    margin: 0 0 28px 0;
     color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+    line-height: 1.4;
 }
 
 /* Mobile Login Screen */
@@ -231,30 +231,30 @@ body.dark-mode .form-group select:focus {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #007aff;
     color: white;
     padding: 14px 24px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 122, 255, 0.2);
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    background: #0051d5;
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
 }
 
 .btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 122, 255, 0.2);
 }
 
 .btn-primary:disabled {
-    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    background: #9ca3af;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -262,12 +262,13 @@ body.dark-mode .form-group select:focus {
 }
 
 body.dark-mode .btn-primary {
-    background: linear-gradient(135deg, #8b9bff 0%, #9b7ec4 100%);
-    box-shadow: 0 4px 12px rgba(139, 155, 255, 0.3);
+    background: #007aff;
+    box-shadow: 0 1px 3px rgba(0, 122, 255, 0.3);
 }
 
 body.dark-mode .btn-primary:hover {
-    box-shadow: 0 6px 20px rgba(139, 155, 255, 0.4);
+    background: #0064d9;
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
 }
 
 .btn-secondary {
@@ -355,12 +356,25 @@ body.dark-mode .login-error {
 .app-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 14px 18px;
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     gap: 12px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-end;
 }
 
 .header-left {
@@ -377,19 +391,21 @@ body.dark-mode .login-error {
 
 .app-header h1 {
     margin: 0;
-    font-size: 22px;
-    color: var(--text-primary);
-}
-
-.user-email {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
 }
 
+.user-email {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
 .user-scope {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
+    font-weight: 400;
 }
 
 .user-sidebar {
