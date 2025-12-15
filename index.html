@@ -60,7 +60,27 @@
     
     <!-- App Screen -->
     <div id="app-screen">
-        <div style="flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column;">
+        <div class="app-header">
+            <div class="header-brand">
+                <img src="nhc-logo.png" alt="NHC Logo" class="header-logo">
+                <div class="header-text">
+                    <div class="header-title">Najran Health Cluster</div>
+                    <div class="header-meta">
+                        <div class="subtitle">Population Health Management</div>
+                        <div class="user-info-meta">
+                            <span class="user-email" id="user-email-display">-</span>
+                            <span class="user-scope" id="user-scope-display">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="admin-button" onclick="showAdminPanel()">👤</button>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+        
+        <div style="flex: 1; overflow: hidden; position: relative;">
             <!-- PHM Dashboard from glass.html -->
             <iframe 
                 id="dashboard-iframe" 

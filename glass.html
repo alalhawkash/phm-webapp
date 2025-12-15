@@ -1275,12 +1275,6 @@
             </div>
         </div>
         <div class="header-actions">
-            <button id="admin-button-glass" onclick="parent.showAdminPanel()" style="display: none; background: #28a745; color: white; padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 8px;">👤 Users</button>
-            <div class="user-info-glass" style="display: none; text-align: right; margin-right: 8px;">
-                <div id="user-email-glass" style="font-size: 12px; font-weight: 600; color: #1a1a1a;">-</div>
-                <div id="user-scope-glass" style="font-size: 10px; color: #666;">-</div>
-            </div>
-            <button id="logout-button-glass" onclick="parent.handleLogout()" style="display: none; background: #dc3545; color: white; padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 8px;">Logout</button>
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
                 <span class="visually-hidden">Toggle theme</span>
             </button>
@@ -2103,23 +2097,6 @@
             if (scopeJson) {
                 userScopeData = JSON.parse(scopeJson);
                 console.log('User scope loaded:', userScopeData);
-                
-                // Update header UI with user info
-                if (userScopeData) {
-                    const email = userScopeData.email || localStorage.getItem('userEmail') || '-';
-                    const scopeText = userScopeData.scope === 'cluster' ? 'Full Access' :
-                        userScopeData.scope === 'zone' ? `Zone: ${userScopeData.zone_id}` :
-                        `PHC: ${userScopeData.phc_id}`;
-                    
-                    document.getElementById('user-email-glass').textContent = email;
-                    document.getElementById('user-scope-glass').textContent = scopeText;
-                    document.querySelector('.user-info-glass').style.display = 'block';
-                    document.getElementById('logout-button-glass').style.display = 'block';
-                    
-                    if (userScopeData.is_admin) {
-                        document.getElementById('admin-button-glass').style.display = 'block';
-                    }
-                }
             }
         } catch (e) {
             console.error('Error loading user scope:', e);

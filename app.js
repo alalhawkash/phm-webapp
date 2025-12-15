@@ -109,10 +109,8 @@ async function loadUserProfile(session) {
             scope: userProfile.scope,
             zone_id: userProfile.zone_id,
             phc_id: userProfile.phc_id,
-            is_admin: userProfile.is_admin,
-            email: userProfile.email
+            is_admin: userProfile.is_admin
         }));
-        localStorage.setItem('userEmail', userProfile.email);
         
         console.log('✅ User profile loaded');
     } catch (err) {
@@ -164,8 +162,19 @@ function showApp() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     
-    // User info is now displayed in glass.html header
-    // No need to update index.html elements
+    if (userProfile && userProfile.is_admin) {
+        document.getElementById('admin-button').classList.add('visible');
+    } else {
+        document.getElementById('admin-button').classList.remove('visible');
+    }
+    
+    if (userProfile) {
+        document.getElementById('user-email-display').textContent = userProfile.email;
+        document.getElementById('user-scope-display').textContent = 
+            userProfile.scope === 'cluster' ? 'Full Access' :
+            userProfile.scope === 'zone' ? `Zone: ${userProfile.zone_id || 'N/A'}` :
+            `PHC: ${userProfile.phc_id || 'N/A'}`;
+    }
 }
 
 // Listen for auth state changes
