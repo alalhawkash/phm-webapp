@@ -60,27 +60,52 @@
     
     <!-- App Screen -->
     <div id="app-screen">
-        <div class="app-header">
-            <div class="header-brand">
-                <img src="nhc-logo.png" alt="NHC Logo" class="header-logo">
-                <div class="header-text">
-                    <div class="header-title">Najran Health Cluster</div>
-                    <div class="header-meta">
-                        <div class="subtitle">Population Health Management</div>
-                        <div class="last-updated">Last update: <span class="last-updated-date" id="lastUpdatedDisplay">--</span></div>
-                        <div class="user-info-meta">
-                            <span class="user-email" id="user-email-display">-</span>
-                            <span class="user-scope" id="user-scope-display">-</span>
-                        </div>
-                    </div>
+        <!-- Sidebar Backdrop -->
+        <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+        
+        <!-- User Sidebar -->
+        <div class="user-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <div class="sidebar-logo">NHC</div>
+                    <div class="sidebar-subtitle">Population Health</div>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="theme-toggle" id="themeToggleMain" onclick="toggleDashboardTheme()" aria-label="Toggle dark mode">
-                    <span class="visually-hidden">Toggle theme</span>
+            
+            <div class="sidebar-user">
+                <div class="avatar-circle">👤</div>
+                <div class="sidebar-user-details">
+                    <div class="user-email" id="user-email-sidebar">-</div>
+                    <div class="user-scope" id="user-scope-sidebar">-</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-info-box">
+                <div class="sidebar-info-label">Last Update</div>
+                <div class="sidebar-info-value" id="lastUpdatedSidebar">--</div>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button class="btn-ghost full-width" onclick="toggleDashboardTheme()">
+                    🌓 Toggle Theme
                 </button>
-                <button id="admin-button" onclick="showAdminPanel()">👤</button>
-                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                <button id="admin-button-sidebar" class="btn-ghost full-width" onclick="showAdminPanel(); toggleSidebar();">
+                    👤 User Management
+                </button>
+                <button class="btn-logout ghost-on-dark full-width" onclick="handleLogout()">
+                    🚪 Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Minimal Header -->
+        <div class="app-header">
+            <button class="icon-button" onclick="toggleSidebar()" aria-label="Menu">
+                ☰
+            </button>
+            <div class="header-brand">
+                <img src="nhc-logo.png" alt="NHC Logo" class="header-logo">
+                <div class="header-title">Najran Health Cluster</div>
             </div>
         </div>
         
@@ -250,6 +275,22 @@
     <script src="app.js"></script>
     
     <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const appScreen = document.getElementById('app-screen');
+            appScreen.classList.toggle('sidebar-open');
+        }
+        
+        // Close sidebar with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const appScreen = document.getElementById('app-screen');
+                if (appScreen.classList.contains('sidebar-open')) {
+                    appScreen.classList.remove('sidebar-open');
+                }
+            }
+        });
+        
         // Handle login form submission
         async function handleLoginSubmit(event) {
             event.preventDefault();
@@ -291,7 +332,7 @@
             }
         }
         
-        // Sync "Last update" from iframe
+        // Sync "Last update" from iframe to sidebar
         function syncLastUpdated() {
             const iframe = document.getElementById('dashboard-iframe');
             if (iframe && iframe.contentWindow) {
@@ -299,7 +340,7 @@
                     const iframeDoc = iframe.contentWindow.document;
                     const lastUpdatedEl = iframeDoc.getElementById('lastUpdatedValue');
                     if (lastUpdatedEl && lastUpdatedEl.textContent !== '--') {
-                        document.getElementById('lastUpdatedDisplay').textContent = lastUpdatedEl.textContent;
+                        document.getElementById('lastUpdatedSidebar').textContent = lastUpdatedEl.textContent;
                     }
                 } catch (e) {
                     // Cross-origin issue, ignore

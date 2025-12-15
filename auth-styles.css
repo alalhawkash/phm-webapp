@@ -362,24 +362,23 @@ body.dark-mode .login-error {
 .app-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 12px 16px;
+    padding: 10px 16px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     gap: 12px;
-    flex-wrap: wrap;
 }
 
 .header-brand {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1;
 }
 
 .header-logo {
-    width: 72px;
-    height: 72px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
 }
 
@@ -390,10 +389,10 @@ body.dark-mode .login-error {
 }
 
 .header-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .header-meta {
@@ -616,6 +615,29 @@ body:not(.dark-mode) .sidebar-user {
     color: #0f172a;
 }
 
+.sidebar-info-box {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+body:not(.dark-mode) .sidebar-info-box {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+}
+
+.sidebar-info-label {
+    opacity: 0.7;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.sidebar-info-value {
+    color: #f6a623;
+    font-weight: 600;
+}
+
 .avatar-circle {
     width: 44px;
     height: 44px;
@@ -626,92 +648,95 @@ body:not(.dark-mode) .sidebar-user {
     font-size: 20px;
 }
 
+.sidebar-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 .sidebar-user-details .user-email {
     color: inherit;
+    font-weight: 600;
+    font-size: 13px;
 }
 
 .sidebar-user-details .user-scope {
     color: inherit;
     opacity: 0.8;
+    font-size: 12px;
+}
+
+.sidebar-user-details .user-scope::before {
+    content: none;
 }
 
 .sidebar-actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: auto;
 }
 
 .sidebar-actions button {
     text-align: left;
+    justify-content: flex-start;
+}
+
+body:not(.dark-mode) .sidebar-actions .btn-ghost {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+    border: none;
+}
+
+body:not(.dark-mode) .sidebar-actions .btn-ghost:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+body:not(.dark-mode) .sidebar-actions .btn-logout {
+    background: transparent;
+    border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
 /* Mobile App Header */
 @media (max-width: 768px) {
     .app-header {
-        padding: 14px 16px;
-        gap: 10px;
-        flex-wrap: wrap;
+        padding: 10px 14px;
     }
     
-    .app-header h1 {
-        font-size: 18px;
+    .header-logo {
+        width: 42px;
+        height: 42px;
     }
     
-    .user-info {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .user-details {
-        order: 3;
-        width: 100%;
-        text-align: center;
-        padding-top: 8px;
-        border-top: 1px solid var(--border);
-    }
-    
-    #admin-button,
-    .btn-logout {
-        font-size: 13px;
-        padding: 8px 14px;
-    }
-    
-    .header-actions {
-        gap: 6px;
-    }
-    
-    .mode-chip {
-        padding: 8px 10px;
-        font-size: 13px;
+    .header-title {
+        font-size: 16px;
     }
     
     .icon-button {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
     }
 }
 
 @media (max-width: 480px) {
     .app-header {
-        padding: 12px;
+        padding: 8px 12px;
     }
     
-    .app-header h1 {
-        font-size: 16px;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 8px;
+    .header-logo {
+        width: 38px;
+        height: 38px;
     }
     
-    .user-info {
-        width: 100%;
-        justify-content: center;
+    .header-title {
+        font-size: 15px;
     }
     
-    #admin-button,
-    .btn-logout {
-        font-size: 12px;
-        padding: 6px 12px;
+    .icon-button {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
 }
 
@@ -807,10 +832,17 @@ body.dark-mode .btn-ghost:hover {
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 22px;
+    line-height: 1;
+    padding: 0;
 }
 
 .icon-button:hover {
     background: rgba(0, 0, 0, 0.04);
+}
+
+.icon-button:active {
+    transform: scale(0.95);
 }
 
 body.dark-mode .icon-button:hover {
