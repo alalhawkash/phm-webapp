@@ -35,15 +35,30 @@ async function loadUserProfile(session) {
     console.log('🔍 loadUserProfile() started');
     
     try {
-        // Use the session passed from onAuthStateChange (more reliable than calling getSession again)
-        console.log('🔍 Got session:', session ? 'Yes' : 'No');
-        
-        if (!session || !session.user) {
-            console.error('No active session');
-            return;
+        // First, try to load from localStorage (fast!)
+        const cachedScope = localStorage.getItem('userScope');
+        if (cachedScope) {
+            try {
+                const scopeData = JSON.parse(cachedScope);
+                // Reconstruct userProfile from cached data
+                userProfile = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    scope: scopeData.scope,
+                    zone_id: scopeData.zone_id,
+                    phc_id: scopeData.phc_id,
+                    is_admin: scopeData.is_admin,
+                    active: true // Assume active if they're logged in
+                };
+                console.log('✅ User profile loaded from cache!', userProfile);
+                return; // Skip database query
+            } catch (e) {
+                console.log('Cache parse error, loading from database...');
+            }
         }
         
-        console.log('🔍 Querying app_users for user:', session.user.id);
+        // If no cache, load from database
+        console.log('🔍 No cache, querying database for user:', session.user.id);
         
         const { data, error } = await supabase
             .from('app_users')
@@ -57,7 +72,6 @@ async function loadUserProfile(session) {
             console.error('❌ Error loading user profile:', error);
             console.error('Error details:', error.message, error.code, error.details);
             
-            // If user profile doesn't exist, show an alert
             if (error.code === 'PGRST116') {
                 alert('User profile not found. Please contact an administrator.');
             }
@@ -65,7 +79,6 @@ async function loadUserProfile(session) {
         }
         
         userProfile = data;
-        console.log('🔍 User profile set:', userProfile);
         
         // Check if user is active
         if (!userProfile.active) {
@@ -75,7 +88,7 @@ async function loadUserProfile(session) {
             return;
         }
         
-        // Store user scope in localStorage for the dashboard to use
+        // Store in localStorage for next time
         localStorage.setItem('userScope', JSON.stringify({
             scope: userProfile.scope,
             zone_id: userProfile.zone_id,
@@ -83,7 +96,7 @@ async function loadUserProfile(session) {
             is_admin: userProfile.is_admin
         }));
         
-        console.log('✅ User profile loaded successfully!', userProfile);
+        console.log('✅ User profile loaded from database!', userProfile);
     } catch (err) {
         console.error('❌ Exception in loadUserProfile:', err);
     }
