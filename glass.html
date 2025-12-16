@@ -1060,6 +1060,16 @@
             color: #555;
             font-weight: 500;
         }
+        
+        .dm-metric-label-orange {
+            font-size: 16px;
+            color: #ff9800;
+            font-weight: 600;
+        }
+        
+        .dark-mode .dm-metric-label-orange {
+            color: #ff9800;
+        }
 
         .dm-metric-value {
             font-size: 20px;
@@ -1109,6 +1119,16 @@
             font-size: 16px;
             color: #555;
             font-weight: 500;
+        }
+        
+        .predm-metric-label-orange {
+            font-size: 16px;
+            color: #ff9800;
+            font-weight: 600;
+        }
+        
+        .dark-mode .predm-metric-label-orange {
+            color: #ff9800;
         }
 
         .predm-metric-value {
@@ -1289,6 +1309,17 @@
         
         .dark-mode #phcDetailView .zone-detail-title h2 {
             color: #f2f4f8 !important;
+        }
+        
+        #phcDetailView .carousel-wrapper {
+            flex: 1;
+            min-height: 0;
+            padding-top: 10px;
+        }
+        
+        #phcDetailCarousel .card {
+            height: 620px;
+            max-height: 620px;
         }
 
         /* iPhone and Android specific adjustments */
@@ -1653,38 +1684,78 @@
                 <button class="back-button" id="phcDetailBackButton" onclick="goBackToZone()" aria-label="Go back"></button>
                 <div class="zone-detail-title" style="flex: 1; text-align: left;">
                     <h2 id="phcDetailTitle" style="margin: 0; font-size: 20px; font-weight: 600; color: #1a1a1a;">PHC Details</h2>
-                    <div class="subtitle" style="font-size: 10px; color: #888; margin-top: 2px;">Diabetes Follow-up</div>
+                    <div class="subtitle" style="font-size: 10px; color: #888; margin-top: 2px;">PHC Performance</div>
                 </div>
             </div>
-            <div class="container" style="padding: 20px; flex: 1; overflow-y: auto;">
-                <div class="phc-dashboard-card">
-                    <div class="phc-dashboard-header">
-                        <h3>Diabetes Follow-up</h3>
+            <div class="carousel-wrapper">
+                <div class="carousel" id="phcDetailCarousel">
+                    <!-- Screening Card -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="screen-count-template">
+                                <div class="template-header">
+                                    <h2>Screening</h2>
+                                    <div class="subtitle">Performance Overview</div>
+                                </div>
+                                <div class="metrics-section">
+                                    <div class="metric-row">
+                                        <span class="metric-label">Remaining</span>
+                                        <span class="metric-value percentage-value" id="phcScreeningRemaining">0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label" id="phcMissedScreeningLabel">Missed opportunistic screening on --</span>
+                                        <span class="metric-value percentage-value" id="phcMissedScreening">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="phc-dashboard-main-metric">
-                        <div class="phc-metric-category">Uncontrolled DM</div>
-                        <div class="phc-metric-value-large" id="phcUncontrolledDMCount">0</div>
-                        <div class="phc-metric-percentage" id="phcUncontrolledDMPercent">0% of DM</div>
+                    <!-- DM Card -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="dm-template">
+                                <div class="template-header">
+                                    <h2>DM Patients</h2>
+                                    <div class="subtitle">Diabetes Management Overview</div>
+                                </div>
+                                <div class="metrics-section">
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label">Uncontrolled DM</span>
+                                        <span class="dm-metric-value uncontrolled-value" id="phcUncontrolledDMCount">0</span>
+                                    </div>
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label-orange">Need follow-up uncontrolled DM (+30 days)</span>
+                                        <span class="dm-metric-value uncontrolled-value" id="phcFollowupDM30">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="phc-dashboard-metrics-section">
-                        <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
-                            <span class="phc-metric-label-orange">Need follow-up uncontrolled DM (+30 days)</span>
-                            <span class="phc-metric-value" id="phcFollowupDM30">0</span>
-                        </div>
-                        
-                        <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
-                            <span class="phc-metric-label-orange">Need follow-up pre-DM (+90 days)</span>
-                            <span class="phc-metric-value" id="phcFollowupPreDM90">0</span>
-                        </div>
-                        
-                        <div class="phc-dashboard-metric-item">
-                            <span class="phc-metric-label" id="phcMissedScreeningLabel">Missed opportunistic screening on --</span>
-                            <span class="phc-metric-value" id="phcMissedScreening">0</span>
+                    <!-- Pre-DM Card -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="predm-template">
+                                <div class="template-header">
+                                    <h2>Pre-DM Patients</h2>
+                                    <div class="subtitle">Pre-Diabetes Management Overview</div>
+                                </div>
+                                <div class="metrics-section">
+                                    <div class="predm-metric-row">
+                                        <span class="predm-metric-label">Pre-DM Patients</span>
+                                        <span class="predm-metric-value predm-value" id="phcPreDMTotal">0</span>
+                                    </div>
+                                    <div class="predm-metric-row">
+                                        <span class="predm-metric-label-orange">Need follow-up pre-DM (+90 days)</span>
+                                        <span class="predm-metric-value predm-nofollowup-value" id="phcFollowupPreDM90">0</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="carousel-dots" id="phcDetailCarouselDots"></div>
             </div>
         </div>
     </div>
@@ -3342,6 +3413,44 @@
             const titleEl = document.getElementById('phcDetailTitle');
             if (titleEl) titleEl.textContent = displayName;
             
+            // Initialize carousel for PHC detail view
+            const phcCarousel = document.getElementById('phcDetailCarousel');
+            const phcDotsContainer = document.getElementById('phcDetailCarouselDots');
+            
+            if (phcCarousel && phcDotsContainer) {
+                // Clear existing dots
+                phcDotsContainer.innerHTML = '';
+                const phcCards = Array.from(phcCarousel.querySelectorAll('.card'));
+                phcCards.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'carousel-dot';
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => {
+                        phcCarousel.scrollTo({
+                            left: i * phcCarousel.clientWidth,
+                            behavior: 'smooth'
+                        });
+                    });
+                    phcDotsContainer.appendChild(dot);
+                });
+                
+                // Update dots on scroll
+                const updatePhcDots = () => {
+                    const index = Math.round(phcCarousel.scrollLeft / phcCarousel.clientWidth);
+                    const dots = phcDotsContainer.querySelectorAll('.carousel-dot');
+                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+                };
+                
+                let phcScrollTimeout;
+                phcCarousel.addEventListener('scroll', () => {
+                    clearTimeout(phcScrollTimeout);
+                    phcScrollTimeout = setTimeout(updatePhcDots, 50);
+                }, { passive: true });
+                
+                updatePhcDots();
+            }
+            
             // Populate PHC dashboard data
             populatePHCDashboard(phcName);
         }
@@ -3375,68 +3484,73 @@
             const predmPHC = predmPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
             const screeningPHC = screeningPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
             
-            // Calculate Uncontrolled DM
-            let uncontrolledDM = 0;
-            let totalDM = 0;
-            let uncontrolledPercent = 0;
-            
-            if (dmPHC) {
-                totalDM = dmPHC.total || 0;
-                const controlled = dmPHC.controlled || 0;
-                uncontrolledDM = Math.max(0, totalDM - controlled);
-                uncontrolledPercent = totalDM > 0 ? ((uncontrolledDM / totalDM) * 100).toFixed(1) : 0;
+            // SCREENING CARD: Remaining and Missed Opportunities
+            if (screeningPHC) {
+                const target = screeningPHC.target || 0;
+                const achieved = screeningPHC.achieved || 0;
+                const remaining = Math.max(0, target - achieved);
+                const missedOpps = parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0;
+                
+                document.getElementById('phcScreeningRemaining').textContent = remaining.toLocaleString();
+                document.getElementById('phcMissedScreening').textContent = missedOpps.toLocaleString();
+                
+                // Update label with date before last update
+                const labelEl = document.getElementById('phcMissedScreeningLabel');
+                if (labelEl && lastUpdateDate) {
+                    let previousDate = '--';
+                    try {
+                        const dateStr = lastUpdateDate.toString().trim();
+                        const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                        if (dateMatch) {
+                            const day = parseInt(dateMatch[1], 10);
+                            const month = parseInt(dateMatch[2], 10) - 1;
+                            const year = parseInt(dateMatch[3], 10);
+                            const dateObj = new Date(year, month, day);
+                            if (dateObj && !isNaN(dateObj.getTime())) {
+                                dateObj.setDate(dateObj.getDate() - 1);
+                                const prevDay = dateObj.getDate();
+                                const prevMonth = dateObj.getMonth() + 1;
+                                const prevYear = dateObj.getFullYear();
+                                previousDate = `${prevDay}/${prevMonth}/${prevYear}`;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error parsing date:', e);
+                    }
+                    labelEl.textContent = `Missed opportunistic screening on ${previousDate}`;
+                } else if (labelEl) {
+                    labelEl.textContent = 'Missed opportunistic screening on --';
+                }
+            } else {
+                document.getElementById('phcScreeningRemaining').textContent = '0';
+                document.getElementById('phcMissedScreening').textContent = '0';
             }
             
-            // Update dashboard
-            document.getElementById('phcUncontrolledDMCount').textContent = uncontrolledDM.toLocaleString();
-            document.getElementById('phcUncontrolledDMPercent').textContent = `${uncontrolledPercent}% of DM`;
-            
-            // For now, set follow-up counts to 0 (these would need to come from additional data columns)
-            // TODO: Add data columns for follow-up counts when available
-            document.getElementById('phcFollowupDM30').textContent = '0';
-            document.getElementById('phcFollowupPreDM90').textContent = '0';
-            
-            // Daily missed opportunistic screening (from opportunities)
-            const missedScreening = screeningPHC ? (parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0) : 0;
-            document.getElementById('phcMissedScreening').textContent = missedScreening.toLocaleString();
-            
-            // Update label with date before last update
-            const labelEl = document.getElementById('phcMissedScreeningLabel');
-            if (labelEl && lastUpdateDate) {
-                // Try to parse the date and calculate previous day
-                let previousDate = '--';
-                try {
-                    // Try different date formats
-                    let dateObj = null;
-                    
-                    // Try parsing as DD/MM/YYYY or DD-MM-YYYY
-                    const dateStr = lastUpdateDate.toString().trim();
-                    const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-                    if (dateMatch) {
-                        const day = parseInt(dateMatch[1], 10);
-                        const month = parseInt(dateMatch[2], 10) - 1; // JS months are 0-indexed
-                        const year = parseInt(dateMatch[3], 10);
-                        dateObj = new Date(year, month, day);
-                    } else {
-                        // Try parsing as standard date string
-                        dateObj = new Date(dateStr);
-                    }
-                    
-                    if (dateObj && !isNaN(dateObj.getTime())) {
-                        // Calculate previous day
-                        dateObj.setDate(dateObj.getDate() - 1);
-                        const prevDay = dateObj.getDate();
-                        const prevMonth = dateObj.getMonth() + 1; // Back to 1-indexed
-                        const prevYear = dateObj.getFullYear();
-                        previousDate = `${prevDay}/${prevMonth}/${prevYear}`;
-                    }
-                } catch (e) {
-                    console.error('Error parsing date:', e);
-                }
+            // DM CARD: Uncontrolled DM and Need follow-up
+            if (dmPHC) {
+                const totalDM = dmPHC.total || 0;
+                const controlled = dmPHC.controlled || 0;
+                const uncontrolledDM = Math.max(0, totalDM - controlled);
                 
-                labelEl.textContent = `Missed opportunistic screening on ${previousDate}`;
-            } else if (labelEl) {
-                labelEl.textContent = 'Missed opportunistic screening on --';
+                document.getElementById('phcUncontrolledDMCount').textContent = uncontrolledDM.toLocaleString();
+                
+                // For now, set follow-up count to 0 (needs data column)
+                document.getElementById('phcFollowupDM30').textContent = '0';
+            } else {
+                document.getElementById('phcUncontrolledDMCount').textContent = '0';
+                document.getElementById('phcFollowupDM30').textContent = '0';
+            }
+            
+            // PRE-DM CARD: Pre-DM total and Need follow-up
+            if (predmPHC) {
+                const preDMTotal = predmPHC.total || 0;
+                document.getElementById('phcPreDMTotal').textContent = preDMTotal.toLocaleString();
+                
+                // For now, set follow-up count to 0 (needs data column)
+                document.getElementById('phcFollowupPreDM90').textContent = '0';
+            } else {
+                document.getElementById('phcPreDMTotal').textContent = '0';
+                document.getElementById('phcFollowupPreDM90').textContent = '0';
             }
         }
 
