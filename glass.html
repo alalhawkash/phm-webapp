@@ -1680,7 +1680,7 @@
                         </div>
                         
                         <div class="phc-dashboard-metric-item">
-                            <span class="phc-metric-label">Daily missed opportunistic screening</span>
+                            <span class="phc-metric-label" id="phcMissedScreeningLabel">Missed opportunistic screening on --</span>
                             <span class="phc-metric-value" id="phcMissedScreening">0</span>
                         </div>
                     </div>
@@ -1968,6 +1968,7 @@
         let predmNoFollowupTotal = null;
         let globalSheetData = null; // Store sheet data globally
         let currentZoneName = null; // Store current zone name for PHC navigation
+        let lastUpdateDate = null; // Store last update date
 
         function updateScreeningPercentage() {
             const screenedEl = document.getElementById('currentValue');
@@ -2481,6 +2482,9 @@
             // Fallback if span not found
             lastUpdatedEl.textContent = lastUpdatedCell ? `Last update: ${lastUpdatedCell}` : 'Last update: --';
         }
+        
+        // Store last update date globally
+        lastUpdateDate = lastUpdatedCell || null;
 
                 // Store data globally for zone detail view
                 globalSheetData = data;
@@ -3395,6 +3399,45 @@
             // Daily missed opportunistic screening (from opportunities)
             const missedScreening = screeningPHC ? (parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0) : 0;
             document.getElementById('phcMissedScreening').textContent = missedScreening.toLocaleString();
+            
+            // Update label with date before last update
+            const labelEl = document.getElementById('phcMissedScreeningLabel');
+            if (labelEl && lastUpdateDate) {
+                // Try to parse the date and calculate previous day
+                let previousDate = '--';
+                try {
+                    // Try different date formats
+                    let dateObj = null;
+                    
+                    // Try parsing as DD/MM/YYYY or DD-MM-YYYY
+                    const dateStr = lastUpdateDate.toString().trim();
+                    const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+                    if (dateMatch) {
+                        const day = parseInt(dateMatch[1], 10);
+                        const month = parseInt(dateMatch[2], 10) - 1; // JS months are 0-indexed
+                        const year = parseInt(dateMatch[3], 10);
+                        dateObj = new Date(year, month, day);
+                    } else {
+                        // Try parsing as standard date string
+                        dateObj = new Date(dateStr);
+                    }
+                    
+                    if (dateObj && !isNaN(dateObj.getTime())) {
+                        // Calculate previous day
+                        dateObj.setDate(dateObj.getDate() - 1);
+                        const prevDay = dateObj.getDate();
+                        const prevMonth = dateObj.getMonth() + 1; // Back to 1-indexed
+                        const prevYear = dateObj.getFullYear();
+                        previousDate = `${prevDay}/${prevMonth}/${prevYear}`;
+                    }
+                } catch (e) {
+                    console.error('Error parsing date:', e);
+                }
+                
+                labelEl.textContent = `Missed opportunistic screening on ${previousDate}`;
+            } else if (labelEl) {
+                labelEl.textContent = 'Missed opportunistic screening on --';
+            }
         }
 
     // Theme toggle (light / dark)
