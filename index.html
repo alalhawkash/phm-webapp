@@ -127,20 +127,22 @@
     <div id="admin-panel">
         <div class="admin-container">
             <div class="admin-header">
-                <h2>👤 User Management</h2>
-                <button class="btn-secondary" onclick="hideAdminPanel()">Close</button>
+                <h2>User Management</h2>
+                <button class="admin-close-btn" onclick="hideAdminPanel()">Done</button>
             </div>
             
             <div class="admin-sections">
                 
                 <!-- Invite User Section -->
                 <div class="admin-section">
-                    <h3>📧 Invite New User</h3>
+                    <h3>Invite New User</h3>
                     
-                    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
-                        <strong>📝 Step 1:</strong> Create the user in Supabase first:<br>
-                        Go to Supabase → Authentication → Users → Add user → Create new user<br>
-                        <strong>📋 Step 2:</strong> Copy the User ID and paste it below
+                    <div class="admin-info-box">
+                        <div class="admin-info-title">Step 1</div>
+                        <div class="admin-info-text">Create the user in Supabase first:<br>
+                        Go to Supabase → Authentication → Users → Add user → Create new user</div>
+                        <div class="admin-info-title" style="margin-top: 12px;">Step 2</div>
+                        <div class="admin-info-text">Copy the User ID and paste it below</div>
                     </div>
                     
                     <form id="invite-form" class="modal-form" onsubmit="inviteUser(event)">
@@ -189,7 +191,7 @@
                 
                 <!-- Users List Section -->
                 <div class="admin-section">
-                    <h3>👥 All Users</h3>
+                    <h3>All Users</h3>
                     
                     <div style="overflow-x: auto;">
                         <table class="users-table">
@@ -221,8 +223,8 @@
     <div id="edit-user-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>✏️ Edit User</h3>
-                <button class="btn-close" onclick="closeEditUserModal()">&times;</button>
+                <h3>Edit User</h3>
+                <button class="btn-close" onclick="closeEditUserModal()">Done</button>
             </div>
             
             <form class="modal-form" onsubmit="updateUserRole(event)">
