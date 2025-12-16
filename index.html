@@ -339,14 +339,12 @@
             
             const result = await handleLogin(email, password);
             
+            // handleLogin will reload the page on success, so this only handles errors
             if (!result.success) {
                 errorMsg.textContent = result.error;
                 errorMsg.style.display = 'block';
                 submitBtn.textContent = 'Login';
                 submitBtn.disabled = false;
-            } else {
-                // Reload page to clear any cached state from previous user
-                window.location.reload();
             }
         }
         

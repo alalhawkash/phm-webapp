@@ -145,6 +145,9 @@ async function handleLogin(email, password) {
         return { success: false, error: error.message };
     }
     
+    // Reload immediately after successful authentication
+    window.location.reload();
+    
     return { success: true };
 }
 
