@@ -19,7 +19,7 @@ body {
 }
 
 body.dark-mode {
-    --bg: #0b1324;
+    --bg: #0f172a;
     --surface: #0f172a;
     --text-primary: #e2e8f0;
     --text-muted: #a3b1cc;
@@ -29,6 +29,7 @@ body.dark-mode {
     --sidebar-bg: #0d162d;
     --sidebar-text: #f8fafc;
     --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    background: #0f172a;
 }
 
 /* Login Screen */
