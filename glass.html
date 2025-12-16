@@ -2079,15 +2079,27 @@
 
         // Load user scope from parent window or localStorage
         let userScopeData = null;
-        try {
-            const scopeJson = localStorage.getItem('userScope');
-            if (scopeJson) {
-                userScopeData = JSON.parse(scopeJson);
-                console.log('User scope loaded:', userScopeData);
+        
+        function loadUserScope() {
+            try {
+                const scopeJson = localStorage.getItem('userScope');
+                if (scopeJson) {
+                    const parsed = JSON.parse(scopeJson);
+                    // Only update if scope data changed
+                    if (JSON.stringify(parsed) !== JSON.stringify(userScopeData)) {
+                        userScopeData = parsed;
+                        console.log('User scope loaded:', userScopeData);
+                        return true; // Scope data changed
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading user scope:', e);
             }
-        } catch (e) {
-            console.error('Error loading user scope:', e);
+            return false; // No change
         }
+        
+        // Initial load
+        loadUserScope();
 
         // Load data from Supabase (or fallback to Google Sheets)
         (function() {
@@ -2363,9 +2375,21 @@
                 }
 
 
-                populateScreeningZones(data);
-                populateDMZones(data);
-                populatePreDMZones(data);
+                // Re-check user scope before populating zones (in case it wasn't available initially)
+                const scopeChanged = loadUserScope();
+                
+                // Re-populate zones if scope data changed or wasn't available before
+                if (scopeChanged || !userScopeData) {
+                    // Scope data just became available, re-populate zones
+                    populateScreeningZones(data);
+                    populateDMZones(data);
+                    populatePreDMZones(data);
+                } else {
+                    // Normal population
+                    populateScreeningZones(data);
+                    populateDMZones(data);
+                    populatePreDMZones(data);
+                }
 
                 // Auto-navigate zone-scoped users to their zone detail view
                 if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
@@ -2376,6 +2400,39 @@
                         navigateToZone(zoneId, 'screening');
                     }, 500);
                 }
+                
+                // Check for scope data after delays (in case parent page saves it later)
+                // Check after 1 second
+                setTimeout(() => {
+                    if (loadUserScope() && globalSheetData) {
+                        // Scope data just became available, re-populate zones
+                        populateScreeningZones(globalSheetData);
+                        populateDMZones(globalSheetData);
+                        populatePreDMZones(globalSheetData);
+                        
+                        // Auto-navigate if zone user
+                        if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                            const zoneId = userScopeData.zone_id;
+                            navigateToZone(zoneId, 'screening');
+                        }
+                    }
+                }, 1000);
+                
+                // Check again after 2 seconds (fallback)
+                setTimeout(() => {
+                    if (loadUserScope() && globalSheetData) {
+                        // Scope data just became available, re-populate zones
+                        populateScreeningZones(globalSheetData);
+                        populateDMZones(globalSheetData);
+                        populatePreDMZones(globalSheetData);
+                        
+                        // Auto-navigate if zone user
+                        if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                            const zoneId = userScopeData.zone_id;
+                            navigateToZone(zoneId, 'screening');
+                        }
+                    }
+                }, 2000);
 
                 // Fallback: Pre-DM overview when section detection misses
                 // AD2 (row index 1, col index 29) expected to hold Pre-DM Patients
