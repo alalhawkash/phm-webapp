@@ -8,6 +8,11 @@
     <!-- Apply dark mode immediately to prevent white flash -->
     <script>
         (function() {
+            // Reset zoom to default (100%) on page load
+            if (document.body) {
+                document.body.style.zoom = '1';
+            }
+            
             const savedTheme = localStorage.getItem('phm-theme');
             if (savedTheme === 'dark') {
                 if (document.documentElement) {
@@ -429,6 +434,24 @@
         
         // Check last updated every 2 seconds
         setInterval(syncLastUpdated, 2000);
+        
+        // Reset zoom to default (100%) on page load/reload
+        window.addEventListener('load', function() {
+            document.body.style.zoom = '1';
+            if (document.documentElement) {
+                document.documentElement.style.zoom = '1';
+            }
+        });
+        
+        // Also reset on DOMContentLoaded for faster reset
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.body) {
+                document.body.style.zoom = '1';
+            }
+            if (document.documentElement) {
+                document.documentElement.style.zoom = '1';
+            }
+        });
     </script>
 </body>
 </html>
