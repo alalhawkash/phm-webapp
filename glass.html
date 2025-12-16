@@ -2367,6 +2367,16 @@
                 populateDMZones(data);
                 populatePreDMZones(data);
 
+                // Auto-navigate zone-scoped users to their zone detail view
+                if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                    // Wait a bit for DOM to be ready, then auto-navigate
+                    setTimeout(() => {
+                        const zoneId = userScopeData.zone_id;
+                        // Navigate to zone detail view showing PHCs list
+                        navigateToZone(zoneId, 'screening');
+                    }, 500);
+                }
+
                 // Fallback: Pre-DM overview when section detection misses
                 // AD2 (row index 1, col index 29) expected to hold Pre-DM Patients
                 if (predmPatientsTotal === null && data.length > 1 && typeof data[1][29] !== 'undefined') {
