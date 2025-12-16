@@ -547,9 +547,10 @@ body.dark-mode .user-scope {
     bottom: 0;
     width: 280px;
     max-width: 82%;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.35);
+    background: rgba(24, 28, 36, 0.9);
+    color: #e8e8e8;
+    border-right: 1px solid #2a323d;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
     transform: translateX(-105%);
     transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
     z-index: 12000;
@@ -562,7 +563,8 @@ body.dark-mode .user-scope {
 body:not(.dark-mode) .user-sidebar {
     background: #ffffff;
     color: #1a1a1a;
-    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
+    border-right: 1px solid #e8e8e8;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
 }
 
 #app-screen.sidebar-open .user-sidebar {
@@ -604,7 +606,7 @@ body:not(.dark-mode) .sidebar-backdrop {
     font-weight: 700;
     letter-spacing: -0.02em;
     font-size: 22px;
-    color: var(--sidebar-text);
+    color: #e8e8e8;
 }
 
 body:not(.dark-mode) .sidebar-logo {
@@ -613,13 +615,15 @@ body:not(.dark-mode) .sidebar-logo {
 
 .sidebar-subtitle {
     font-size: 13px;
-    opacity: 0.6;
+    opacity: 0.7;
     font-weight: 400;
     letter-spacing: -0.01em;
+    color: #e8e8e8;
 }
 
 body:not(.dark-mode) .sidebar-subtitle {
     color: #666;
+    opacity: 1;
 }
 
 .sidebar-user {
@@ -627,24 +631,28 @@ body:not(.dark-mode) .sidebar-subtitle {
     flex-direction: column;
     gap: 4px;
     padding: 16px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
 }
 
 body:not(.dark-mode) .sidebar-user {
-    background: rgba(0, 0, 0, 0.04);
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
     color: #1a1a1a;
 }
 
 .sidebar-info-box {
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     font-size: 13px;
 }
 
 body:not(.dark-mode) .sidebar-info-box {
-    background: rgba(0, 0, 0, 0.04);
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
     color: #1a1a1a;
 }
 
@@ -700,9 +708,9 @@ body:not(.dark-mode) .sidebar-info-label {
 .sidebar-btn {
     width: 100%;
     padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--sidebar-text);
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: #e8e8e8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     font-size: 15px;
     font-weight: 500;
@@ -713,25 +721,26 @@ body:not(.dark-mode) .sidebar-info-label {
 }
 
 .sidebar-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-btn:active {
     transform: scale(0.98);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 body:not(.dark-mode) .sidebar-btn {
-    background: rgba(0, 0, 0, 0.05);
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
     color: #1a1a1a;
 }
 
 body:not(.dark-mode) .sidebar-btn:hover {
-    background: rgba(0, 0, 0, 0.08);
+    background: #f0f0f0;
 }
 
 body:not(.dark-mode) .sidebar-btn:active {
-    background: rgba(0, 0, 0, 0.04);
+    background: #e8e8e8;
 }
 
 /* Danger button (Sign Out) */
