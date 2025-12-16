@@ -73,7 +73,6 @@
             </div>
             
             <div class="sidebar-user">
-                <div class="avatar-circle">👤</div>
                 <div class="sidebar-user-details">
                     <div class="user-email" id="user-email-sidebar">-</div>
                     <div class="user-scope" id="user-scope-sidebar">-</div>
@@ -86,14 +85,14 @@
             </div>
             
             <div class="sidebar-actions">
-                <button class="btn-ghost full-width" onclick="toggleDashboardTheme()">
-                    🌓 Toggle Theme
+                <button class="sidebar-btn" onclick="toggleDashboardTheme()">
+                    Appearance
                 </button>
-                <button id="admin-button-sidebar" class="btn-ghost full-width" onclick="showAdminPanel(); toggleSidebar();">
-                    👤 User Management
+                <button id="admin-button-sidebar" class="sidebar-btn" onclick="showAdminPanel(); toggleSidebar();">
+                    User Management
                 </button>
-                <button class="btn-logout ghost-on-dark full-width" onclick="handleLogout()">
-                    🚪 Logout
+                <button class="sidebar-btn sidebar-btn-danger" onclick="handleLogout()">
+                    Sign Out
                 </button>
             </div>
         </div>
