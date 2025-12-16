@@ -1142,8 +1142,7 @@
         .phc-dashboard-card {
             background: #ffffff;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 24px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border: 1px solid #e8e8e8;
         }
@@ -1154,40 +1153,49 @@
             color: #e8e8e8;
         }
         
-        .phc-dashboard-card-orange {
-            background: rgba(255, 152, 0, 0.1);
-            border: 1px solid rgba(255, 152, 0, 0.3);
-        }
-        
-        .dark-mode .phc-dashboard-card-orange {
-            background: rgba(255, 152, 0, 0.15);
-            border: 1px solid rgba(255, 152, 0, 0.4);
-        }
-        
         .phc-dashboard-header {
-            margin-bottom: 16px;
+            margin-bottom: 24px;
         }
         
         .phc-dashboard-header h3 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            color: #666;
+            color: #1a1a1a;
             margin: 0;
         }
         
         .dark-mode .phc-dashboard-header h3 {
-            color: #bfc7d1;
+            color: #e8e8e8;
         }
         
         .phc-dashboard-main-metric {
             text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .dark-mode .phc-dashboard-main-metric {
+            border-bottom-color: #2a323d;
+        }
+        
+        .phc-metric-category {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .dark-mode .phc-metric-category {
+            color: #bfc7d1;
         }
         
         .phc-metric-value-large {
-            font-size: 48px;
+            font-size: 56px;
             font-weight: 700;
             color: #1a1a1a;
             margin-bottom: 8px;
+            line-height: 1;
         }
         
         .dark-mode .phc-metric-value-large {
@@ -1204,11 +1212,29 @@
             color: #bfc7d1;
         }
         
-        .phc-dashboard-metric-row {
+        .phc-dashboard-metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .phc-dashboard-metric-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 16px;
+            background: transparent;
+            border-radius: 8px;
+        }
+        
+        .phc-dashboard-metric-item-orange {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .dark-mode .phc-dashboard-metric-item-orange {
+            background: rgba(255, 152, 0, 0.15);
+            border: 1px solid rgba(255, 152, 0, 0.4);
         }
         
         .phc-metric-label {
@@ -1633,32 +1659,30 @@
             <div class="container" style="padding: 20px; flex: 1; overflow-y: auto;">
                 <div class="phc-dashboard-card">
                     <div class="phc-dashboard-header">
-                        <h3>Uncontrolled DM</h3>
+                        <h3>Diabetes Follow-up</h3>
                     </div>
+                    
                     <div class="phc-dashboard-main-metric">
+                        <div class="phc-metric-category">Uncontrolled DM</div>
                         <div class="phc-metric-value-large" id="phcUncontrolledDMCount">0</div>
                         <div class="phc-metric-percentage" id="phcUncontrolledDMPercent">0% of DM</div>
                     </div>
-                </div>
-                
-                <div class="phc-dashboard-card phc-dashboard-card-orange">
-                    <div class="phc-dashboard-metric-row">
-                        <span class="phc-metric-label-orange">Need follow-up uncontrolled DM (+30 days)</span>
-                        <span class="phc-metric-value" id="phcFollowupDM30">0</span>
-                    </div>
-                </div>
-                
-                <div class="phc-dashboard-card phc-dashboard-card-orange">
-                    <div class="phc-dashboard-metric-row">
-                        <span class="phc-metric-label-orange">Need follow-up pre-DM (+90 days)</span>
-                        <span class="phc-metric-value" id="phcFollowupPreDM90">0</span>
-                    </div>
-                </div>
-                
-                <div class="phc-dashboard-card">
-                    <div class="phc-dashboard-metric-row">
-                        <span class="phc-metric-label">Daily missed opportunistic screening</span>
-                        <span class="phc-metric-value" id="phcMissedScreening">0</span>
+                    
+                    <div class="phc-dashboard-metrics-section">
+                        <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
+                            <span class="phc-metric-label-orange">Need follow-up uncontrolled DM (+30 days)</span>
+                            <span class="phc-metric-value" id="phcFollowupDM30">0</span>
+                        </div>
+                        
+                        <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
+                            <span class="phc-metric-label-orange">Need follow-up pre-DM (+90 days)</span>
+                            <span class="phc-metric-value" id="phcFollowupPreDM90">0</span>
+                        </div>
+                        
+                        <div class="phc-dashboard-metric-item">
+                            <span class="phc-metric-label">Daily missed opportunistic screening</span>
+                            <span class="phc-metric-value" id="phcMissedScreening">0</span>
+                        </div>
                     </div>
                 </div>
             </div>
