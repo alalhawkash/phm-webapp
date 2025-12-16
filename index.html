@@ -344,6 +344,9 @@
                 errorMsg.style.display = 'block';
                 submitBtn.textContent = 'Login';
                 submitBtn.disabled = false;
+            } else {
+                // Reload page to clear any cached state from previous user
+                window.location.reload();
             }
         }
         
