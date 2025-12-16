@@ -1380,7 +1380,7 @@
         </div>
         <div class="main-view" id="zoneDetailView" style="display: none;">
             <div class="zone-detail-header" style="padding: 16px 20px; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
-                <button class="back-button" onclick="goBackToMain()" aria-label="Go back"></button>
+                <button class="back-button" id="zoneDetailBackButton" onclick="goBackToMain()" aria-label="Go back" style="display: none;"></button>
                 <div class="zone-detail-title" style="flex: 1; text-align: left;">
                     <h2 id="zoneDetailTitle" style="margin: 0; font-size: 20px; font-weight: 600; color: #1a1a1a;">Zone Details</h2>
                     <div class="subtitle" style="font-size: 10px; color: #888; margin-top: 2px;">PHC Performance</div>
@@ -1401,12 +1401,16 @@
                                         <span class="metric-value target-value" id="zoneDetailTargetValue">0</span>
                                     </div>
                                     <div class="metric-row">
-                                        <span class="metric-label">Current</span>
-                                        <span class="metric-value percentage-value" id="zoneDetailCurrentValue">0</span>
+                                        <span class="metric-label">Screened</span>
+                                        <span class="metric-value percentage-value" id="zoneDetailScreenedValue">0</span>
                                     </div>
                                     <div class="metric-row">
-                                        <span class="metric-label">Percentage</span>
-                                        <span class="metric-value percentage-value" id="zoneDetailPercentageValue">0%</span>
+                                        <span class="metric-label">Remaining</span>
+                                        <span class="metric-value percentage-value" id="zoneDetailRemainingValue">0</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">Opportunities</span>
+                                        <span class="metric-value percentage-value" id="zoneDetailOpportunitiesValue">0</span>
                                     </div>
                                 </div>
                                 <div class="zones-ranking" id="zoneDetailScreeningPHCs">
@@ -2392,12 +2396,17 @@
                 }
 
                 // Auto-navigate zone-scoped users to their zone detail view
-                if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
                     // Wait a bit for DOM to be ready, then auto-navigate
                     setTimeout(() => {
                         const zoneId = userScopeData.zone_id;
                         // Navigate to zone detail view showing PHCs list
                         navigateToZone(zoneId, 'screening');
+                        // Hide back button for zone/PHC users
+                        const backButton = document.getElementById('zoneDetailBackButton');
+                        if (backButton) {
+                            backButton.style.display = 'none';
+                        }
                     }, 500);
                 }
                 
@@ -2410,10 +2419,15 @@
                         populateDMZones(globalSheetData);
                         populatePreDMZones(globalSheetData);
                         
-                        // Auto-navigate if zone user
-                        if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                        // Auto-navigate if zone/PHC user
+                        if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
                             const zoneId = userScopeData.zone_id;
                             navigateToZone(zoneId, 'screening');
+                            // Hide back button
+                            const backButton = document.getElementById('zoneDetailBackButton');
+                            if (backButton) {
+                                backButton.style.display = 'none';
+                            }
                         }
                     }
                 }, 1000);
@@ -2426,10 +2440,15 @@
                         populateDMZones(globalSheetData);
                         populatePreDMZones(globalSheetData);
                         
-                        // Auto-navigate if zone user
-                        if (userScopeData && userScopeData.scope === 'zone' && userScopeData.zone_id) {
+                        // Auto-navigate if zone/PHC user
+                        if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
                             const zoneId = userScopeData.zone_id;
                             navigateToZone(zoneId, 'screening');
+                            // Hide back button
+                            const backButton = document.getElementById('zoneDetailBackButton');
+                            if (backButton) {
+                                backButton.style.display = 'none';
+                            }
                         }
                     }
                 }, 2000);
@@ -2993,16 +3012,29 @@
                 
                 // Calculate and display zone overview metrics for Screening
                 let zoneTargetTotal = 0;
-                let zoneCurrentTotal = 0;
+                let zoneScreenedTotal = 0;
+                let zoneOpportunitiesTotal = 0;
                 screeningPHCs.forEach(phc => {
                     if (!isNaN(phc.target)) zoneTargetTotal += phc.target;
-                    if (!isNaN(phc.achieved)) zoneCurrentTotal += phc.achieved;
+                    if (!isNaN(phc.achieved)) zoneScreenedTotal += phc.achieved;
+                    // Sum opportunities (parse from text if needed)
+                    const oppNum = parseFloat(String(phc.opportunities || '0').replace(/,/g, ''));
+                    if (!isNaN(oppNum)) zoneOpportunitiesTotal += oppNum;
                 });
-                const zonePercentage = zoneTargetTotal > 0 ? ((zoneCurrentTotal / zoneTargetTotal) * 100).toFixed(1) : 0;
+                const zoneRemainingTotal = Math.max(0, zoneTargetTotal - zoneScreenedTotal);
                 
                 document.getElementById('zoneDetailTargetValue').textContent = zoneTargetTotal.toLocaleString();
-                document.getElementById('zoneDetailCurrentValue').textContent = zoneCurrentTotal.toLocaleString();
-                document.getElementById('zoneDetailPercentageValue').textContent = `${zonePercentage}%`;
+                document.getElementById('zoneDetailScreenedValue').textContent = zoneScreenedTotal.toLocaleString();
+                document.getElementById('zoneDetailRemainingValue').textContent = zoneRemainingTotal.toLocaleString();
+                document.getElementById('zoneDetailOpportunitiesValue').textContent = zoneOpportunitiesTotal.toLocaleString();
+                
+                // Hide back button for zone/PHC scoped users
+                const backButton = document.getElementById('zoneDetailBackButton');
+                if (backButton && userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc')) {
+                    backButton.style.display = 'none';
+                } else if (backButton) {
+                    backButton.style.display = 'block';
+                }
                 
                 // Calculate and display zone overview metrics for DM
                 let zoneDMTotal = 0;
