@@ -551,12 +551,18 @@ body.dark-mode .user-scope {
     color: var(--sidebar-text);
     box-shadow: 8px 0 24px rgba(0, 0, 0, 0.35);
     transform: translateX(-105%);
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
     z-index: 12000;
     padding: 22px 20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+body:not(.dark-mode) .user-sidebar {
+    background: #ffffff;
+    color: #1a1a1a;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
 }
 
 #app-screen.sidebar-open .user-sidebar {
@@ -571,6 +577,10 @@ body.dark-mode .user-scope {
     pointer-events: none;
     transition: opacity 0.2s ease;
     z-index: 11990;
+}
+
+body:not(.dark-mode) .sidebar-backdrop {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 #app-screen.sidebar-open .sidebar-backdrop {
@@ -594,11 +604,20 @@ body.dark-mode .user-scope {
     font-weight: 800;
     letter-spacing: 0.08em;
     font-size: 18px;
+    color: var(--sidebar-text);
+}
+
+body:not(.dark-mode) .sidebar-logo {
+    color: #1a1a1a;
 }
 
 .sidebar-subtitle {
     font-size: 12px;
     opacity: 0.8;
+}
+
+body:not(.dark-mode) .sidebar-subtitle {
+    color: #666;
 }
 
 .sidebar-user {
@@ -623,14 +642,18 @@ body:not(.dark-mode) .sidebar-user {
 }
 
 body:not(.dark-mode) .sidebar-info-box {
-    background: rgba(0, 0, 0, 0.04);
-    color: #0f172a;
+    background: rgba(0, 0, 0, 0.06);
+    color: #1a1a1a;
 }
 
 .sidebar-info-label {
     opacity: 0.7;
     margin-bottom: 4px;
     font-size: 11px;
+}
+
+body:not(.dark-mode) .sidebar-info-label {
+    color: #666;
 }
 
 .sidebar-info-value {
@@ -646,6 +669,10 @@ body:not(.dark-mode) .sidebar-info-box {
     place-items: center;
     background: rgba(255, 255, 255, 0.12);
     font-size: 20px;
+}
+
+body:not(.dark-mode) .avatar-circle {
+    background: rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-user-details {
@@ -683,18 +710,24 @@ body:not(.dark-mode) .sidebar-info-box {
 }
 
 body:not(.dark-mode) .sidebar-actions .btn-ghost {
-    background: rgba(0, 0, 0, 0.04);
-    color: #0f172a;
-    border: none;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    border: 1px solid #e0e0e0;
 }
 
 body:not(.dark-mode) .sidebar-actions .btn-ghost:hover {
-    background: rgba(0, 0, 0, 0.08);
+    background: #e8e8e8;
 }
 
 body:not(.dark-mode) .sidebar-actions .btn-logout {
-    background: transparent;
+    background: #fff5f5;
+    color: #dc3545;
     border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+body:not(.dark-mode) .sidebar-actions .btn-logout:hover {
+    background: #ffe8e8;
+    border-color: rgba(220, 53, 69, 0.5);
 }
 
 /* Mobile App Header */
