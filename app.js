@@ -162,6 +162,9 @@ function showApp() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     
+    // Ensure sidebar is closed by default
+    document.getElementById('app-screen').classList.remove('sidebar-open');
+    
     if (userProfile && userProfile.is_admin) {
         document.getElementById('admin-button-sidebar').style.display = 'block';
     } else {

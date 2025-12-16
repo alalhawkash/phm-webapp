@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHM - Primary Healthcare Management</title>
     
+    <!-- Apply dark mode immediately to prevent white flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('phm-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    
     <!-- Auth Styles -->
     <link rel="stylesheet" href="auth-styles.css">
     
@@ -13,6 +24,14 @@
     
     <style>
         /* Prevent white page flash */
+        html {
+            background: #f5f5f5;
+        }
+        
+        html.dark-mode {
+            background: #0f172a;
+        }
+        
         body {
             background: #f5f5f5;
             min-height: 100vh;
