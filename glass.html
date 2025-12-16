@@ -1138,6 +1138,133 @@
             margin-left: 8px;
         }
 
+        /* PHC Detail Dashboard Styles */
+        .phc-dashboard-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e8e8;
+        }
+        
+        .dark-mode .phc-dashboard-card {
+            background: rgba(24, 28, 36, 0.9);
+            border: 1px solid #2a323d;
+            color: #e8e8e8;
+        }
+        
+        .phc-dashboard-card-orange {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .dark-mode .phc-dashboard-card-orange {
+            background: rgba(255, 152, 0, 0.15);
+            border: 1px solid rgba(255, 152, 0, 0.4);
+        }
+        
+        .phc-dashboard-header {
+            margin-bottom: 16px;
+        }
+        
+        .phc-dashboard-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            margin: 0;
+        }
+        
+        .dark-mode .phc-dashboard-header h3 {
+            color: #bfc7d1;
+        }
+        
+        .phc-dashboard-main-metric {
+            text-align: center;
+        }
+        
+        .phc-metric-value-large {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .dark-mode .phc-metric-value-large {
+            color: #e8e8e8;
+        }
+        
+        .phc-metric-percentage {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .dark-mode .phc-metric-percentage {
+            color: #bfc7d1;
+        }
+        
+        .phc-dashboard-metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+        
+        .phc-metric-label {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .dark-mode .phc-metric-label {
+            color: #bfc7d1;
+        }
+        
+        .phc-metric-label-orange {
+            font-size: 16px;
+            color: #ff9800;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .phc-metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .dark-mode .phc-metric-value {
+            color: #e8e8e8;
+        }
+        
+        #phcDetailView {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 30;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+        
+        .dark-mode #phcDetailView {
+            background: #0f1115;
+        }
+        
+        .dark-mode #phcDetailView .zone-detail-header {
+            background: #161a20 !important;
+            border-bottom-color: #262c36 !important;
+        }
+        
+        .dark-mode #phcDetailView .zone-detail-title h2 {
+            color: #f2f4f8 !important;
+        }
+
         /* iPhone and Android specific adjustments */
         @media screen and (max-width: 480px) {
             header {
@@ -1495,6 +1622,47 @@
                 <div class="carousel-dots" id="zoneDetailCarouselDots"></div>
             </div>
         </div>
+        <div class="main-view" id="phcDetailView" style="display: none;">
+            <div class="zone-detail-header" style="padding: 16px 20px; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
+                <button class="back-button" id="phcDetailBackButton" onclick="goBackToZone()" aria-label="Go back"></button>
+                <div class="zone-detail-title" style="flex: 1; text-align: left;">
+                    <h2 id="phcDetailTitle" style="margin: 0; font-size: 20px; font-weight: 600; color: #1a1a1a;">PHC Details</h2>
+                    <div class="subtitle" style="font-size: 10px; color: #888; margin-top: 2px;">Diabetes Follow-up</div>
+                </div>
+            </div>
+            <div class="container" style="padding: 20px; flex: 1; overflow-y: auto;">
+                <div class="phc-dashboard-card">
+                    <div class="phc-dashboard-header">
+                        <h3>Uncontrolled DM</h3>
+                    </div>
+                    <div class="phc-dashboard-main-metric">
+                        <div class="phc-metric-value-large" id="phcUncontrolledDMCount">0</div>
+                        <div class="phc-metric-percentage" id="phcUncontrolledDMPercent">0% of DM</div>
+                    </div>
+                </div>
+                
+                <div class="phc-dashboard-card phc-dashboard-card-orange">
+                    <div class="phc-dashboard-metric-row">
+                        <span class="phc-metric-label-orange">Need follow-up uncontrolled DM (+30 days)</span>
+                        <span class="phc-metric-value" id="phcFollowupDM30">0</span>
+                    </div>
+                </div>
+                
+                <div class="phc-dashboard-card phc-dashboard-card-orange">
+                    <div class="phc-dashboard-metric-row">
+                        <span class="phc-metric-label-orange">Need follow-up pre-DM (+90 days)</span>
+                        <span class="phc-metric-value" id="phcFollowupPreDM90">0</span>
+                    </div>
+                </div>
+                
+                <div class="phc-dashboard-card">
+                    <div class="phc-dashboard-metric-row">
+                        <span class="phc-metric-label">Daily missed opportunistic screening</span>
+                        <span class="phc-metric-value" id="phcMissedScreening">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <footer>
         <p>2025 Alhaalha</p>
@@ -1775,6 +1943,7 @@
         let predmToNormalTotal = null;
         let predmNoFollowupTotal = null;
         let globalSheetData = null; // Store sheet data globally
+        let currentZoneName = null; // Store current zone name for PHC navigation
 
         function updateScreeningPercentage() {
             const screenedEl = document.getElementById('currentValue');
@@ -2889,8 +3058,9 @@
                     
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
                     
+                    const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
-                        <div class="zone-item zone-item--screening">
+                        <div class="zone-item zone-item--screening" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
                                 <span class="zone-name-text">${displayName}</span>
                             </div>
@@ -2924,8 +3094,9 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
+                    const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
-                        <div class="zone-item zone-item--dm">
+                        <div class="zone-item zone-item--dm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
                                 <span class="zone-name-text">${displayName}</span>
                             </div>
@@ -2959,8 +3130,9 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
+                    const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
-                        <div class="zone-item zone-item--predm">
+                        <div class="zone-item zone-item--predm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
                                 <span class="zone-name-text">${displayName}</span>
                             </div>
@@ -2985,6 +3157,9 @@
 
         // Zone navigation functions
         function navigateToZone(zoneName, context) {
+            // Store current zone name
+            currentZoneName = zoneName;
+            
             // Hide main view and show zone detail view
             const mainView = document.getElementById('mainView');
             const zoneDetailView = document.getElementById('zoneDetailView');
@@ -3115,6 +3290,87 @@
             
             if (mainView) mainView.classList.remove('hidden');
             if (zoneDetailView) zoneDetailView.style.display = 'none';
+        }
+        
+        function goBackToZone() {
+            const zoneDetailView = document.getElementById('zoneDetailView');
+            const phcDetailView = document.getElementById('phcDetailView');
+            
+            if (zoneDetailView) zoneDetailView.style.display = 'flex';
+            if (phcDetailView) phcDetailView.style.display = 'none';
+        }
+        
+        // Navigate to PHC detail view
+        function navigateToPHC(phcName) {
+            // Hide zone detail view and show PHC detail view
+            const zoneDetailView = document.getElementById('zoneDetailView');
+            const phcDetailView = document.getElementById('phcDetailView');
+            
+            if (zoneDetailView) zoneDetailView.style.display = 'none';
+            if (phcDetailView) phcDetailView.style.display = 'flex';
+            
+            // Update PHC detail title
+            const displayName = PHC_DISPLAY_NAMES[phcName] || PHC_DISPLAY_NAMES[phcName?.toLowerCase()] || phcName;
+            const titleEl = document.getElementById('phcDetailTitle');
+            if (titleEl) titleEl.textContent = displayName;
+            
+            // Populate PHC dashboard data
+            populatePHCDashboard(phcName);
+        }
+        
+        // Populate PHC dashboard with data
+        function populatePHCDashboard(phcName) {
+            if (!globalSheetData) return;
+            
+            // Get the zone for this PHC (use current zone if available, otherwise look it up)
+            let phcZone = currentZoneName;
+            if (!phcZone) {
+                phcZone = PHC_ZONE_MAP[phcName];
+                if (!phcZone) {
+                    const normalizedPhcName = normalizePHC(phcName);
+                    const matchingKey = Object.keys(PHC_ZONE_MAP).find(key => 
+                        normalizePHC(key) === normalizedPhcName
+                    );
+                    if (matchingKey) {
+                        phcZone = PHC_ZONE_MAP[matchingKey];
+                    }
+                }
+            }
+            
+            // Find PHC data from the zone
+            const dmPHCs = phcZone ? populateZonePHCs(globalSheetData, phcZone, 'dm') : [];
+            const predmPHCs = phcZone ? populateZonePHCs(globalSheetData, phcZone, 'predm') : [];
+            const screeningPHCs = phcZone ? populateZonePHCs(globalSheetData, phcZone, 'screening') : [];
+            
+            // Find the specific PHC
+            const dmPHC = dmPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
+            const predmPHC = predmPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
+            const screeningPHC = screeningPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
+            
+            // Calculate Uncontrolled DM
+            let uncontrolledDM = 0;
+            let totalDM = 0;
+            let uncontrolledPercent = 0;
+            
+            if (dmPHC) {
+                totalDM = dmPHC.total || 0;
+                const controlled = dmPHC.controlled || 0;
+                uncontrolledDM = Math.max(0, totalDM - controlled);
+                uncontrolledPercent = totalDM > 0 ? ((uncontrolledDM / totalDM) * 100).toFixed(1) : 0;
+            }
+            
+            // Update dashboard
+            document.getElementById('phcUncontrolledDMCount').textContent = uncontrolledDM.toLocaleString();
+            document.getElementById('phcUncontrolledDMPercent').textContent = `${uncontrolledPercent}% of DM`;
+            
+            // For now, set follow-up counts to 0 (these would need to come from additional data columns)
+            // TODO: Add data columns for follow-up counts when available
+            document.getElementById('phcFollowupDM30').textContent = '0';
+            document.getElementById('phcFollowupPreDM90').textContent = '0';
+            
+            // Daily missed opportunistic screening (from opportunities)
+            const missedScreening = screeningPHC ? (parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0) : 0;
+            document.getElementById('phcMissedScreening').textContent = missedScreening.toLocaleString();
         }
 
     // Theme toggle (light / dark)
