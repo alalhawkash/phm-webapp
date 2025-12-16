@@ -392,7 +392,7 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     gap: 12px;
-    touch-action: pan-y pinch-zoom;
+    touch-action: pan-x pan-y pinch-zoom;
     scrollbar-width: none;
 }
 .carousel::-webkit-scrollbar {
@@ -1327,6 +1327,25 @@
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y pinch-zoom;
+        }
+        
+        /* Ensure cards and content don't block touch events */
+        #phcDetailCarousel .card,
+        #phcDetailCarousel .card-content,
+        #phcDetailCarousel .phc-dm-dashboard,
+        #phcDetailCarousel .phc-predm-dashboard,
+        #phcDetailCarousel .screen-count-template {
+            touch-action: pan-x pan-y;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        /* Allow text selection in specific areas if needed */
+        #phcDetailCarousel .phc-metric-value-large,
+        #phcDetailCarousel .phc-metric-value {
+            user-select: text;
+            -webkit-user-select: text;
         }
         
         /* PHC Dashboard Styles - Matching Image Design */
