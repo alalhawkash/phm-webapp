@@ -3104,6 +3104,18 @@
                 }
             }
             localStorage.setItem(THEME_KEY, mode);
+            
+            // Notify parent page (index.html) about theme change
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'theme-changed',
+                        theme: mode
+                    }, '*');
+                }
+            } catch (e) {
+                // Cross-origin or other error, ignore
+            }
         }
 
         const savedTheme = localStorage.getItem(THEME_KEY);
@@ -3117,6 +3129,19 @@
                 applyTheme(nextMode);
             });
         }
+        
+        // Listen for theme changes from parent
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'theme-changed') {
+                const mode = event.data.theme;
+                if (mode === 'dark') {
+                    body.classList.add('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                }
+                localStorage.setItem(THEME_KEY, mode);
+            }
+        });
     })();
     </script>
 </body>

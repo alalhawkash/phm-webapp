@@ -383,20 +383,55 @@
         function toggleDashboardTheme() {
             const iframe = document.getElementById('dashboard-iframe');
             if (iframe && iframe.contentWindow) {
-                // Toggle theme in glass.html
-                const iframeDoc = iframe.contentWindow.document;
-                const iframeBody = iframeDoc.body;
-                iframeBody.classList.toggle('dark-mode');
-                
-                // Save preference
-                const isDark = iframeBody.classList.contains('dark-mode');
-                localStorage.setItem('phm-theme', isDark ? 'dark' : 'light');
-                
-                // Toggle parent theme too
-                document.documentElement.classList.toggle('dark-mode', isDark);
-                document.body.classList.toggle('dark-mode', isDark);
+                try {
+                    // Toggle theme in glass.html
+                    const iframeDoc = iframe.contentWindow.document;
+                    const iframeBody = iframeDoc.body;
+                    if (iframeBody) {
+                        iframeBody.classList.toggle('dark-mode');
+                        
+                        // Save preference
+                        const isDark = iframeBody.classList.contains('dark-mode');
+                        localStorage.setItem('phm-theme', isDark ? 'dark' : 'light');
+                        
+                        // Toggle parent theme too
+                        document.documentElement.classList.toggle('dark-mode', isDark);
+                        document.body.classList.toggle('dark-mode', isDark);
+                    }
+                } catch (e) {
+                    // Fallback: use localStorage if direct access fails
+                    const currentTheme = localStorage.getItem('phm-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    localStorage.setItem('phm-theme', newTheme);
+                    
+                    // Toggle parent theme
+                    const isDark = newTheme === 'dark';
+                    document.documentElement.classList.toggle('dark-mode', isDark);
+                    document.body.classList.toggle('dark-mode', isDark);
+                    
+                    // Try to notify iframe via postMessage
+                    try {
+                        iframe.contentWindow.postMessage({
+                            type: 'theme-changed',
+                            theme: newTheme
+                        }, '*');
+                    } catch (e2) {
+                        // Ignore
+                    }
+                }
             }
         }
+        
+        // Listen for theme changes from iframe
+        window.addEventListener('message', function(event) {
+            // Accept messages from same origin (security: could add origin check)
+            if (event.data && event.data.type === 'theme-changed') {
+                const isDark = event.data.theme === 'dark';
+                document.documentElement.classList.toggle('dark-mode', isDark);
+                document.body.classList.toggle('dark-mode', isDark);
+                localStorage.setItem('phm-theme', event.data.theme);
+            }
+        });
         
         // Sync dark mode when iframe loads
         const iframe = document.getElementById('dashboard-iframe');
