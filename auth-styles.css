@@ -1050,6 +1050,7 @@ body.dark-mode .admin-close-btn {
     padding: 0;
     border-radius: 0;
     border: none;
+    margin-bottom: 0;
 }
 
 .admin-section h3 {
@@ -1089,6 +1090,14 @@ body:not(.dark-mode) .admin-info-box {
 }
 
 /* Users Table */
+.users-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-top: 16px;
+    -webkit-overflow-scrolling: touch;
+}
+
 .users-table {
     width: 100%;
     border-collapse: collapse;
@@ -1096,6 +1105,7 @@ body:not(.dark-mode) .admin-info-box {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     overflow: hidden;
+    min-width: 600px;
 }
 
 body:not(.dark-mode) .users-table {
@@ -1285,18 +1295,13 @@ body.dark-mode .btn-close {
     }
     
     /* Make table scrollable on mobile */
-    .users-table {
-        font-size: 12px;
-        display: block;
-        overflow-x: auto;
+    .users-table-wrapper {
+        margin-top: 12px;
     }
     
-    .users-table thead,
-    .users-table tbody,
-    .users-table tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
+    .users-table {
+        font-size: 12px;
+        min-width: 500px;
     }
     
     .users-table th,
