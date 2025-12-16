@@ -433,6 +433,24 @@
             }
         });
         
+        // Send user scope to iframe when it loads
+        function sendUserScopeToIframe() {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    const scopeJson = localStorage.getItem('userScope');
+                    if (scopeJson) {
+                        iframe.contentWindow.postMessage({
+                            type: 'user-scope',
+                            scope: JSON.parse(scopeJson)
+                        }, '*');
+                    }
+                } catch (e) {
+                    console.error('Error sending scope to iframe:', e);
+                }
+            }
+        }
+        
         // Sync dark mode when iframe loads
         const iframe = document.getElementById('dashboard-iframe');
         if (iframe) {
@@ -440,6 +458,8 @@
                 // Wait a bit for iframe to fully initialize
                 setTimeout(() => {
                     syncDarkModeFromIframe();
+                    // Send user scope data to iframe
+                    sendUserScopeToIframe();
                 }, 500);
             });
         }

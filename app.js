@@ -105,12 +105,28 @@ async function loadUserProfile(session) {
         }
         
         // Cache for next time
-        localStorage.setItem('userScope', JSON.stringify({
+        const scopeData = {
             scope: userProfile.scope,
             zone_id: userProfile.zone_id,
             phc_id: userProfile.phc_id,
             is_admin: userProfile.is_admin
-        }));
+        };
+        localStorage.setItem('userScope', JSON.stringify(scopeData));
+        
+        // Send scope to iframe if it's already loaded
+        setTimeout(() => {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'user-scope',
+                        scope: scopeData
+                    }, '*');
+                } catch (e) {
+                    // Iframe not ready yet, will be sent on iframe load
+                }
+            }
+        }, 100);
         
         console.log('✅ User profile loaded');
     } catch (err) {

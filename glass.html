@@ -2083,6 +2083,7 @@
 
         // Load user scope from parent window or localStorage
         let userScopeData = null;
+        let scopeReceivedFromParent = false;
         
         function loadUserScope() {
             try {
@@ -2092,7 +2093,7 @@
                     // Only update if scope data changed
                     if (JSON.stringify(parsed) !== JSON.stringify(userScopeData)) {
                         userScopeData = parsed;
-                        console.log('User scope loaded:', userScopeData);
+                        console.log('User scope loaded from localStorage:', userScopeData);
                         return true; // Scope data changed
                     }
                 }
@@ -2102,7 +2103,37 @@
             return false; // No change
         }
         
-        // Initial load
+        // Listen for user scope from parent
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'user-scope') {
+                const newScope = event.data.scope;
+                if (newScope && JSON.stringify(newScope) !== JSON.stringify(userScopeData)) {
+                    userScopeData = newScope;
+                    scopeReceivedFromParent = true;
+                    console.log('User scope received from parent:', userScopeData);
+                    
+                    // If data is already loaded, re-populate zones with correct filtering
+                    if (globalSheetData) {
+                        populateScreeningZones(globalSheetData);
+                        populateDMZones(globalSheetData);
+                        populatePreDMZones(globalSheetData);
+                        
+                        // Auto-navigate zone/PHC users to their zone
+                        if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
+                            setTimeout(() => {
+                                navigateToZone(userScopeData.zone_id, 'screening');
+                                const backButton = document.getElementById('zoneDetailBackButton');
+                                if (backButton) {
+                                    backButton.style.display = 'none';
+                                }
+                            }, 100);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Initial load from localStorage
         loadUserScope();
 
         // Load data from Supabase (or fallback to Google Sheets)
