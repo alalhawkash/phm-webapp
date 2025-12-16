@@ -10,8 +10,12 @@
         (function() {
             const savedTheme = localStorage.getItem('phm-theme');
             if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark-mode');
-                document.body.classList.add('dark-mode');
+                if (document.documentElement) {
+                    document.documentElement.classList.add('dark-mode');
+                }
+                if (document.body) {
+                    document.body.classList.add('dark-mode');
+                }
             }
         })();
     </script>
@@ -338,6 +342,38 @@
             }
         }
         
+        // Sync dark mode from iframe to parent page
+        function syncDarkModeFromIframe() {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    const iframeDoc = iframe.contentWindow.document;
+                    const iframeBody = iframeDoc.body;
+                    if (iframeBody) {
+                        const isDark = iframeBody.classList.contains('dark-mode');
+                        // Sync parent page with iframe state
+                        if (isDark) {
+                            document.documentElement.classList.add('dark-mode');
+                            document.body.classList.add('dark-mode');
+                        } else {
+                            document.documentElement.classList.remove('dark-mode');
+                            document.body.classList.remove('dark-mode');
+                        }
+                    }
+                } catch (e) {
+                    // Cross-origin issue, try using localStorage instead
+                    const savedTheme = localStorage.getItem('phm-theme');
+                    if (savedTheme === 'dark') {
+                        document.documentElement.classList.add('dark-mode');
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.documentElement.classList.remove('dark-mode');
+                        document.body.classList.remove('dark-mode');
+                    }
+                }
+            }
+        }
+        
         // Toggle dark mode in iframe (glass.html)
         function toggleDashboardTheme() {
             const iframe = document.getElementById('dashboard-iframe');
@@ -352,9 +388,28 @@
                 localStorage.setItem('phm-theme', isDark ? 'dark' : 'light');
                 
                 // Toggle parent theme too
+                document.documentElement.classList.toggle('dark-mode', isDark);
                 document.body.classList.toggle('dark-mode', isDark);
             }
         }
+        
+        // Sync dark mode when iframe loads
+        const iframe = document.getElementById('dashboard-iframe');
+        if (iframe) {
+            iframe.addEventListener('load', function() {
+                // Wait a bit for iframe to fully initialize
+                setTimeout(() => {
+                    syncDarkModeFromIframe();
+                }, 500);
+            });
+        }
+        
+        // Also sync on page load if iframe is already loaded
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                syncDarkModeFromIframe();
+            }, 1000);
+        });
         
         // Sync "Last update" from iframe to sidebar
         function syncLastUpdated() {
