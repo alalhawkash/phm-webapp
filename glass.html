@@ -3671,27 +3671,32 @@
                         cardIndex = 2; // Pre-DM card
                     }
                     
-                    // Use requestAnimationFrame to set scroll before browser paints
+                    // Use double requestAnimationFrame to ensure view is fully rendered
                     requestAnimationFrame(() => {
-                        // Temporarily disable smooth scrolling
-                        carousel.style.scrollBehavior = 'auto';
-                        
-                        // Set scroll position immediately without animation
-                        carousel.scrollLeft = cardIndex * carousel.clientWidth;
-                        
-                        // Force synchronous layout recalculation
-                        void carousel.offsetHeight;
-                        
-                        // Update dots to show correct active dot
-                        const dots = document.getElementById('carouselDots');
-                        if (dots) {
-                            const dotButtons = dots.querySelectorAll('.carousel-dot');
-                            dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
-                        }
-                        
-                        // Restore smooth scrolling in next frame
                         requestAnimationFrame(() => {
-                            carousel.style.scrollBehavior = '';
+                            // Check if carousel has valid width
+                            if (carousel.clientWidth > 0) {
+                                // Temporarily disable smooth scrolling
+                                carousel.style.scrollBehavior = 'auto';
+                                
+                                // Set scroll position immediately
+                                carousel.scrollLeft = cardIndex * carousel.clientWidth;
+                                
+                                // Force synchronous layout recalculation
+                                void carousel.offsetHeight;
+                                
+                                // Update dots
+                                const dots = document.getElementById('carouselDots');
+                                if (dots) {
+                                    const dotButtons = dots.querySelectorAll('.carousel-dot');
+                                    dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
+                                }
+                                
+                                // Restore smooth scrolling
+                                requestAnimationFrame(() => {
+                                    carousel.style.scrollBehavior = '';
+                                });
+                            }
                         });
                     });
                 }
