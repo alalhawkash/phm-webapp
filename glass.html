@@ -2137,12 +2137,14 @@
         const DM_PHC_NAME_COL = 24; // DM PHC
         const DM_PHC_TOTAL_COL = 25; // DM Patients
         const DM_PHC_CONTROLLED_COL = 26; // Controlled DM
+        const DM_PHC_NO_APPT_30D_COL = 27; // No Appt 30D+ (DM)
         const DM_PHC_INDICATOR_COL = 28; // 7-Day Indicator DM
         const PREDM_PHC_NAME_COL = 39; // PRE-DM PHC
         const PREDM_PHC_TOTAL_COL = 40; // Pre-DM Patients
         const PREDM_PHC_NORMAL_COL = 41; // Pre-DM to Normal
         const PREDM_PHC_FOLLOWUP_COL = 42; // Pre-DM No Follow-up
         const PREDM_PHC_INDICATOR_COL = 43; // 7-Day Indicator PRE-DM
+        const PREDM_PHC_NO_APPT_90D_COL = 44; // No Appt 90D+ (PreDM)
 
         const DM_ZONE_START_ROW = 98; // Will be found dynamically
         const DM_ZONE_NAME_COL = 18; // DM Zone
@@ -3129,7 +3131,7 @@
         // Populate PHCs for a specific zone
         function populateZonePHCs(data, zoneName, context) {
             let sectionName = '';
-            let nameCol, valueCol, targetCol, indicatorCol, controlledCol, normalCol, followupCol, oppCol;
+            let nameCol, valueCol, targetCol, indicatorCol, controlledCol, normalCol, followupCol, oppCol, noAppt30DCol, noAppt90DCol;
             
             if (context === 'screening') {
                 sectionName = 'PHC Rankings - Screening';
@@ -3143,6 +3145,7 @@
                 nameCol = DM_PHC_NAME_COL;
                 valueCol = DM_PHC_TOTAL_COL;
                 controlledCol = DM_PHC_CONTROLLED_COL;
+                noAppt30DCol = DM_PHC_NO_APPT_30D_COL;
                 indicatorCol = DM_PHC_INDICATOR_COL;
             } else if (context === 'predm') {
                 sectionName = 'PHC Rankings - No Follow-up';
@@ -3150,6 +3153,7 @@
                 valueCol = PREDM_PHC_TOTAL_COL;
                 normalCol = PREDM_PHC_NORMAL_COL;
                 followupCol = PREDM_PHC_FOLLOWUP_COL;
+                noAppt90DCol = PREDM_PHC_NO_APPT_90D_COL;
                 indicatorCol = PREDM_PHC_INDICATOR_COL;
             }
             
@@ -3219,10 +3223,12 @@
                     } else if (context === 'dm') {
                         const totalRaw = (row[valueCol] || '').trim();
                         const controlledRaw = (row[controlledCol] || '').trim();
+                        const noAppt30DRaw = noAppt30DCol !== undefined ? (row[noAppt30DCol] || '').trim() : '';
                         const indicatorRaw = (row[indicatorCol] || '').toString().trim();
                         
                         const totalNum = parseFloat(totalRaw.replace(/,/g, ''));
                         const controlledNum = parseFloat(controlledRaw.replace(/,/g, ''));
+                        const noAppt30DNum = parseFloat(noAppt30DRaw.replace(/,/g, '')) || 0;
                         const indicatorNum = parseFloat(indicatorRaw);
                         
                         let valueText = '0%';
@@ -3236,17 +3242,20 @@
                             value: valueText,
                             total: totalNum,
                             controlled: controlledNum,
+                            noAppt30D: noAppt30DNum,
                             indicator: indicatorNum
                         });
                     } else if (context === 'predm') {
                         const totalRaw = (row[valueCol] || '').trim();
                         const normalRaw = (row[normalCol] || '').trim();
                         const followupRaw = (row[followupCol] || '').trim();
+                        const noAppt90DRaw = noAppt90DCol !== undefined ? (row[noAppt90DCol] || '').trim() : '';
                         const indicatorRaw = (row[indicatorCol] || '').toString().trim();
                         
                         const totalNum = parseFloat(totalRaw.replace(/,/g, ''));
                         const normalNum = parseFloat(normalRaw.replace(/,/g, ''));
                         const followupNum = parseFloat(followupRaw.replace(/,/g, ''));
+                        const noAppt90DNum = parseFloat(noAppt90DRaw.replace(/,/g, '')) || 0;
                         const indicatorNum = parseFloat(indicatorRaw);
                         
                         let normalPercentText = '0%';
@@ -3268,6 +3277,7 @@
                             total: totalNum,
                             normal: normalNum,
                             followup: followupNum,
+                            noAppt90D: noAppt90DNum,
                             indicator: indicatorNum
                         });
                     }
@@ -3660,14 +3670,13 @@
                 const uncontrolledDM = Math.max(0, totalDM - controlled);
                 const uncontrolledPercent = totalDM > 0 ? ((uncontrolledDM / totalDM) * 100).toFixed(0) : 0;
                 const controlledPercent = totalDM > 0 ? ((controlled / totalDM) * 100).toFixed(0) : 0;
+                const noAppt30D = dmPHC.noAppt30D || 0;
                 
                 document.getElementById('phcUncontrolledDMCount').textContent = uncontrolledDM.toLocaleString();
                 document.getElementById('phcUncontrolledDMPercent').textContent = `${uncontrolledPercent}%`;
                 document.getElementById('phcControlledDMCount').textContent = controlled.toLocaleString();
                 document.getElementById('phcControlledDMPercent').textContent = `${controlledPercent}%`;
-                
-                // For now, set follow-up count to 0 (needs data column)
-                document.getElementById('phcFollowupDM30').textContent = '0';
+                document.getElementById('phcFollowupDM30').textContent = noAppt30D.toLocaleString();
             } else {
                 document.getElementById('phcUncontrolledDMCount').textContent = '0';
                 document.getElementById('phcUncontrolledDMPercent').textContent = '0%';
@@ -3679,10 +3688,9 @@
             // PRE-DM CARD: Pre-DM Patients count and No Appt 90D+
             if (predmPHC) {
                 const preDMTotal = predmPHC.total || 0;
+                const noAppt90D = predmPHC.noAppt90D || 0;
                 document.getElementById('phcPreDMTotal').textContent = preDMTotal.toLocaleString();
-                
-                // For now, set follow-up count to 0 (needs data column)
-                document.getElementById('phcFollowupPreDM90').textContent = '0';
+                document.getElementById('phcFollowupPreDM90').textContent = noAppt90D.toLocaleString();
             } else {
                 document.getElementById('phcPreDMTotal').textContent = '0';
                 document.getElementById('phcFollowupPreDM90').textContent = '0';
