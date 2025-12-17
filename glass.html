@@ -2911,34 +2911,6 @@
                     }
                 }, 2000);
 
-                // Fallback: Pre-DM overview when section detection misses
-                // AD2 (row index 1, col index 29) expected to hold Pre-DM Patients
-                if (predmPatientsTotal === null && data.length > 1 && typeof data[1][29] !== 'undefined') {
-                    const val = parseInt(String(data[1][29] || '').replace(/,/g, ''), 10);
-                    if (!isNaN(val)) {
-                        predmPatientsTotal = val;
-                        document.getElementById('preDMPatientsValue').textContent = val.toLocaleString();
-                        updatePreDMPercentages();
-                    }
-                }
-                // AD3 -> row index 2, col 29: Pre-DM to Normal
-                if (predmToNormalTotal === null && data.length > 2 && typeof data[2][29] !== 'undefined') {
-                    const val = parseInt(String(data[2][29] || '').replace(/,/g, ''), 10);
-                    if (!isNaN(val)) {
-                        predmToNormalTotal = val;
-                        document.getElementById('preDMToNormalValue').textContent = val.toLocaleString();
-                        updatePreDMPercentages();
-                    }
-                }
-                // AD4 -> row index 3, col 29: Pre-DM No Follow-up
-                if (predmNoFollowupTotal === null && data.length > 3 && typeof data[3][29] !== 'undefined') {
-                    const val = parseInt(String(data[3][29] || '').replace(/,/g, ''), 10);
-                    if (!isNaN(val)) {
-                        predmNoFollowupTotal = val;
-                        document.getElementById('preDMNoFollowupValue').textContent = val.toLocaleString();
-                        updatePreDMPercentages();
-                    }
-                }
 
                 // Fallback: explicit rows if section headers are missing
                 // Screening overview
