@@ -1366,16 +1366,19 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            padding: 10px 14px;
-            gap: 8px;
+            padding: 8px 14px;
+            gap: 6px;
             box-sizing: border-box;
+            overflow: hidden;
         }
         
         .phc-watch-header {
             text-align: center;
             margin-bottom: 2px;
+            flex-shrink: 0;
+            min-height: fit-content;
         }
         
         .phc-watch-header h2 {
@@ -1384,6 +1387,9 @@
             color: #1a1a1a;
             margin: 0;
             letter-spacing: -0.02em;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.2;
         }
         
         .dark-mode .phc-watch-header h2 {
@@ -1393,11 +1399,22 @@
         .phc-watch-metrics {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
             align-items: center;
             flex: 1;
-            justify-content: center;
+            justify-content: flex-start;
+            min-height: 0;
+        }
+        
+        /* Container for side-by-side metrics (Screening and DM cards) */
+        .phc-watch-metrics-row {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            width: 100%;
+            justify-content: space-around;
+            align-items: flex-start;
         }
         
         .phc-watch-metric-large {
@@ -1406,7 +1423,13 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 6px 0;
+            padding: 4px 0;
+        }
+        
+        /* Side-by-side metrics take equal space */
+        .phc-watch-metrics-row .phc-watch-metric-large {
+            flex: 1;
+            min-width: 0;
         }
         
         .phc-watch-label {
@@ -1452,7 +1475,7 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 6px 10px;
+            padding: 5px 10px;
             background: rgba(255, 152, 0, 0.08);
             border-radius: 8px;
             border: 1px solid rgba(255, 152, 0, 0.2);
@@ -1471,6 +1494,9 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
             line-height: 1.2;
+            word-wrap: break-word;
+            white-space: normal;
+            text-align: center;
         }
         
         .phc-watch-value-small {
@@ -1859,15 +1885,18 @@
                                     <h2>Screening</h2>
                                 </div>
                                 <div class="phc-watch-metrics">
-                                    <div class="phc-watch-metric-large">
-                                        <div class="phc-watch-label">Screened</div>
-                                        <div class="phc-watch-value" id="phcScreenedCount">0</div>
-                                        <div class="phc-watch-percent" id="phcScreenedPercent">0%</div>
-                                    </div>
-                                    <div class="phc-watch-metric-large">
-                                        <div class="phc-watch-label">Remaining</div>
-                                        <div class="phc-watch-value" id="phcScreeningRemaining">0</div>
-                                        <div class="phc-watch-percent" id="phcRemainingPercent">0%</div>
+                                    <!-- Side-by-side container for Screening metrics -->
+                                    <div class="phc-watch-metrics-row">
+                                        <div class="phc-watch-metric-large">
+                                            <div class="phc-watch-label">Screened</div>
+                                            <div class="phc-watch-value" id="phcScreenedCount">0</div>
+                                            <div class="phc-watch-percent" id="phcScreenedPercent">0%</div>
+                                        </div>
+                                        <div class="phc-watch-metric-large">
+                                            <div class="phc-watch-label">Remaining</div>
+                                            <div class="phc-watch-value" id="phcScreeningRemaining">0</div>
+                                            <div class="phc-watch-percent" id="phcRemainingPercent">0%</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1882,15 +1911,18 @@
                                     <h2>Diabetes Follow-up</h2>
                                 </div>
                                 <div class="phc-watch-metrics">
-                                    <div class="phc-watch-metric-large">
-                                        <div class="phc-watch-label">Uncontrolled DM</div>
-                                        <div class="phc-watch-value" id="phcUncontrolledDMCount">0</div>
-                                        <div class="phc-watch-percent" id="phcUncontrolledDMPercent">0%</div>
-                                    </div>
-                                    <div class="phc-watch-metric-large">
-                                        <div class="phc-watch-label">Controlled DM</div>
-                                        <div class="phc-watch-value" id="phcControlledDMCount">0</div>
-                                        <div class="phc-watch-percent" id="phcControlledDMPercent">0%</div>
+                                    <!-- Side-by-side container for DM metrics -->
+                                    <div class="phc-watch-metrics-row">
+                                        <div class="phc-watch-metric-large">
+                                            <div class="phc-watch-label">Uncontrolled DM</div>
+                                            <div class="phc-watch-value" id="phcUncontrolledDMCount">0</div>
+                                            <div class="phc-watch-percent" id="phcUncontrolledDMPercent">0%</div>
+                                        </div>
+                                        <div class="phc-watch-metric-large">
+                                            <div class="phc-watch-label">Controlled DM</div>
+                                            <div class="phc-watch-value" id="phcControlledDMCount">0</div>
+                                            <div class="phc-watch-percent" id="phcControlledDMPercent">0%</div>
+                                        </div>
                                     </div>
                                     <div class="phc-watch-metric-small phc-watch-metric-orange">
                                         <div class="phc-watch-label-small">Uncontrolled DM with no follow-up 30 Days+</div>
