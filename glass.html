@@ -1316,27 +1316,40 @@
             flex: 1;
             min-height: 0;
             padding-top: 10px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         
         #phcDetailCarousel .card {
-            height: 400px;
-            max-height: 400px;
+            height: 200px;
+            max-height: 200px;
+            flex: 0 0 auto;
         }
         
-        /* Ensure smooth scrolling for PHC carousel */
+        /* PHC carousel - vertical layout */
         #phcDetailCarousel {
+            flex-direction: column;
             scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
+            scroll-snap-type: y mandatory;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-x;
-            overflow-y: hidden;
+            touch-action: pan-y;
+            overflow-y: auto;
+            overflow-x: hidden;
+            gap: 12px;
+            padding: 0 20px;
         }
         
-        /* Ensure cards and content don't block touch events - horizontal only */
+        /* Cards in vertical layout */
+        #phcDetailCarousel .card {
+            width: 100%;
+            scroll-snap-align: start;
+        }
+        
+        /* Allow normal touch interaction for vertical scrolling */
         #phcDetailCarousel .card,
         #phcDetailCarousel .card-content,
         #phcDetailCarousel .phc-watch-dashboard {
-            touch-action: pan-x;
+            touch-action: auto;
             user-select: none;
             -webkit-user-select: none;
         }
@@ -1355,8 +1368,8 @@
             height: 100%;
             justify-content: center;
             align-items: center;
-            padding: 12px 14px;
-            gap: 10px;
+            padding: 10px 14px;
+            gap: 8px;
             box-sizing: border-box;
         }
         
@@ -1366,7 +1379,7 @@
         }
         
         .phc-watch-header h2 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #1a1a1a;
             margin: 0;
@@ -1380,7 +1393,7 @@
         .phc-watch-metrics {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
             align-items: center;
             flex: 1;
@@ -1393,14 +1406,14 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 8px 0;
+            padding: 6px 0;
         }
         
         .phc-watch-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 500;
             color: #666;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -1410,7 +1423,7 @@
         }
         
         .phc-watch-value {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             color: #1a1a1a;
             line-height: 1;
@@ -1423,7 +1436,7 @@
         }
         
         .phc-watch-percent {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
             color: #666;
             letter-spacing: 0.2px;
@@ -1439,9 +1452,9 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 8px 10px;
+            padding: 6px 10px;
             background: rgba(255, 152, 0, 0.08);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 152, 0, 0.2);
         }
         
@@ -1451,17 +1464,17 @@
         }
         
         .phc-watch-label-small {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 600;
             color: #ff9800;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
             line-height: 1.2;
         }
         
         .phc-watch-value-small {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: #1a1a1a;
             line-height: 1;
@@ -1910,7 +1923,7 @@
                     </div>
                 </div>
             </div>
-            <div class="carousel-dots" id="phcDetailCarouselDots"></div>
+            <div class="carousel-dots" id="phcDetailCarouselDots" style="display: none;"></div>
         </div>
     </div>
     <footer>
@@ -3724,44 +3737,6 @@
             const displayName = PHC_DISPLAY_NAMES[phcName] || PHC_DISPLAY_NAMES[phcName?.toLowerCase()] || phcName;
             const titleEl = document.getElementById('phcDetailTitle');
             if (titleEl) titleEl.textContent = displayName;
-            
-            // Initialize carousel for PHC detail view
-            const phcCarousel = document.getElementById('phcDetailCarousel');
-            const phcDotsContainer = document.getElementById('phcDetailCarouselDots');
-            
-            if (phcCarousel && phcDotsContainer) {
-                // Clear existing dots
-                phcDotsContainer.innerHTML = '';
-                const phcCards = Array.from(phcCarousel.querySelectorAll('.card'));
-                phcCards.forEach((_, i) => {
-                    const dot = document.createElement('button');
-                    dot.type = 'button';
-                    dot.className = 'carousel-dot';
-                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-                    dot.addEventListener('click', () => {
-                        phcCarousel.scrollTo({
-                            left: i * phcCarousel.clientWidth,
-                            behavior: 'smooth'
-                        });
-                    });
-                    phcDotsContainer.appendChild(dot);
-                });
-                
-                // Update dots on scroll
-                const updatePhcDots = () => {
-                    const index = Math.round(phcCarousel.scrollLeft / phcCarousel.clientWidth);
-                    const dots = phcDotsContainer.querySelectorAll('.carousel-dot');
-                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
-                };
-                
-                let phcScrollTimeout;
-                phcCarousel.addEventListener('scroll', () => {
-                    clearTimeout(phcScrollTimeout);
-                    phcScrollTimeout = setTimeout(updatePhcDots, 50);
-                }, { passive: true });
-                
-                updatePhcDots();
-            }
             
             // Populate PHC dashboard data
             populatePHCDashboard(phcName);
