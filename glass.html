@@ -3074,66 +3074,17 @@
             if (sectionName.includes('Screening')) {
                 nameCol = SCREENING_PHC_NAME_COL; // column J (index 9)
                 checkCols = [0, 3, 8, 9]; // Check columns A, D, I, J
-            } else if (sectionName.includes('DM') || sectionName.includes('Uncontrolled')) {
+            } else if (sectionName.includes('DM')) {
                 nameCol = DM_PHC_NAME_COL; // column X (index 24)
                 checkCols = [0, 16, 22, 23, 24]; // Check columns A, Q, W, X, Y
-            } else if (sectionName.includes('Pre-DM') || sectionName.includes('No Follow-up')) {
+            } else if (sectionName.includes('Pre-DM')) {
                 nameCol = PREDM_PHC_NAME_COL; // column 39
                 checkCols = [0, 30, 37, 38, 39]; // Check columns A, AF, AL, AM, AN
             }
             
-            const searchName = sectionName.toUpperCase();
-            
-            // First, try to find section header by searching for the exact section name or keywords
-            for (let i = 0; i < data.length; i++) {
-                const row = data[i] || [];
-                
-                // Check multiple columns for section header
-                let matchesHeader = false;
-                for (const colIdx of checkCols) {
-                    const cell = String(row[colIdx] || '').trim().toUpperCase();
-                    if (cell.includes(searchName) || 
-                        (cell.includes('PHC') && cell.includes('RANKING')) ||
-                        (sectionName.includes('Screening') && (cell.includes('SCREENING') && cell.includes('PHC'))) ||
-                        (sectionName.includes('DM') && (cell.includes('DM') && cell.includes('PHC'))) ||
-                        (sectionName.includes('Pre-DM') && (cell.includes('PRE-DM') && cell.includes('PHC')))) {
-                        matchesHeader = true;
-                        break;
-                    }
-                }
-                
-                if (matchesHeader) {
-                    // Found section header, now look for data start row
-                    // Check next few rows for header row or first data row
-                    for (let j = i + 1; j < Math.min(i + 10, data.length); j++) {
-                        const nextRow = data[j] || [];
-                        const phcNameCell = String(nextRow[nameCol] || '').trim();
-                        
-                        // If we find a PHC name in the expected column, this is likely the start
-                        if (phcNameCell && phcNameCell.length > 0 && 
-                            !phcNameCell.toUpperCase().includes('PHC') && 
-                            !phcNameCell.toUpperCase().includes('RANKING') &&
-                            !phcNameCell.toUpperCase().includes('ZONE') &&
-                            !phcNameCell.toUpperCase().includes('NAME')) {
-                            found = true;
-                            startRow = j;
-                            break;
-                        }
-                        
-                        // Also check if this row has a number in first cell (rank) and PHC name
-                        const firstCell = String(nextRow[0] || '').trim();
-                        if (!isNaN(parseInt(firstCell)) && phcNameCell && phcNameCell.length > 0) {
-                            found = true;
-                            startRow = j;
-                            break;
-                        }
-                    }
-                    if (found) break;
-                }
-            }
-            
-            // Fallback: If section header not found, try to find by looking for PHC names in expected columns
-            if (!found && nameCol !== undefined) {
+            // Skip header search - directly look for PHC names in expected columns
+            // This is more reliable since section headers may vary
+            if (nameCol !== undefined) {
                 for (let i = 0; i < data.length; i++) {
                     const row = data[i] || [];
                     const phcNameCell = String(row[nameCol] || '').trim();
@@ -3146,7 +3097,10 @@
                         !phcNameCell.toUpperCase().includes('NAME') &&
                         !phcNameCell.toUpperCase().includes('SCREENING') &&
                         !phcNameCell.toUpperCase().includes('DM') &&
-                        !phcNameCell.toUpperCase().includes('PRE-DM')) {
+                        !phcNameCell.toUpperCase().includes('PRE-DM') &&
+                        !phcNameCell.toUpperCase().includes('UNCONTROLLED') &&
+                        !phcNameCell.toUpperCase().includes('FOLLOW-UP') &&
+                        !phcNameCell.toUpperCase().includes('FOLLOWUP')) {
                         // Check if this looks like actual data (has values in adjacent columns)
                         const hasData = row[nameCol + 1] || row[nameCol + 2] || row[nameCol - 1];
                         if (hasData) {
@@ -3167,21 +3121,21 @@
             let nameCol, valueCol, targetCol, indicatorCol, controlledCol, normalCol, followupCol, oppCol, noAppt30DCol, noAppt90DCol;
             
             if (context === 'screening') {
-                sectionName = 'PHC Rankings - Screening';
+                sectionName = 'Screening';
                 nameCol = SCREENING_PHC_NAME_COL;
                 valueCol = SCREENING_PHC_VALUE_COL;
                 oppCol = SCREENING_PHC_OPP_COL;
                 targetCol = SCREENING_PHC_TARGET_COL;
                 indicatorCol = SCREENING_PHC_INDICATOR_COL;
             } else if (context === 'dm') {
-                sectionName = 'PHC Rankings - Uncontrolled DM';
+                sectionName = 'DM';
                 nameCol = DM_PHC_NAME_COL;
                 valueCol = DM_PHC_TOTAL_COL;
                 controlledCol = DM_PHC_CONTROLLED_COL;
                 noAppt30DCol = DM_PHC_NO_APPT_30D_COL;
                 indicatorCol = DM_PHC_INDICATOR_COL;
             } else if (context === 'predm') {
-                sectionName = 'PHC Rankings - No Follow-up';
+                sectionName = 'Pre-DM';
                 nameCol = PREDM_PHC_NAME_COL;
                 valueCol = PREDM_PHC_TOTAL_COL;
                 normalCol = PREDM_PHC_NORMAL_COL;
