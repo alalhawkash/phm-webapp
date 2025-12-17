@@ -1608,7 +1608,7 @@
                     <div class="card-content">
                         <div class="screen-count-template">
                             <div class="template-header">
-                                <h2>Screen Count</h2>
+                                <h2>Population Reach</h2>
                                 <div class="subtitle">Performance Overview</div>
             </div>
                             <div class="metrics-section">
@@ -1625,7 +1625,7 @@
                                     <span class="metric-value percentage-value" id="percentageValue">0</span>
         </div>
                                 <div class="metric-row">
-                                    <span class="metric-label">Opportunities</span>
+                                    <span class="metric-label">Missed Screening Opportunities</span>
                                     <span class="metric-value percentage-value" id="opportunitiesValue">0</span>
                                 </div>
         </div>
@@ -1725,7 +1725,7 @@
                         <div class="card-content">
                             <div class="screen-count-template">
                                 <div class="template-header">
-                                    <h2>Screen Count</h2>
+                                    <h2>Population Reach</h2>
                                     <div class="subtitle">Performance Overview</div>
                                 </div>
                                 <div class="metrics-section">
@@ -1742,7 +1742,7 @@
                                         <span class="metric-value percentage-value" id="zoneDetailRemainingValue">0</span>
                                     </div>
                                     <div class="metric-row">
-                                        <span class="metric-label">Opportunities</span>
+                                        <span class="metric-label">Missed Screening Opportunities</span>
                                         <span class="metric-value percentage-value" id="zoneDetailOpportunitiesValue">0</span>
                                     </div>
                                 </div>
@@ -2250,7 +2250,7 @@
             const container = document.getElementById('screeningZonesList');
             if (!container) return;
 
-            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Opps</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Screening Opportunities</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
             let rank = 1;
             
             // Apply scope filtering
@@ -3342,7 +3342,7 @@
             let html = '';
             
             if (context === 'screening') {
-                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Opps</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Screening Opportunities</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
                 phcs.forEach(phc => {
                     const indicatorNum = phc.indicator || 0;
                     let indicatorArrow = '-';
