@@ -1335,115 +1335,135 @@
         /* Ensure cards and content don't block touch events - horizontal only */
         #phcDetailCarousel .card,
         #phcDetailCarousel .card-content,
-        #phcDetailCarousel .phc-dm-dashboard,
-        #phcDetailCarousel .phc-predm-dashboard,
-        #phcDetailCarousel .screen-count-template {
+        #phcDetailCarousel .phc-watch-dashboard {
             touch-action: pan-x;
             user-select: none;
             -webkit-user-select: none;
         }
         
         /* Allow text selection in specific areas if needed */
-        #phcDetailCarousel .phc-metric-value-large,
-        #phcDetailCarousel .phc-metric-value {
+        #phcDetailCarousel .phc-watch-value,
+        #phcDetailCarousel .phc-watch-value-small {
             user-select: text;
             -webkit-user-select: text;
         }
         
-        /* PHC Dashboard Styles - Matching Image Design */
-        .phc-dm-dashboard,
-        .phc-predm-dashboard {
+        /* PHC Watch-Style Dashboard - Apple Watch Minimalist Design */
+        .phc-watch-dashboard {
             display: flex;
             flex-direction: column;
             height: 100%;
-            gap: 24px;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            gap: 32px;
         }
         
-        .phc-dashboard-header h2 {
-            font-size: 18px;
+        .phc-watch-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .phc-watch-header h2 {
+            font-size: 20px;
             font-weight: 600;
             color: #1a1a1a;
             margin: 0;
+            letter-spacing: -0.02em;
         }
         
-        .dark-mode .phc-dashboard-header h2 {
+        .dark-mode .phc-watch-header h2 {
             color: #e8e8e8;
         }
         
-        .phc-dashboard-main-metric {
+        .phc-watch-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            width: 100%;
+            align-items: center;
+        }
+        
+        .phc-watch-metric-large {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 20px 0;
+            width: 100%;
+            padding: 24px 0;
         }
         
-        .phc-metric-category {
-            font-size: 14px;
-            color: #666;
+        .phc-watch-label {
+            font-size: 13px;
             font-weight: 500;
-            margin-bottom: 16px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .dark-mode .phc-metric-category {
+        .dark-mode .phc-watch-label {
             color: #bfc7d1;
         }
         
-        .phc-metric-value-large {
-            font-size: 64px;
+        .phc-watch-value {
+            font-size: 72px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 8px;
             line-height: 1;
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
         }
         
-        .dark-mode .phc-metric-value-large {
+        .dark-mode .phc-watch-value {
             color: #ffffff;
         }
         
-        .phc-metric-percentage {
-            font-size: 14px;
-            color: #666;
+        .phc-watch-percent {
+            font-size: 16px;
             font-weight: 500;
+            color: #666;
+            letter-spacing: 0.3px;
         }
         
-        .dark-mode .phc-metric-percentage {
+        .dark-mode .phc-watch-percent {
             color: #bfc7d1;
         }
         
-        .phc-dashboard-metrics-section {
+        .phc-watch-metric-small {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: auto;
-        }
-        
-        .phc-dashboard-metric-item {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 16px;
-            background: rgba(255, 152, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255, 152, 0, 0.08);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 152, 0, 0.2);
+        }
+        
+        .dark-mode .phc-watch-metric-small {
+            background: rgba(255, 152, 0, 0.12);
             border: 1px solid rgba(255, 152, 0, 0.3);
-            border-radius: 8px;
         }
         
-        .dark-mode .phc-dashboard-metric-item {
-            background: rgba(255, 152, 0, 0.15);
-            border: 1px solid rgba(255, 152, 0, 0.4);
-        }
-        
-        .phc-metric-label-orange {
-            font-size: 16px;
-            color: #ff9800;
+        .phc-watch-label-small {
+            font-size: 12px;
             font-weight: 600;
-            flex: 1;
+            color: #ff9800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .phc-dashboard-metric-item .phc-metric-value {
-            font-size: 24px;
+        .phc-watch-value-small {
+            font-size: 32px;
             font-weight: 700;
             color: #1a1a1a;
+            line-height: 1;
         }
         
-        .dark-mode .phc-dashboard-metric-item .phc-metric-value {
+        .dark-mode .phc-watch-value-small {
             color: #ffffff;
         }
 
@@ -1817,19 +1837,20 @@
                     <!-- Screening Card -->
                     <div class="card">
                         <div class="card-content">
-                            <div class="screen-count-template">
-                                <div class="template-header">
+                            <div class="phc-watch-dashboard">
+                                <div class="phc-watch-header">
                                     <h2>Screening</h2>
-                                    <div class="subtitle">Performance Overview</div>
                                 </div>
-                                <div class="metrics-section">
-                                    <div class="metric-row">
-                                        <span class="metric-label">Remaining</span>
-                                        <span class="metric-value percentage-value" id="phcScreeningRemaining">0</span>
+                                <div class="phc-watch-metrics">
+                                    <div class="phc-watch-metric-large">
+                                        <div class="phc-watch-label">Screened</div>
+                                        <div class="phc-watch-value" id="phcScreenedCount">0</div>
+                                        <div class="phc-watch-percent" id="phcScreenedPercent">0%</div>
                                     </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label" id="phcMissedScreeningLabel">Missed opportunistic screening on --</span>
-                                        <span class="metric-value percentage-value" id="phcMissedScreening">0</span>
+                                    <div class="phc-watch-metric-large">
+                                        <div class="phc-watch-label">Remaining</div>
+                                        <div class="phc-watch-value" id="phcScreeningRemaining">0</div>
+                                        <div class="phc-watch-percent" id="phcRemainingPercent">0%</div>
                                     </div>
                                 </div>
                             </div>
@@ -1839,19 +1860,24 @@
                     <!-- DM Card -->
                     <div class="card">
                         <div class="card-content">
-                            <div class="phc-dm-dashboard">
-                                <div class="phc-dashboard-header">
+                            <div class="phc-watch-dashboard">
+                                <div class="phc-watch-header">
                                     <h2>Diabetes Follow-up</h2>
                                 </div>
-                                <div class="phc-dashboard-main-metric">
-                                    <div class="phc-metric-category">Uncontrolled DM</div>
-                                    <div class="phc-metric-value-large" id="phcUncontrolledDMCount">0</div>
-                                    <div class="phc-metric-percentage" id="phcUncontrolledDMPercent">0% of DM</div>
-                                </div>
-                                <div class="phc-dashboard-metrics-section">
-                                    <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
-                                        <span class="phc-metric-label-orange">No Appt 30D (DM)</span>
-                                        <span class="phc-metric-value" id="phcFollowupDM30">0</span>
+                                <div class="phc-watch-metrics">
+                                    <div class="phc-watch-metric-large">
+                                        <div class="phc-watch-label">Uncontrolled DM</div>
+                                        <div class="phc-watch-value" id="phcUncontrolledDMCount">0</div>
+                                        <div class="phc-watch-percent" id="phcUncontrolledDMPercent">0%</div>
+                                    </div>
+                                    <div class="phc-watch-metric-large">
+                                        <div class="phc-watch-label">Controlled DM</div>
+                                        <div class="phc-watch-value" id="phcControlledDMCount">0</div>
+                                        <div class="phc-watch-percent" id="phcControlledDMPercent">0%</div>
+                                    </div>
+                                    <div class="phc-watch-metric-small phc-watch-metric-orange">
+                                        <div class="phc-watch-label-small">No Appt 30D+ (DM)</div>
+                                        <div class="phc-watch-value-small" id="phcFollowupDM30">0</div>
                                     </div>
                                 </div>
                             </div>
@@ -1861,18 +1887,18 @@
                     <!-- Pre-DM Card -->
                     <div class="card">
                         <div class="card-content">
-                            <div class="phc-predm-dashboard">
-                                <div class="phc-dashboard-header">
+                            <div class="phc-watch-dashboard">
+                                <div class="phc-watch-header">
                                     <h2>Pre-DM Follow-up</h2>
                                 </div>
-                                <div class="phc-dashboard-main-metric">
-                                    <div class="phc-metric-category">Pre-DM Patients</div>
-                                    <div class="phc-metric-value-large" id="phcPreDMTotal">0</div>
-                                </div>
-                                <div class="phc-dashboard-metrics-section">
-                                    <div class="phc-dashboard-metric-item phc-dashboard-metric-item-orange">
-                                        <span class="phc-metric-label-orange">No Appt 90D (PreDM)</span>
-                                        <span class="phc-metric-value" id="phcFollowupPreDM90">0</span>
+                                <div class="phc-watch-metrics">
+                                    <div class="phc-watch-metric-large">
+                                        <div class="phc-watch-label">Pre-DM Patients</div>
+                                        <div class="phc-watch-value" id="phcPreDMTotal">0</div>
+                                    </div>
+                                    <div class="phc-watch-metric-small phc-watch-metric-orange">
+                                        <div class="phc-watch-label-small">No Appt 90D+ (PreDM)</div>
+                                        <div class="phc-watch-value-small" id="phcFollowupPreDM90">0</div>
                                     </div>
                                 </div>
                             </div>
@@ -3608,67 +3634,49 @@
             const predmPHC = predmPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
             const screeningPHC = screeningPHCs.find(p => normalizePHC(p.name) === normalizePHC(phcName));
             
-            // SCREENING CARD: Remaining and Missed Opportunities
+            // SCREENING CARD: Screened and Remaining (with count and %)
             if (screeningPHC) {
                 const target = screeningPHC.target || 0;
                 const achieved = screeningPHC.achieved || 0;
                 const remaining = Math.max(0, target - achieved);
-                const missedOpps = parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0;
+                const screenedPercent = target > 0 ? ((achieved / target) * 100).toFixed(0) : 0;
+                const remainingPercent = target > 0 ? ((remaining / target) * 100).toFixed(0) : 0;
                 
+                document.getElementById('phcScreenedCount').textContent = achieved.toLocaleString();
+                document.getElementById('phcScreenedPercent').textContent = `${screenedPercent}%`;
                 document.getElementById('phcScreeningRemaining').textContent = remaining.toLocaleString();
-                document.getElementById('phcMissedScreening').textContent = missedOpps.toLocaleString();
-                
-                // Update label with date before last update
-                const labelEl = document.getElementById('phcMissedScreeningLabel');
-                if (labelEl && lastUpdateDate) {
-                    let previousDate = '--';
-                    try {
-                        const dateStr = lastUpdateDate.toString().trim();
-                        const dateMatch = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-                        if (dateMatch) {
-                            const day = parseInt(dateMatch[1], 10);
-                            const month = parseInt(dateMatch[2], 10) - 1;
-                            const year = parseInt(dateMatch[3], 10);
-                            const dateObj = new Date(year, month, day);
-                            if (dateObj && !isNaN(dateObj.getTime())) {
-                                dateObj.setDate(dateObj.getDate() - 1);
-                                const prevDay = dateObj.getDate();
-                                const prevMonth = dateObj.getMonth() + 1;
-                                const prevYear = dateObj.getFullYear();
-                                previousDate = `${prevDay}/${prevMonth}/${prevYear}`;
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error parsing date:', e);
-                    }
-                    labelEl.textContent = `Missed opportunistic screening on ${previousDate}`;
-                } else if (labelEl) {
-                    labelEl.textContent = 'Missed opportunistic screening on --';
-                }
+                document.getElementById('phcRemainingPercent').textContent = `${remainingPercent}%`;
             } else {
+                document.getElementById('phcScreenedCount').textContent = '0';
+                document.getElementById('phcScreenedPercent').textContent = '0%';
                 document.getElementById('phcScreeningRemaining').textContent = '0';
-                document.getElementById('phcMissedScreening').textContent = '0';
+                document.getElementById('phcRemainingPercent').textContent = '0%';
             }
             
-            // DM CARD: Uncontrolled DM and Need follow-up
+            // DM CARD: Uncontrolled DM, Controlled DM, and No Appt 30D+
             if (dmPHC) {
                 const totalDM = dmPHC.total || 0;
                 const controlled = dmPHC.controlled || 0;
                 const uncontrolledDM = Math.max(0, totalDM - controlled);
                 const uncontrolledPercent = totalDM > 0 ? ((uncontrolledDM / totalDM) * 100).toFixed(0) : 0;
+                const controlledPercent = totalDM > 0 ? ((controlled / totalDM) * 100).toFixed(0) : 0;
                 
                 document.getElementById('phcUncontrolledDMCount').textContent = uncontrolledDM.toLocaleString();
-                document.getElementById('phcUncontrolledDMPercent').textContent = `${uncontrolledPercent}% of DM`;
+                document.getElementById('phcUncontrolledDMPercent').textContent = `${uncontrolledPercent}%`;
+                document.getElementById('phcControlledDMCount').textContent = controlled.toLocaleString();
+                document.getElementById('phcControlledDMPercent').textContent = `${controlledPercent}%`;
                 
                 // For now, set follow-up count to 0 (needs data column)
                 document.getElementById('phcFollowupDM30').textContent = '0';
             } else {
                 document.getElementById('phcUncontrolledDMCount').textContent = '0';
-                document.getElementById('phcUncontrolledDMPercent').textContent = '0% of DM';
+                document.getElementById('phcUncontrolledDMPercent').textContent = '0%';
+                document.getElementById('phcControlledDMCount').textContent = '0';
+                document.getElementById('phcControlledDMPercent').textContent = '0%';
                 document.getElementById('phcFollowupDM30').textContent = '0';
             }
             
-            // PRE-DM CARD: Pre-DM total and Need follow-up
+            // PRE-DM CARD: Pre-DM Patients count and No Appt 90D+
             if (predmPHC) {
                 const preDMTotal = predmPHC.total || 0;
                 document.getElementById('phcPreDMTotal').textContent = preDMTotal.toLocaleString();
