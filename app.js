@@ -151,6 +151,9 @@ async function handleLogin(email, password) {
     return { success: true };
 }
 
+// Make handleLogin explicitly available on window for inline scripts
+window.handleLogin = handleLogin;
+
 // Handle logout
 async function handleLogout() {
     await supabase.auth.signOut();
