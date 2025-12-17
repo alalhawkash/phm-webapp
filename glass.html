@@ -3659,27 +3659,27 @@
             
             // Scroll to the card that matches the context we came from
             if (lastClusterContext) {
-                setTimeout(() => {
-                    const carousel = document.getElementById('carousel');
-                    if (carousel) {
-                        let cardIndex = 0; // Default to first card (Screening)
-                        
-                        if (lastClusterContext === 'screening') {
-                            cardIndex = 0; // Screening card
-                        } else if (lastClusterContext === 'dm') {
-                            cardIndex = 1; // DM card
-                        } else if (lastClusterContext === 'predm') {
-                            cardIndex = 2; // Pre-DM card
-                        }
-                        
+                const carousel = document.getElementById('carousel');
+                if (carousel) {
+                    let cardIndex = 0; // Default to first card (Screening)
+                    
+                    if (lastClusterContext === 'screening') {
+                        cardIndex = 0; // Screening card
+                    } else if (lastClusterContext === 'dm') {
+                        cardIndex = 1; // DM card
+                    } else if (lastClusterContext === 'predm') {
+                        cardIndex = 2; // Pre-DM card
+                    }
+                    
+                    // Use requestAnimationFrame to set scroll before browser paints
+                    requestAnimationFrame(() => {
                         // Temporarily disable smooth scrolling
-                        const originalScrollBehavior = carousel.style.scrollBehavior;
                         carousel.style.scrollBehavior = 'auto';
                         
                         // Set scroll position immediately without animation
                         carousel.scrollLeft = cardIndex * carousel.clientWidth;
                         
-                        // Force a reflow to ensure the scroll happens immediately
+                        // Force synchronous layout recalculation
                         void carousel.offsetHeight;
                         
                         // Update dots to show correct active dot
@@ -3689,12 +3689,12 @@
                             dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
                         }
                         
-                        // Restore smooth scrolling after a brief moment
-                        setTimeout(() => {
-                            carousel.style.scrollBehavior = originalScrollBehavior || '';
-                        }, 0);
-                    }
-                }, 50); // Reduced delay
+                        // Restore smooth scrolling in next frame
+                        requestAnimationFrame(() => {
+                            carousel.style.scrollBehavior = '';
+                        });
+                    });
+                }
             }
         }
         
