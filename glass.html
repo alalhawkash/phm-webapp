@@ -3158,14 +3158,32 @@
             }
             
             const { found, startRow } = findPHCRankingsSection(data, sectionName);
-            if (!found || startRow < 0) return [];
+            if (!found || startRow < 0) {
+                console.warn(`PHC Rankings section not found: ${sectionName}, zone: ${zoneName}`);
+                return [];
+            }
             
             const phcs = [];
             for (let i = startRow; i < data.length; i++) {
                 const row = data[i] || [];
                 const phcName = (row[nameCol] || '').trim();
                 
-                if (!phcName || phcName === '') break;
+                // Skip empty rows but continue looking (don't break immediately)
+                if (!phcName || phcName === '') {
+                    // If we've found some PHCs and hit an empty row, we might be at the end
+                    // But continue for a few more rows in case there are gaps
+                    if (phcs.length > 0 && i > startRow + 5) {
+                        // After finding PHCs and hitting multiple empty rows, likely done
+                        let emptyCount = 0;
+                        for (let j = i; j < Math.min(i + 3, data.length); j++) {
+                            const nextRow = data[j] || [];
+                            const nextPhcName = (nextRow[nameCol] || '').trim();
+                            if (!nextPhcName || nextPhcName === '') emptyCount++;
+                        }
+                        if (emptyCount >= 3) break; // 3 consecutive empty rows, likely end of section
+                    }
+                    continue;
+                }
                 
                 // Debug: log PHC names that might match "al fahad al janubi"
                 if (normalizePHC(phcName).includes('fahad') && normalizePHC(phcName).includes('janubi')) {
@@ -3196,7 +3214,11 @@
                     }
                 }
                 
-                if (phcZone === zoneName) {
+                // Normalize zone names for comparison
+                const normalizedPhcZone = phcZone ? normalizePHC(phcZone) : '';
+                const normalizedZoneName = zoneName ? normalizePHC(zoneName) : '';
+                
+                if (normalizedPhcZone === normalizedZoneName || phcZone === zoneName) {
                     if (context === 'screening') {
                         const achievedRaw = (row[valueCol] || '').trim();
                         const oppRaw = oppCol !== undefined ? (row[oppCol] || '').trim() : '';
@@ -3226,10 +3248,10 @@
                         const noAppt30DRaw = noAppt30DCol !== undefined ? (row[noAppt30DCol] || '').trim() : '';
                         const indicatorRaw = (row[indicatorCol] || '').toString().trim();
                         
-                        const totalNum = parseFloat(totalRaw.replace(/,/g, ''));
-                        const controlledNum = parseFloat(controlledRaw.replace(/,/g, ''));
-                        const noAppt30DNum = parseFloat(noAppt30DRaw.replace(/,/g, '')) || 0;
-                        const indicatorNum = parseFloat(indicatorRaw);
+                        const totalNum = isNaN(parseFloat(totalRaw.replace(/,/g, ''))) ? 0 : parseFloat(totalRaw.replace(/,/g, ''));
+                        const controlledNum = isNaN(parseFloat(controlledRaw.replace(/,/g, ''))) ? 0 : parseFloat(controlledRaw.replace(/,/g, ''));
+                        const noAppt30DNum = isNaN(parseFloat(noAppt30DRaw.replace(/,/g, ''))) ? 0 : parseFloat(noAppt30DRaw.replace(/,/g, ''));
+                        const indicatorNum = isNaN(parseFloat(indicatorRaw)) ? 0 : parseFloat(indicatorRaw);
                         
                         let valueText = '0%';
                         if (!isNaN(totalNum) && !isNaN(controlledNum) && totalNum !== 0) {
@@ -3252,11 +3274,11 @@
                         const noAppt90DRaw = noAppt90DCol !== undefined ? (row[noAppt90DCol] || '').trim() : '';
                         const indicatorRaw = (row[indicatorCol] || '').toString().trim();
                         
-                        const totalNum = parseFloat(totalRaw.replace(/,/g, ''));
-                        const normalNum = parseFloat(normalRaw.replace(/,/g, ''));
-                        const followupNum = parseFloat(followupRaw.replace(/,/g, ''));
-                        const noAppt90DNum = parseFloat(noAppt90DRaw.replace(/,/g, '')) || 0;
-                        const indicatorNum = parseFloat(indicatorRaw);
+                        const totalNum = isNaN(parseFloat(totalRaw.replace(/,/g, ''))) ? 0 : parseFloat(totalRaw.replace(/,/g, ''));
+                        const normalNum = isNaN(parseFloat(normalRaw.replace(/,/g, ''))) ? 0 : parseFloat(normalRaw.replace(/,/g, ''));
+                        const followupNum = isNaN(parseFloat(followupRaw.replace(/,/g, ''))) ? 0 : parseFloat(followupRaw.replace(/,/g, ''));
+                        const noAppt90DNum = isNaN(parseFloat(noAppt90DRaw.replace(/,/g, ''))) ? 0 : parseFloat(noAppt90DRaw.replace(/,/g, ''));
+                        const indicatorNum = isNaN(parseFloat(indicatorRaw)) ? 0 : parseFloat(indicatorRaw);
                         
                         let normalPercentText = '0%';
                         if (!isNaN(totalNum) && !isNaN(normalNum) && totalNum !== 0) {
@@ -3506,10 +3528,15 @@
                 let zoneDMTotal = 0;
                 let zoneControlledTotal = 0;
                 dmPHCs.forEach(phc => {
-                    if (!isNaN(phc.total)) zoneDMTotal += phc.total;
-                    if (!isNaN(phc.controlled)) zoneControlledTotal += phc.controlled;
+                    const total = phc.total || 0;
+                    const controlled = phc.controlled || 0;
+                    if (!isNaN(total) && total >= 0) zoneDMTotal += total;
+                    if (!isNaN(controlled) && controlled >= 0) zoneControlledTotal += controlled;
                 });
-                const zoneUncontrolledTotal = zoneDMTotal - zoneControlledTotal;
+                // Ensure values are non-negative
+                zoneDMTotal = Math.max(0, zoneDMTotal);
+                zoneControlledTotal = Math.max(0, zoneControlledTotal);
+                const zoneUncontrolledTotal = Math.max(0, zoneDMTotal - zoneControlledTotal);
                 const zoneControlledPercent = zoneDMTotal > 0 ? ((zoneControlledTotal / zoneDMTotal) * 100).toFixed(1) : 0;
                 const zoneUncontrolledPercent = zoneDMTotal > 0 ? ((zoneUncontrolledTotal / zoneDMTotal) * 100).toFixed(1) : 0;
                 
@@ -3524,10 +3551,18 @@
                 let zoneNormalTotal = 0;
                 let zoneFollowupTotal = 0;
                 predmPHCs.forEach(phc => {
-                    if (!isNaN(phc.total)) zonePreDMTotal += phc.total;
-                    if (!isNaN(phc.normal)) zoneNormalTotal += phc.normal;
-                    if (!isNaN(phc.followup)) zoneFollowupTotal += phc.followup;
+                    const total = phc.total || 0;
+                    const normal = phc.normal || 0;
+                    const followup = phc.followup || 0;
+                    if (!isNaN(total) && total >= 0) zonePreDMTotal += total;
+                    if (!isNaN(normal) && normal >= 0) zoneNormalTotal += normal;
+                    if (!isNaN(followup) && followup >= 0) zoneFollowupTotal += followup;
                 });
+                // Ensure values are non-negative
+                zonePreDMTotal = Math.max(0, zonePreDMTotal);
+                zoneNormalTotal = Math.max(0, zoneNormalTotal);
+                zoneFollowupTotal = Math.max(0, zoneFollowupTotal);
+                
                 const zoneNormalPercent = zonePreDMTotal > 0 ? ((zoneNormalTotal / zonePreDMTotal) * 100).toFixed(1) : 0;
                 const zoneFollowupPercent = zonePreDMTotal > 0 ? ((zoneFollowupTotal / zonePreDMTotal) * 100).toFixed(1) : 0;
                 
