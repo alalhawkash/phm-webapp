@@ -2134,17 +2134,17 @@
         const SCREENING_PHC_VALUE_COL = 11; // Screened by PHC
         const SCREENING_PHC_TARGET_COL = 12; // Target by PHC
         const SCREENING_PHC_INDICATOR_COL = 13; // 7-Day Indicator by PHC
-        const DM_PHC_NAME_COL = 25; // DM PHC (column Y, index 25)
-        const DM_PHC_TOTAL_COL = 26; // DM Patients
-        const DM_PHC_CONTROLLED_COL = 27; // Controlled DM
-        const DM_PHC_INDICATOR_COL = 29; // 7-Day Indicator DM
-        const DM_PHC_NO_APPT_30D_COL = 24; // UNCONTROLLED DM NO VISIT 30DAYS BY THE PHCS (user confirmed column 24)
-        const PREDM_PHC_NAME_COL = 39; // PRE-DM PHC (column AN)
-        const PREDM_PHC_TOTAL_COL = 40; // Pre-DM Patients
-        const PREDM_PHC_NORMAL_COL = 41; // Pre-DM to Normal
-        const PREDM_PHC_FOLLOWUP_COL = 42; // Pre-DM No Follow-up
-        const PREDM_PHC_INDICATOR_COL = 43; // 7-Day Indicator PRE-DM
-        const PREDM_PHC_NO_APPT_90D_COL = 45; // PRE-DM Patients NO VISIT 90DAYS BY THE PHCS
+        const DM_PHC_NAME_COL = 25; // DM PHC (column 25)
+        const DM_PHC_TOTAL_COL = 26; // DM Patients (column 26)
+        const DM_PHC_CONTROLLED_COL = 27; // Controlled DM (column 27)
+        const DM_PHC_INDICATOR_COL = 29; // 7-Day Indicator DM (column 29)
+        const DM_PHC_NO_APPT_30D_COL = 30; // UNCONTROLLED DM NO VISIT 30DAYS BY THE PHCS (column 30)
+        const PREDM_PHC_NAME_COL = 42; // PRE-DM PHC (column 42)
+        const PREDM_PHC_TOTAL_COL = 43; // Pre-DM Patients (column 43)
+        const PREDM_PHC_NORMAL_COL = 44; // Pre-DM to Normal (column 44)
+        const PREDM_PHC_FOLLOWUP_COL = 45; // Pre-DM No Follow-up (column 45)
+        const PREDM_PHC_INDICATOR_COL = 46; // 7-Day Indicator PRE-DM (column 46)
+        const PREDM_PHC_NO_APPT_90D_COL = 47; // PRE-DM Patients NO VISIT 90DAYS BY THE PHCS (column 47)
 
         const DM_ZONE_START_ROW = 98; // Will be found dynamically
         const DM_ZONE_NAME_COL = 18; // DM Zone
@@ -3075,11 +3075,11 @@
                 nameCol = SCREENING_PHC_NAME_COL; // column J (index 9)
                 headerCol = 9; // Check column J for "SCREENING PHC"
             } else if (sectionName.includes('DM PHC') || sectionName.includes('DM')) {
-                nameCol = DM_PHC_NAME_COL; // column Y (index 25)
+                nameCol = DM_PHC_NAME_COL; // column 25
                 headerCol = 25; // Check column 25 for "DM PHC"
             } else if (sectionName.includes('PRE-DM PHC') || sectionName.includes('Pre-DM') || sectionName.includes('PRE-DM')) {
-                nameCol = PREDM_PHC_NAME_COL; // column 39
-                headerCol = 39; // Check column 39 for "PRE-DM PHC"
+                nameCol = PREDM_PHC_NAME_COL; // column 42
+                headerCol = 42; // Check column 42 for "PRE-DM PHC"
             } else {
                 return { found: false, startRow: -1 };
             }
