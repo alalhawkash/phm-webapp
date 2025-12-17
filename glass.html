@@ -3527,6 +3527,23 @@
 
             // Initialize carousel for zone detail view
             const zoneCarousel = document.getElementById('zoneDetailCarousel');
+            
+            // Set scroll position IMMEDIATELY (before user sees it) to prevent flash
+            if (zoneCarousel && context) {
+                let cardIndex = 0; // Default to first card (Screening)
+                
+                if (context === 'screening') {
+                    cardIndex = 0; // Screening card
+                } else if (context === 'dm') {
+                    cardIndex = 1; // DM card
+                } else if (context === 'predm') {
+                    cardIndex = 2; // Pre-DM card
+                }
+                
+                // Set scroll position immediately without animation to prevent flash
+                zoneCarousel.scrollLeft = cardIndex * zoneCarousel.clientWidth;
+            }
+            
             const zoneDotsContainer = document.getElementById('zoneDetailCarouselDots');
             
             if (zoneCarousel && zoneDotsContainer) {
@@ -3547,6 +3564,17 @@
                     zoneDotsContainer.appendChild(dot);
                 });
                 
+                // Update dots immediately based on context (if available)
+                if (context !== undefined) {
+                    let cardIndex = 0;
+                    if (context === 'screening') cardIndex = 0;
+                    else if (context === 'dm') cardIndex = 1;
+                    else if (context === 'predm') cardIndex = 2;
+                    
+                    const dots = zoneDotsContainer.querySelectorAll('.carousel-dot');
+                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
+                }
+                
                 // Update dots on scroll
                 const updateZoneDots = () => {
                     const index = Math.round(zoneCarousel.scrollLeft / zoneCarousel.clientWidth);
@@ -3560,7 +3588,10 @@
                     zoneScrollTimeout = setTimeout(updateZoneDots, 50);
                 }, { passive: true });
                 
-                updateZoneDots();
+                // Only call updateZoneDots if context wasn't set (to avoid double update)
+                if (context === undefined) {
+                    updateZoneDots();
+                }
             }
 
             // Populate PHCs for the selected zone
@@ -3646,35 +3677,6 @@
                 renderZonePHCList('zoneDetailScreeningPHCs', screeningPHCs, 'screening');
                 renderZonePHCList('zoneDetailDMPHCs', dmPHCs, 'dm');
                 renderZonePHCList('zoneDetailPreDMPHCs', predmPHCs, 'predm');
-                
-                // Scroll to the correct card based on context
-                setTimeout(() => {
-                    const zoneCarousel = document.getElementById('zoneDetailCarousel');
-                    if (zoneCarousel && context) {
-                        let cardIndex = 0; // Default to first card (Screening)
-                        
-                        if (context === 'screening') {
-                            cardIndex = 0; // Screening card
-                        } else if (context === 'dm') {
-                            cardIndex = 1; // DM card
-                        } else if (context === 'predm') {
-                            cardIndex = 2; // Pre-DM card
-                        }
-                        
-                        // Scroll to the correct card
-                        zoneCarousel.scrollTo({
-                            left: cardIndex * zoneCarousel.clientWidth,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Update dots to show correct active dot
-                        const dots = document.getElementById('zoneDetailCarouselDots');
-                        if (dots) {
-                            const dotButtons = dots.querySelectorAll('.carousel-dot');
-                            dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
-                        }
-                    }
-                }, 150); // Small delay to ensure carousel is rendered
             }
         }
 
