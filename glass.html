@@ -3463,23 +3463,15 @@
             // Store the context for back button navigation
             lastClusterContext = context;
             
-            // Hide main view and show zone detail view
+            // Hide main view
             const mainView = document.getElementById('mainView');
             const zoneDetailView = document.getElementById('zoneDetailView');
             
             if (mainView) mainView.classList.add('hidden');
             if (zoneDetailView) zoneDetailView.style.display = 'flex';
-
-            // Update zone detail page title (use full name if available)
-            const fullZoneName = ZONE_FULL_NAMES[zoneName] || ZONE_FULL_NAMES[zoneName?.toUpperCase?.()] || zoneName;
-
-            const titleEl = document.getElementById('zoneDetailTitle');
-            if (titleEl) titleEl.textContent = fullZoneName;
-
-            // Initialize carousel for zone detail view
-            const zoneCarousel = document.getElementById('zoneDetailCarousel');
             
-            // Set scroll position IMMEDIATELY (before user sees it) to prevent flash
+            // Set scroll position using requestAnimationFrame to ensure it happens before paint
+            const zoneCarousel = document.getElementById('zoneDetailCarousel');
             if (zoneCarousel && context) {
                 let cardIndex = 0; // Default to first card (Screening)
                 
@@ -3491,8 +3483,35 @@
                     cardIndex = 2; // Pre-DM card
                 }
                 
-                // Set scroll position immediately without animation to prevent flash
-                zoneCarousel.scrollLeft = cardIndex * zoneCarousel.clientWidth;
+                // Use requestAnimationFrame to set scroll before browser paints
+                requestAnimationFrame(() => {
+                    // Temporarily disable smooth scrolling
+                    zoneCarousel.style.scrollBehavior = 'auto';
+                    
+                    // Set scroll position immediately
+                    zoneCarousel.scrollLeft = cardIndex * zoneCarousel.clientWidth;
+                    
+                    // Force synchronous layout recalculation
+                    void zoneCarousel.offsetHeight;
+                    
+                    // Restore smooth scrolling in next frame
+                    requestAnimationFrame(() => {
+                        zoneCarousel.style.scrollBehavior = '';
+                    });
+                });
+            }
+
+            // Update zone detail page title (use full name if available)
+            const fullZoneName = ZONE_FULL_NAMES[zoneName] || ZONE_FULL_NAMES[zoneName?.toUpperCase?.()] || zoneName;
+
+            const titleEl = document.getElementById('zoneDetailTitle');
+            if (titleEl) titleEl.textContent = fullZoneName;
+            
+            // Restore smooth scrolling after view is shown
+            if (zoneCarousel) {
+                setTimeout(() => {
+                    zoneCarousel.style.scrollBehavior = '';
+                }, 0);
             }
             
             const zoneDotsContainer = document.getElementById('zoneDetailCarouselDots');
@@ -3653,11 +3672,15 @@
                             cardIndex = 2; // Pre-DM card
                         }
                         
-                        // Scroll to the correct card
-                        carousel.scrollTo({
-                            left: cardIndex * carousel.clientWidth,
-                            behavior: 'smooth'
-                        });
+                        // Temporarily disable smooth scrolling
+                        const originalScrollBehavior = carousel.style.scrollBehavior;
+                        carousel.style.scrollBehavior = 'auto';
+                        
+                        // Set scroll position immediately without animation
+                        carousel.scrollLeft = cardIndex * carousel.clientWidth;
+                        
+                        // Force a reflow to ensure the scroll happens immediately
+                        void carousel.offsetHeight;
                         
                         // Update dots to show correct active dot
                         const dots = document.getElementById('carouselDots');
@@ -3665,8 +3688,13 @@
                             const dotButtons = dots.querySelectorAll('.carousel-dot');
                             dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
                         }
+                        
+                        // Restore smooth scrolling after a brief moment
+                        setTimeout(() => {
+                            carousel.style.scrollBehavior = originalScrollBehavior || '';
+                        }, 0);
                     }
-                }, 100); // Small delay to ensure carousel is rendered
+                }, 50); // Reduced delay
             }
         }
         
