@@ -21,6 +21,21 @@ var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     }
 });
 
+// Handle invalid refresh token errors gracefully
+// This error is non-critical - occurs when a stale token exists in localStorage
+// The app will work fine, user just needs to login again if session expired
+supabase.auth.onAuthStateChange((event, session) => {
+    // Handle token refresh errors silently
+    if (event === 'TOKEN_REFRESHED' && !session) {
+        // Token refresh failed - clear invalid token
+        try {
+            localStorage.removeItem('supabase.auth.token');
+        } catch (e) {
+            // Ignore storage errors
+        }
+    }
+});
+
 console.log('✅ Supabase client initialized');
 
 // =====================================================
