@@ -1331,6 +1331,8 @@
             flex: 0 0 auto;
             background: #FFFFFF;
             border: 1px solid #E7ECF3;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             position: relative;
         }
         
@@ -1380,65 +1382,86 @@
             border-radius: 8px;
         }
         
-        /* Card Title Colors */
+        /* Card Title Colors - Bold 700-800 */
         #phcDetailCarousel .phc-card-screening .phc-watch-header h2 {
             color: #1F4FBF;
+            font-weight: 800;
         }
         
         #phcDetailCarousel .phc-card-diabetes .phc-watch-header h2 {
             color: #115E59;
+            font-weight: 800;
         }
         
         #phcDetailCarousel .phc-card-predm .phc-watch-header h2 {
             color: #92400E;
+            font-weight: 800;
         }
         
-        /* Optional Header Tint */
+        /* Subtle Title Bar */
         #phcDetailCarousel .phc-card-screening .phc-watch-header {
-            background: #EAF1FF;
-            border-radius: 8px;
-            padding: 4px 8px;
-            margin-bottom: 6px;
+            background: rgba(47, 111, 237, 0.10);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 8px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
         }
         
         #phcDetailCarousel .phc-card-diabetes .phc-watch-header {
-            background: #E6FFFA;
-            border-radius: 8px;
-            padding: 4px 8px;
-            margin-bottom: 6px;
+            background: rgba(15, 118, 110, 0.10);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 8px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
         }
         
         #phcDetailCarousel .phc-card-predm .phc-watch-header {
-            background: #FFF7ED;
-            border-radius: 8px;
-            padding: 4px 8px;
-            margin-bottom: 6px;
+            background: rgba(180, 83, 9, 0.10);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 8px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
         }
         
         /* Dark mode adjustments for header tints */
         .dark-mode #phcDetailCarousel .phc-card-screening .phc-watch-header {
-            background: rgba(47, 111, 237, 0.1);
+            background: rgba(47, 111, 237, 0.10);
         }
         
         .dark-mode #phcDetailCarousel .phc-card-diabetes .phc-watch-header {
-            background: rgba(15, 118, 110, 0.1);
+            background: rgba(15, 118, 110, 0.10);
         }
         
         .dark-mode #phcDetailCarousel .phc-card-predm .phc-watch-header {
-            background: rgba(180, 83, 9, 0.1);
+            background: rgba(180, 83, 9, 0.10);
         }
         
         /* Dark mode title colors - keep card-specific colors */
         .dark-mode #phcDetailCarousel .phc-card-screening .phc-watch-header h2 {
             color: #1F4FBF;
+            font-weight: 800;
         }
         
         .dark-mode #phcDetailCarousel .phc-card-diabetes .phc-watch-header h2 {
             color: #115E59;
+            font-weight: 800;
         }
         
         .dark-mode #phcDetailCarousel .phc-card-predm .phc-watch-header h2 {
             color: #92400E;
+            font-weight: 800;
         }
         
         /* PHC carousel - vertical layout */
@@ -1483,35 +1506,23 @@
             height: 100%;
             justify-content: flex-start;
             align-items: center;
-            padding: 8px 14px;
+            padding: 12px 16px;
             gap: 6px;
             box-sizing: border-box;
             overflow: hidden;
+            background: #FFFFFF;
+        }
+        
+        .dark-mode .phc-watch-dashboard {
+            background: transparent;
         }
         
         .phc-watch-header {
             text-align: center;
-            margin-bottom: 6px;
-            padding-bottom: 6px;
             flex-shrink: 0;
             min-height: fit-content;
             position: relative;
             width: 100%;
-        }
-        
-        .phc-watch-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        
-        .dark-mode .phc-watch-header::after {
-            background: #2a323d;
         }
         
         .phc-watch-header h2 {
