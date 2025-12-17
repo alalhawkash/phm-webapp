@@ -2250,7 +2250,7 @@
             const container = document.getElementById('screeningZonesList');
             if (!container) return;
 
-            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Screening Opportunities</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
             let rank = 1;
             
             // Apply scope filtering
@@ -3342,7 +3342,7 @@
             let html = '';
             
             if (context === 'screening') {
-                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Screening Opportunities</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
                 phcs.forEach(phc => {
                     const indicatorNum = phc.indicator || 0;
                     let indicatorArrow = '-';
