@@ -3192,7 +3192,10 @@
             
             const { found, startRow } = findPHCRankingsSection(data, sectionName);
             if (!found || startRow < 0) {
-                console.warn(`PHC Rankings section not found: ${sectionName}, zone: ${zoneName}`);
+                // Print first row to help understand structure
+                if (data.length > 0) {
+                    console.log('First row of Google Sheet:', data[0]);
+                }
                 return [];
             }
             
