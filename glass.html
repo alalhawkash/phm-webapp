@@ -2748,27 +2748,6 @@
                         continue;
                     }
                     
-                    // Parse Pre-DM Overview (columns AC and AD)
-                if (currentSection === 'predm') {
-                    const rawLabel = String(row[PREDM_LABEL_COL] || '').trim().toLowerCase();
-                    const predmValue = row[PREDM_VALUE_COL];
-                    const parsedValue = parseInt(String(predmValue ?? '').replace(/,/g, ''), 10);
-                    const hasNumber = !isNaN(parsedValue);
-                    
-                    if (rawLabel.includes('pre-dm patients') && hasNumber) {
-                        predmPatientsTotal = parsedValue;
-                        document.getElementById('preDMPatientsValue').textContent = parsedValue.toLocaleString();
-                        updatePreDMPercentages();
-                    } else if (rawLabel.includes('pre-dm to normal') && hasNumber) {
-                        predmToNormalTotal = parsedValue;
-                        document.getElementById('preDMToNormalValue').textContent = parsedValue.toLocaleString();
-                        updatePreDMPercentages();
-                    } else if (rawLabel.includes('pre-dm no follow-up') && hasNumber) {
-                        predmNoFollowupTotal = parsedValue;
-                        document.getElementById('preDMNoFollowupValue').textContent = parsedValue.toLocaleString();
-                        updatePreDMPercentages();
-                    }
-                }
                         
                 // Parse Screening Overview (new labels in column A/B)
                 if (currentSection === 'screening') {
