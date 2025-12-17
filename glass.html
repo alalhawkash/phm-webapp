@@ -3070,75 +3070,99 @@
             let startRow = -1;
             
             // Determine which columns to check based on section name
-            let nameCol, checkCols = [];
+            let nameCol, headerCol;
             if (sectionName.includes('Screening')) {
                 nameCol = SCREENING_PHC_NAME_COL; // column J (index 9)
-                checkCols = [0, 3, 8, 9]; // Check columns A, D, I, J
+                headerCol = 9; // Check column J for "SCREENING PHC"
             } else if (sectionName.includes('DM PHC') || sectionName.includes('DM')) {
                 nameCol = DM_PHC_NAME_COL; // column X (index 24)
-                checkCols = [24]; // Check column X where "DM PHC" header is
+                headerCol = 24; // Check column 24 for "DM PHC"
             } else if (sectionName.includes('PRE-DM PHC') || sectionName.includes('Pre-DM') || sectionName.includes('PRE-DM')) {
                 nameCol = PREDM_PHC_NAME_COL; // column 39
-                checkCols = [39]; // Check column 39 where "PRE-DM PHC" header is
+                headerCol = 39; // Check column 39 for "PRE-DM PHC"
+            } else {
+                return { found: false, startRow: -1 };
             }
             
-            const searchName = sectionName.toUpperCase();
-            
-            // First, try to find section header by searching for the exact section name or keywords
-            for (let i = 0; i < data.length; i++) {
-                const row = data[i] || [];
+            // First, check the first row (row 0) for the header
+            if (data.length > 0) {
+                const firstRow = data[0] || [];
+                const headerCell = String(firstRow[headerCol] || '').trim().toUpperCase();
                 
-                // Check multiple columns for section header
-                let matchesHeader = false;
-                for (const colIdx of checkCols) {
-                    const cell = String(row[colIdx] || '').trim().toUpperCase();
-                    if (cell.includes(searchName) || 
-                        (cell.includes('PHC') && cell.includes('RANKING')) ||
-                        (sectionName.includes('Screening') && (cell.includes('SCREENING') && cell.includes('PHC'))) ||
-                        (sectionName.includes('DM') && (cell.includes('DM') && cell.includes('PHC'))) ||
-                        (sectionName.includes('Pre-DM') && (cell.includes('PRE-DM') && cell.includes('PHC')))) {
-                        matchesHeader = true;
-                        break;
-                    }
-                }
-                
-                if (matchesHeader) {
-                    // Found section header, now look for data start row
-                    // Check next few rows for header row or first data row
-                    for (let j = i + 1; j < Math.min(i + 10, data.length); j++) {
-                        const nextRow = data[j] || [];
-                        const phcNameCell = String(nextRow[nameCol] || '').trim();
+                // Check if header matches
+                if (headerCell.includes('DM PHC') || headerCell.includes('PRE-DM PHC') || headerCell.includes('SCREENING PHC')) {
+                    // Header found in first row, now find where data starts
+                    // Look for the first row that has a PHC name in the nameCol
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i] || [];
+                        const phcNameCell = String(row[nameCol] || '').trim();
                         
-                        // If we find a PHC name in the expected column, this is likely the start
-                        if (phcNameCell && phcNameCell.length > 0 && 
+                        // Skip empty cells and header-like text
+                        if (phcNameCell && phcNameCell.length > 2 && 
                             !phcNameCell.toUpperCase().includes('PHC') && 
                             !phcNameCell.toUpperCase().includes('RANKING') &&
                             !phcNameCell.toUpperCase().includes('ZONE') &&
-                            !phcNameCell.toUpperCase().includes('NAME')) {
-                            found = true;
-                            startRow = j;
-                            break;
-                        }
-                        
-                        // Also check if this row has a number in first cell (rank) and PHC name
-                        const firstCell = String(nextRow[0] || '').trim();
-                        if (!isNaN(parseInt(firstCell)) && phcNameCell && phcNameCell.length > 0) {
-                            found = true;
-                            startRow = j;
-                            break;
+                            !phcNameCell.toUpperCase().includes('NAME') &&
+                            !phcNameCell.toUpperCase().includes('SCREENING') &&
+                            !phcNameCell.toUpperCase().includes('DM') &&
+                            !phcNameCell.toUpperCase().includes('PRE-DM') &&
+                            !phcNameCell.toUpperCase().includes('PATIENTS') &&
+                            !phcNameCell.toUpperCase().includes('CONTROLLED') &&
+                            !phcNameCell.toUpperCase().includes('UNCONTROLLED')) {
+                            // Check if this looks like actual data (has values in adjacent columns)
+                            const hasData = row[nameCol + 1] || row[nameCol + 2];
+                            if (hasData) {
+                                found = true;
+                                startRow = i;
+                                break;
+                            }
                         }
                     }
-                    if (found) break;
                 }
             }
             
-            // Fallback: If section header not found, try to find by looking for PHC names in expected columns
-            if (!found && nameCol !== undefined) {
+            // Fallback: If header not found in first row, search all rows
+            if (!found) {
                 for (let i = 0; i < data.length; i++) {
+                    const row = data[i] || [];
+                    const headerCell = String(row[headerCol] || '').trim().toUpperCase();
+                    
+                    if (headerCell.includes('DM PHC') || headerCell.includes('PRE-DM PHC') || headerCell.includes('SCREENING PHC')) {
+                        // Found header, look for data start
+                        for (let j = i + 1; j < Math.min(i + 10, data.length); j++) {
+                            const nextRow = data[j] || [];
+                            const phcNameCell = String(nextRow[nameCol] || '').trim();
+                            
+                            if (phcNameCell && phcNameCell.length > 2 && 
+                                !phcNameCell.toUpperCase().includes('PHC') && 
+                                !phcNameCell.toUpperCase().includes('RANKING') &&
+                                !phcNameCell.toUpperCase().includes('ZONE') &&
+                                !phcNameCell.toUpperCase().includes('NAME') &&
+                                !phcNameCell.toUpperCase().includes('SCREENING') &&
+                                !phcNameCell.toUpperCase().includes('DM') &&
+                                !phcNameCell.toUpperCase().includes('PRE-DM') &&
+                                !phcNameCell.toUpperCase().includes('PATIENTS') &&
+                                !phcNameCell.toUpperCase().includes('CONTROLLED') &&
+                                !phcNameCell.toUpperCase().includes('UNCONTROLLED')) {
+                                const hasData = nextRow[nameCol + 1] || nextRow[nameCol + 2];
+                                if (hasData) {
+                                    found = true;
+                                    startRow = j;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) break;
+                    }
+                }
+            }
+            
+            // Final fallback: Direct search for PHC names in expected column
+            if (!found && nameCol !== undefined) {
+                for (let i = 1; i < data.length; i++) {
                     const row = data[i] || [];
                     const phcNameCell = String(row[nameCol] || '').trim();
                     
-                    // If we find a valid PHC name (not empty, not a header), start from here
                     if (phcNameCell && phcNameCell.length > 2 && 
                         !phcNameCell.toUpperCase().includes('PHC') && 
                         !phcNameCell.toUpperCase().includes('RANKING') &&
@@ -3146,9 +3170,11 @@
                         !phcNameCell.toUpperCase().includes('NAME') &&
                         !phcNameCell.toUpperCase().includes('SCREENING') &&
                         !phcNameCell.toUpperCase().includes('DM') &&
-                        !phcNameCell.toUpperCase().includes('PRE-DM')) {
-                        // Check if this looks like actual data (has values in adjacent columns)
-                        const hasData = row[nameCol + 1] || row[nameCol + 2] || row[nameCol - 1];
+                        !phcNameCell.toUpperCase().includes('PRE-DM') &&
+                        !phcNameCell.toUpperCase().includes('PATIENTS') &&
+                        !phcNameCell.toUpperCase().includes('CONTROLLED') &&
+                        !phcNameCell.toUpperCase().includes('UNCONTROLLED')) {
+                        const hasData = row[nameCol + 1] || row[nameCol + 2];
                         if (hasData) {
                             found = true;
                             startRow = i;
