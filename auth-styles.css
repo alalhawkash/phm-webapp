@@ -90,6 +90,23 @@ body.dark-mode .login-container {
     object-fit: contain;
 }
 
+/* Logo switching based on theme */
+.logo-light {
+    display: block;
+}
+
+.logo-dark {
+    display: none;
+}
+
+body.dark-mode .logo-light {
+    display: none;
+}
+
+body.dark-mode .logo-dark {
+    display: block;
+}
+
 .login-header {
     text-align: center;
     margin-bottom: 32px;
