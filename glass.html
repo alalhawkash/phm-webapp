@@ -1915,6 +1915,10 @@
                                             <div class="phc-watch-percent" id="phcRemainingPercent">0%</div>
                                         </div>
                                     </div>
+                                    <div class="phc-watch-metric-small phc-watch-metric-orange">
+                                        <div class="phc-watch-label-small" id="phcMissedScreeningLabel">Missed Screening Opportunities on --</div>
+                                        <div class="phc-watch-value-small" id="phcMissedScreeningCount">0</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3855,11 +3859,52 @@
                 document.getElementById('phcScreenedPercent').textContent = `${screenedPercent}%`;
                 document.getElementById('phcScreeningRemaining').textContent = remaining.toLocaleString();
                 document.getElementById('phcRemainingPercent').textContent = `${remainingPercent}%`;
+                
+                // Missed Screening Opportunities
+                const opportunities = parseFloat(String(screeningPHC.opportunities || '0').replace(/,/g, '')) || 0;
+                document.getElementById('phcMissedScreeningCount').textContent = opportunities.toLocaleString();
+                
+                // Calculate date one day before last update
+                let missedDateLabel = '--';
+                if (lastUpdateDate) {
+                    try {
+                        // Parse the last update date (assuming format like "MM/DD/YYYY" or "DD/MM/YYYY")
+                        const dateParts = lastUpdateDate.split(/[\/\-]/);
+                        let updateDate;
+                        if (dateParts.length === 3) {
+                            // Try to parse as MM/DD/YYYY or DD/MM/YYYY
+                            const month = parseInt(dateParts[0], 10) - 1;
+                            const day = parseInt(dateParts[1], 10);
+                            const year = parseInt(dateParts[2], 10);
+                            if (month >= 0 && month <= 11 && day > 0 && day <= 31) {
+                                updateDate = new Date(year, month, day);
+                            }
+                        }
+                        if (!updateDate || isNaN(updateDate.getTime())) {
+                            // Fallback: try parsing as ISO date
+                            updateDate = new Date(lastUpdateDate);
+                        }
+                        if (updateDate && !isNaN(updateDate.getTime())) {
+                            // Subtract one day
+                            updateDate.setDate(updateDate.getDate() - 1);
+                            // Format as MM/DD/YYYY
+                            const month = (updateDate.getMonth() + 1).toString().padStart(2, '0');
+                            const day = updateDate.getDate().toString().padStart(2, '0');
+                            const year = updateDate.getFullYear();
+                            missedDateLabel = `${month}/${day}/${year}`;
+                        }
+                    } catch (e) {
+                        console.warn('Error parsing last update date:', e);
+                    }
+                }
+                document.getElementById('phcMissedScreeningLabel').textContent = `Missed Screening Opportunities on ${missedDateLabel}`;
             } else {
                 document.getElementById('phcScreenedCount').textContent = '0';
                 document.getElementById('phcScreenedPercent').textContent = '0%';
                 document.getElementById('phcScreeningRemaining').textContent = '0';
                 document.getElementById('phcRemainingPercent').textContent = '0%';
+                document.getElementById('phcMissedScreeningCount').textContent = '0';
+                document.getElementById('phcMissedScreeningLabel').textContent = 'Missed Screening Opportunities on --';
             }
             
             // DM CARD: Uncontrolled DM, Controlled DM, and No Appt 30D+
