@@ -1539,6 +1539,25 @@
             border: 1px solid rgba(255, 152, 0, 0.3);
         }
         
+        /* Light reddish indicator for warning metrics */
+        .phc-watch-metric-orange {
+            background: rgba(239, 83, 80, 0.08) !important; /* Light reddish background */
+            border: 1px solid rgba(239, 83, 80, 0.2) !important; /* Light reddish border */
+        }
+        
+        .dark-mode .phc-watch-metric-orange {
+            background: rgba(239, 83, 80, 0.12) !important;
+            border: 1px solid rgba(239, 83, 80, 0.3) !important;
+        }
+        
+        .phc-watch-metric-orange .phc-watch-label-small {
+            color: #E57373 !important; /* Light reddish for label */
+        }
+        
+        .dark-mode .phc-watch-metric-orange .phc-watch-label-small {
+            color: #EF9A9A !important; /* Lighter reddish in dark mode */
+        }
+        
         .phc-watch-label-small {
             font-size: 8px;
             font-weight: 600;
