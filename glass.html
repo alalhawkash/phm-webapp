@@ -1408,7 +1408,7 @@
             padding: 0;
             margin: 0;
             margin-bottom: 0;
-            height: 74px;
+            height: 68px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -1417,25 +1417,21 @@
             overflow: hidden;
         }
         
-        /* Subtle glossy wave lines on the right */
+        /* More subtle glossy wave lines on the right */
         #phcDetailCarousel .phc-card-screening .phc-watch-header::after {
             content: '';
             position: absolute;
             right: 0;
             top: 0;
             bottom: 0;
-            width: 60px;
+            width: 40px;
             background: linear-gradient(
                 90deg,
                 transparent 0%,
-                rgba(255, 255, 255, 0.15) 20%,
-                rgba(255, 255, 255, 0.25) 40%,
-                rgba(255, 255, 255, 0.15) 60%,
+                rgba(255, 255, 255, 0.1) 50%,
                 transparent 100%
             );
-            background-size: 20px 100%;
-            background-repeat: repeat-x;
-            opacity: 0.3;
+            opacity: 0.2;
         }
         
         #phcDetailCarousel .phc-card-diabetes .phc-watch-header {
@@ -1598,7 +1594,7 @@
             align-items: flex-start;
         }
         
-        /* Vertical divider for Screening card metrics */
+        /* Minimal vertical divider for Screening card metrics */
         #phcDetailCarousel .phc-card-screening .phc-watch-metrics-row {
             position: relative;
         }
@@ -1608,19 +1604,11 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%) translateX(1px);
-            width: 2.5px;
-            height: 90px;
-            background: #3B3B3B;
-            border-radius: 1px;
-            opacity: 0.8;
-            /* Slight irregularity */
-            clip-path: polygon(
-                0% 0%,
-                100% 2%,
-                100% 98%,
-                0% 100%
-            );
+            transform: translate(-50%, -50%);
+            width: 1px;
+            height: 70px;
+            background: #E0E0E0;
+            opacity: 0.5;
         }
         
         .phc-watch-metric-large {
