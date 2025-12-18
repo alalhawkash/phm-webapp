@@ -159,27 +159,15 @@ async function handleLogin(email, password) {
         });
         
         if (error) {
-            console.error('Login error:', error);
             return { success: false, error: error.message };
         }
         
         if (!data || !data.user) {
-            console.error('No user data returned from login');
             return { success: false, error: 'Login failed: No user data received' };
         }
         
-        // Load user profile before reloading
-        try {
-            await loadUserProfile({ user: data.user });
-        } catch (profileError) {
-            console.error('Error loading user profile:', profileError);
-            // Continue with reload even if profile load fails
-        }
-        
-        // Small delay to ensure profile is saved, then reload
-        setTimeout(() => {
-            window.location.reload();
-        }, 100);
+        // Reload immediately - checkAuth() will handle profile loading on page load
+        window.location.reload();
         
         return { success: true };
     } catch (err) {
@@ -595,67 +583,21 @@ window.deleteUser = async function deleteUser() {
     }
     
     try {
-        console.log('Attempting to delete user:', userId);
-        console.log('User object:', user);
-        
-        // First, verify the user exists in the database
-        const { data: checkData, error: checkError } = await supabase
+        // Delete from app_users table (matches the table used in loadUserProfile and loadAllUsers)
+        const { error } = await supabase
             .from('app_users')
-            .select('id, email')
-            .eq('id', userId)
-            .single();
+            .delete()
+            .eq('id', userId);
         
-        if (checkError || !checkData) {
-            console.error('User not found in database:', checkError);
-            throw new Error('User not found in database. They may have already been deleted.');
-        }
+        if (error) throw error;
         
-        console.log('User found in database:', checkData);
-        
-        // Try using RPC function first (if it exists)
-        const { data: rpcData, error: rpcError } = await supabase.rpc('delete_user_profile', {
-            p_user_id: userId
-        });
-        
-        if (rpcError) {
-            // If RPC doesn't exist or fails, try direct delete
-            console.log('RPC function not available or failed, trying direct delete...', rpcError);
-            
-            const { error: deleteError } = await supabase
-                .from('app_users')
-                .delete()
-                .eq('id', userId);
-            
-            if (deleteError) {
-                console.error('Delete error:', deleteError);
-                throw deleteError;
-            }
-            
-            // Verify deletion by checking if user still exists
-            const { data: verifyData } = await supabase
-                .from('app_users')
-                .select('id')
-                .eq('id', userId)
-                .single();
-            
-            if (verifyData) {
-                throw new Error('User still exists after delete attempt. Deletion may have failed due to permissions or constraints.');
-            }
-        } else {
-            // RPC function worked
-            if (rpcData && !rpcData.success) {
-                throw new Error(rpcData.error || 'Delete failed');
-            }
-        }
-        
-        console.log('User deleted successfully');
         alert('✅ User deleted successfully!');
         closeEditUserModal();
         loadAllUsers();
         
     } catch (error) {
         console.error('Error deleting user:', error);
-        alert('❌ Error deleting user: ' + (error.message || 'Unknown error') + '\n\nCheck console for details.');
+        alert('❌ Error deleting user: ' + (error.message || 'Unknown error'));
     }
 }
 
