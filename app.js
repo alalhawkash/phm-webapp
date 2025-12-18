@@ -574,13 +574,34 @@ window.deleteUser = async function deleteUser() {
     }
     
     try {
-        // Delete from app_users table
-        const { error } = await supabase
-            .from('app_users')
-            .delete()
-            .eq('id', userId);
+        // Try using RPC function first (if it exists)
+        const { data: rpcData, error: rpcError } = await supabase.rpc('delete_user_profile', {
+            p_user_id: userId
+        });
         
-        if (error) throw error;
+        if (rpcError) {
+            // If RPC doesn't exist, try direct delete
+            console.log('RPC function not available, trying direct delete...');
+            const { data, error } = await supabase
+                .from('app_users')
+                .delete()
+                .eq('id', userId)
+                .select();
+            
+            if (error) {
+                console.error('Delete error:', error);
+                throw error;
+            }
+            
+            if (!data || data.length === 0) {
+                throw new Error('User not found or already deleted');
+            }
+        } else {
+            // RPC function worked
+            if (rpcData && !rpcData.success) {
+                throw new Error(rpcData.error || 'Delete failed');
+            }
+        }
         
         alert('✅ User deleted successfully!');
         closeEditUserModal();
@@ -588,7 +609,7 @@ window.deleteUser = async function deleteUser() {
         
     } catch (error) {
         console.error('Error deleting user:', error);
-        alert('❌ Error deleting user: ' + (error.message || 'Unknown error'));
+        alert('❌ Error deleting user: ' + (error.message || 'Unknown error') + '\n\nCheck console for details.');
     }
 }
 
