@@ -1303,11 +1303,6 @@
             background: #0f1115;
         }
         
-        .dark-mode #phcDetailCarousel .card {
-            background: rgba(24, 28, 36, 0.9);
-            border-color: #2a323d;
-        }
-        
         .dark-mode #phcDetailView .zone-detail-header {
             background: #161a20 !important;
             border-bottom-color: #262c36 !important;
@@ -1329,161 +1324,34 @@
             height: 200px;
             max-height: 200px;
             flex: 0 0 auto;
-            background: #FFFFFF;
-            border: 1px solid #E7ECF3;
-            border-radius: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             position: relative;
         }
         
-        /* PHC Card Accent Borders */
-        #phcDetailCarousel .phc-card-screening {
-            padding-left: 16px;
+        /* شريط جانبي أزرق مات - Screening (نفس لون الشعار) */
+        .phc-card-screening {
+            border-left: 4px solid #5B8DEF; /* أزرق مات */
         }
         
-        #phcDetailCarousel .phc-card-screening::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #2F6FED;
-            border-radius: 8px;
+        .dark-mode .phc-card-screening {
+            border-left-color: #6B9EF5; /* أزرق أفتح قليلاً في الوضع الداكن */
         }
         
-        #phcDetailCarousel .phc-card-diabetes {
-            padding-left: 16px;
+        /* شريط جانبي أخضر مات - Pre-DM (مناسب للمنصة الصحية) */
+        .phc-card-predm {
+            border-left: 4px solid #5CB85C; /* أخضر مات */
         }
         
-        #phcDetailCarousel .phc-card-diabetes::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #0F766E;
-            border-radius: 8px;
+        .dark-mode .phc-card-predm {
+            border-left-color: #6BC86C; /* أخضر أفتح قليلاً في الوضع الداكن */
         }
         
-        #phcDetailCarousel .phc-card-predm {
-            padding-left: 16px;
+        /* شريط جانبي برتقالي مات - DM (موشر انتباه رسمي وهادئ) */
+        .phc-card-dm {
+            border-left: 4px solid #F57C00; /* برتقالي مات */
         }
         
-        #phcDetailCarousel .phc-card-predm::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #B45309;
-            border-radius: 8px;
-        }
-        
-        /* Card Title Colors - Bold 700-800 */
-        #phcDetailCarousel .phc-card-screening .phc-watch-header h2 {
-            color: #3159B0;
-            font-weight: 700;
-            margin: 0;
-            padding-left: 24px;
-            text-align: left;
-        }
-        
-        #phcDetailCarousel .phc-card-diabetes .phc-watch-header h2 {
-            color: #115E59;
-            font-weight: 800;
-        }
-        
-        #phcDetailCarousel .phc-card-predm .phc-watch-header h2 {
-            color: #92400E;
-            font-weight: 800;
-        }
-        
-        /* Full-width top banner for Screening card */
-        #phcDetailCarousel .phc-card-screening .phc-watch-header {
-            background: #B9D9F3;
-            border-radius: 18px 18px 0 0;
-            padding: 0;
-            margin: 0;
-            margin-bottom: 0;
-            height: 68px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* More subtle glossy wave lines on the right */
-        #phcDetailCarousel .phc-card-screening .phc-watch-header::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 100%
-            );
-            opacity: 0.2;
-        }
-        
-        #phcDetailCarousel .phc-card-diabetes .phc-watch-header {
-            background: rgba(15, 118, 110, 0.10);
-            border-radius: 12px;
-            padding: 0;
-            margin-bottom: 6px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        #phcDetailCarousel .phc-card-predm .phc-watch-header {
-            background: rgba(180, 83, 9, 0.10);
-            border-radius: 12px;
-            padding: 0;
-            margin-bottom: 6px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        /* Dark mode for Screening banner */
-        .dark-mode #phcDetailCarousel .phc-card-screening .phc-watch-header {
-            background: #B9D9F3;
-        }
-        
-        .dark-mode #phcDetailCarousel .phc-card-screening .phc-watch-header h2 {
-            color: #3159B0;
-        }
-        
-        .dark-mode #phcDetailCarousel .phc-card-diabetes .phc-watch-header {
-            background: rgba(15, 118, 110, 0.10);
-        }
-        
-        .dark-mode #phcDetailCarousel .phc-card-predm .phc-watch-header {
-            background: rgba(180, 83, 9, 0.10);
-        }
-        
-        
-        .dark-mode #phcDetailCarousel .phc-card-diabetes .phc-watch-header h2 {
-            color: #115E59;
-            font-weight: 800;
-        }
-        
-        .dark-mode #phcDetailCarousel .phc-card-predm .phc-watch-header h2 {
-            color: #92400E;
-            font-weight: 800;
+        .dark-mode .phc-card-dm {
+            border-left-color: #FF9800; /* برتقالي أفتح قليلاً في الوضع الداكن */
         }
         
         /* PHC carousel - vertical layout */
@@ -1528,28 +1396,42 @@
             height: 100%;
             justify-content: flex-start;
             align-items: center;
-            padding: 8px 16px;
-            gap: 4px;
+            padding: 8px 14px;
+            gap: 6px;
             box-sizing: border-box;
             overflow: hidden;
-            background: #FFFFFF;
         }
         
-        .dark-mode .phc-watch-dashboard {
-            background: transparent;
-        }
-        
-        /* Remove top padding for Screening card dashboard */
-        #phcDetailCarousel .phc-card-screening .phc-watch-dashboard {
-            padding-top: 0;
+        /* إضافة padding للداخل لإفساح المجال للشريط */
+        .phc-card-screening .phc-watch-dashboard,
+        .phc-card-predm .phc-watch-dashboard,
+        .phc-card-dm .phc-watch-dashboard {
+            padding-left: 16px; /* إضافة مسافة من اليسار */
         }
         
         .phc-watch-header {
             text-align: center;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
             flex-shrink: 0;
             min-height: fit-content;
             position: relative;
             width: 100%;
+        }
+        
+        .phc-watch-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .dark-mode .phc-watch-header::after {
+            background: #2a323d;
         }
         
         .phc-watch-header h2 {
@@ -1570,23 +1452,12 @@
         .phc-watch-metrics {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             width: 100%;
             align-items: center;
             flex: 1;
             justify-content: flex-start;
             min-height: 0;
-        }
-        
-        /* More minimal spacing for Screening metrics */
-        #phcDetailCarousel .phc-card-screening .phc-watch-metrics {
-            margin-top: 0;
-            padding-top: 0;
-            gap: 3px;
-        }
-        
-        #phcDetailCarousel .phc-card-screening .phc-watch-metric-large {
-            padding: 1px 0;
         }
         
         /* Container for side-by-side metrics (Screening and DM cards) */
@@ -1599,30 +1470,13 @@
             align-items: flex-start;
         }
         
-        /* Minimal vertical divider for Screening card metrics */
-        #phcDetailCarousel .phc-card-screening .phc-watch-metrics-row {
-            position: relative;
-        }
-        
-        #phcDetailCarousel .phc-card-screening .phc-watch-metrics-row::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 1px;
-            height: 70px;
-            background: #E0E0E0;
-            opacity: 0.5;
-        }
-        
         .phc-watch-metric-large {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 2px 0;
+            padding: 4px 0;
         }
         
         /* Side-by-side metrics take equal space */
@@ -1640,23 +1494,16 @@
             letter-spacing: 0.3px;
         }
         
-        /* Make Screening card labels uppercase and smaller */
-        #phcDetailCarousel .phc-card-screening .phc-watch-label {
-            text-transform: uppercase;
-            font-size: 8px;
-            letter-spacing: 0.5px;
-        }
-        
         .dark-mode .phc-watch-label {
             color: #bfc7d1;
         }
         
         .phc-watch-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: #1a1a1a;
             line-height: 1;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
             letter-spacing: -0.03em;
         }
         
@@ -1665,7 +1512,7 @@
         }
         
         .phc-watch-percent {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 500;
             color: #666;
             letter-spacing: 0.2px;
@@ -1681,21 +1528,21 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            padding: 6px 12px;
-            background: #FEF2F2;
-            border-radius: 12px;
-            border: 1px solid #FECACA;
+            padding: 5px 10px;
+            background: rgba(255, 152, 0, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 152, 0, 0.2);
         }
         
         .dark-mode .phc-watch-metric-small {
-            background: rgba(254, 242, 242, 0.1);
-            border: 1px solid rgba(254, 202, 202, 0.3);
+            background: rgba(255, 152, 0, 0.12);
+            border: 1px solid rgba(255, 152, 0, 0.3);
         }
         
         .phc-watch-label-small {
             font-size: 8px;
             font-weight: 600;
-            color: #B91C1C;
+            color: #ff9800;
             margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -1705,19 +1552,15 @@
             text-align: center;
         }
         
-        .dark-mode .phc-watch-label-small {
-            color: #FCA5A5;
-        }
-        
         .phc-watch-value-small {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
-            color: #7F1D1D;
+            color: #1a1a1a;
             line-height: 1;
         }
         
         .dark-mode .phc-watch-value-small {
-            color: #FEE2E2;
+            color: #ffffff;
         }
 
         /* iPhone and Android specific adjustments */
@@ -2139,7 +1982,7 @@
                     </div>
                     
                     <!-- DM Card -->
-                    <div class="card phc-card-diabetes">
+                    <div class="card phc-card-dm">
                         <div class="card-content">
                             <div class="phc-watch-dashboard">
                                 <div class="phc-watch-header">
