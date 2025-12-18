@@ -574,27 +574,51 @@ window.deleteUser = async function deleteUser() {
     }
     
     try {
+        console.log('Attempting to delete user:', userId);
+        console.log('User object:', user);
+        
+        // First, verify the user exists in the database
+        const { data: checkData, error: checkError } = await supabase
+            .from('app_users')
+            .select('id, email')
+            .eq('id', userId)
+            .single();
+        
+        if (checkError || !checkData) {
+            console.error('User not found in database:', checkError);
+            throw new Error('User not found in database. They may have already been deleted.');
+        }
+        
+        console.log('User found in database:', checkData);
+        
         // Try using RPC function first (if it exists)
         const { data: rpcData, error: rpcError } = await supabase.rpc('delete_user_profile', {
             p_user_id: userId
         });
         
         if (rpcError) {
-            // If RPC doesn't exist, try direct delete
-            console.log('RPC function not available, trying direct delete...');
-            const { data, error } = await supabase
+            // If RPC doesn't exist or fails, try direct delete
+            console.log('RPC function not available or failed, trying direct delete...', rpcError);
+            
+            const { error: deleteError } = await supabase
                 .from('app_users')
                 .delete()
-                .eq('id', userId)
-                .select();
+                .eq('id', userId);
             
-            if (error) {
-                console.error('Delete error:', error);
-                throw error;
+            if (deleteError) {
+                console.error('Delete error:', deleteError);
+                throw deleteError;
             }
             
-            if (!data || data.length === 0) {
-                throw new Error('User not found or already deleted');
+            // Verify deletion by checking if user still exists
+            const { data: verifyData } = await supabase
+                .from('app_users')
+                .select('id')
+                .eq('id', userId)
+                .single();
+            
+            if (verifyData) {
+                throw new Error('User still exists after delete attempt. Deletion may have failed due to permissions or constraints.');
             }
         } else {
             // RPC function worked
@@ -603,6 +627,7 @@ window.deleteUser = async function deleteUser() {
             }
         }
         
+        console.log('User deleted successfully');
         alert('✅ User deleted successfully!');
         closeEditUserModal();
         loadAllUsers();
