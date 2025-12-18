@@ -553,3 +553,42 @@ async function updateUserRole(event) {
     }
 }
 
+// Delete user
+window.deleteUser = async function deleteUser() {
+    const userId = document.getElementById('edit-user-id').value;
+    if (!userId) {
+        alert('❌ No user selected');
+        return;
+    }
+    
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) {
+        alert('❌ User not found');
+        return;
+    }
+    
+    // Confirm deletion
+    const confirmMessage = `Are you sure you want to delete user:\n\n${user.email}\n\nThis action cannot be undone!`;
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        // Delete from profiles table (this is the main user data)
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+        
+        if (error) throw error;
+        
+        alert('✅ User deleted successfully!');
+        closeEditUserModal();
+        loadAllUsers();
+        
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('❌ Error deleting user: ' + (error.message || 'Unknown error'));
+    }
+}
+
