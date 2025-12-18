@@ -574,9 +574,9 @@ window.deleteUser = async function deleteUser() {
     }
     
     try {
-        // Delete from profiles table (this is the main user data)
+        // Delete from app_users table
         const { error } = await supabase
-            .from('profiles')
+            .from('app_users')
             .delete()
             .eq('id', userId);
         
