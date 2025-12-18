@@ -152,19 +152,40 @@ async function loadUserProfile(session) {
 
 // Handle login
 async function handleLogin(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-    
-    if (error) {
-        return { success: false, error: error.message };
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+        
+        if (error) {
+            console.error('Login error:', error);
+            return { success: false, error: error.message };
+        }
+        
+        if (!data || !data.user) {
+            console.error('No user data returned from login');
+            return { success: false, error: 'Login failed: No user data received' };
+        }
+        
+        // Load user profile before reloading
+        try {
+            await loadUserProfile({ user: data.user });
+        } catch (profileError) {
+            console.error('Error loading user profile:', profileError);
+            // Continue with reload even if profile load fails
+        }
+        
+        // Small delay to ensure profile is saved, then reload
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+        
+        return { success: true };
+    } catch (err) {
+        console.error('Unexpected login error:', err);
+        return { success: false, error: err.message || 'An unexpected error occurred during login' };
     }
-    
-    // Reload immediately after successful authentication
-    window.location.reload();
-    
-    return { success: true };
 }
 
 // Make handleLogin explicitly available on window for inline scripts
