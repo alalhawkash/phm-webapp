@@ -749,39 +749,28 @@
             align-items: center;
             gap: 8px;
             min-width: 0;
-        }
-
-        .zone-item--screening .zone-name {
             background: rgba(0, 122, 255, 0.1);
             border-radius: 6px;
             padding: 6px 12px;
             margin: -6px 0;
             transition: all 0.2s ease;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
         }
         
         .zone-item--screening:hover .zone-name {
             background: rgba(0, 122, 255, 0.2);
             box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
         }
-        
+
         .zone-item--screening .zone-name-text {
             flex: 1;
             min-width: 0;
             color: #007aff;
             font-weight: 600;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            max-width: 100%;
-            line-height: 1.4;
-            font-size: 14px;
+            transition: all 0.2s ease;
         }
         
-        .zone-item--screening .zone-name-text.long-name {
-            font-size: 10px;
+        .zone-item--screening:hover .zone-name-text {
+            color: #0051d5;
         }
         
         .dark-mode .zone-item--screening .zone-name {
@@ -794,6 +783,10 @@
         
         .dark-mode .zone-item--screening .zone-name-text {
             color: #5ac8fa;
+        }
+        
+        .dark-mode .zone-item--screening:hover .zone-name-text {
+            color: #7dd3fc;
         }
 
         .zone-item--screening .zone-rank {
@@ -822,39 +815,28 @@
             align-items: center;
             gap: 8px;
             min-width: 0;
-        }
-
-        .zone-item--dm .zone-name {
             background: rgba(0, 122, 255, 0.1);
             border-radius: 6px;
             padding: 6px 12px;
             margin: -6px 0;
             transition: all 0.2s ease;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
         }
         
         .zone-item--dm:hover .zone-name {
             background: rgba(0, 122, 255, 0.2);
             box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
         }
-        
+
         .zone-item--dm .zone-name-text {
             flex: 1;
             min-width: 0;
             color: #007aff;
             font-weight: 600;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            max-width: 100%;
-            line-height: 1.4;
-            font-size: 14px;
+            transition: all 0.2s ease;
         }
         
-        .zone-item--dm .zone-name-text.long-name {
-            font-size: 10px;
+        .zone-item--dm:hover .zone-name-text {
+            color: #0051d5;
         }
         
         .dark-mode .zone-item--dm .zone-name {
@@ -867,6 +849,10 @@
         
         .dark-mode .zone-item--dm .zone-name-text {
             color: #5ac8fa;
+        }
+        
+        .dark-mode .zone-item--dm:hover .zone-name-text {
+            color: #7dd3fc;
         }
 
         .zone-item--dm .zone-value {
@@ -900,39 +886,28 @@
             align-items: center;
             gap: 8px;
             min-width: 0;
-        }
-
-        .zone-item--predm .zone-name {
             background: rgba(0, 122, 255, 0.1);
             border-radius: 6px;
             padding: 6px 12px;
             margin: -6px 0;
             transition: all 0.2s ease;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
         }
         
         .zone-item--predm:hover .zone-name {
             background: rgba(0, 122, 255, 0.2);
             box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
         }
-        
+
         .zone-item--predm .zone-name-text {
             flex: 1;
             min-width: 0;
             color: #007aff;
             font-weight: 600;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            max-width: 100%;
-            line-height: 1.4;
-            font-size: 14px;
+            transition: all 0.2s ease;
         }
         
-        .zone-item--predm .zone-name-text.long-name {
-            font-size: 10px;
+        .zone-item--predm:hover .zone-name-text {
+            color: #0051d5;
         }
         
         .dark-mode .zone-item--predm .zone-name {
@@ -945,6 +920,10 @@
         
         .dark-mode .zone-item--predm .zone-name-text {
             color: #5ac8fa;
+        }
+        
+        .dark-mode .zone-item--predm:hover .zone-name-text {
+            color: #7dd3fc;
         }
 
         .zone-item--predm .zone-rank {
@@ -2547,12 +2526,10 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const isLongName = zoneName.length > 18;
-                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--screening" onclick="navigateToZone('${escapedZoneName}', 'screening')">
                         <div class="zone-name">
-                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
+                            <span class="zone-name-text">${zoneName}</span>
                         </div>
                         <span class="zone-value">${oppText}</span>
                         <span class="zone-value">${zoneValueText}</span>
@@ -2634,12 +2611,10 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const isLongName = zoneName.length > 18;
-                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--dm" onclick="navigateToZone('${escapedZoneName}', 'dm')">
                         <div class="zone-name">
-                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
+                            <span class="zone-name-text">${zoneName}</span>
                         </div>
                         <span class="zone-value">${controlledText}</span>
                         <span class="zone-value">${uncontrolledText}</span>
@@ -2722,12 +2697,10 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const isLongName = zoneName.length > 18;
-                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--predm" onclick="navigateToZone('${escapedZoneName}', 'predm')">
                         <div class="zone-name">
-                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
+                            <span class="zone-name-text">${zoneName}</span>
                         </div>
                         <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                         <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
@@ -3602,14 +3575,12 @@
                     }
                     
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
-                    const isLongName = displayName.length > 18;
-                    const longNameClass = isLongName ? ' long-name' : '';
                     
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--screening" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text${longNameClass}">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>
                             </div>
                             <span class="zone-value">${phc.opportunities || '0'}</span>
                             <span class="zone-value">${phc.value}</span>
@@ -3640,14 +3611,12 @@
                     const uncontrolledText = !isNaN(phc.total) && !isNaN(phc.controlled) ? Math.max(0, phc.total - phc.controlled).toLocaleString() : '0';
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
-                    const isLongName = displayName.length > 18;
-                    const longNameClass = isLongName ? ' long-name' : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--dm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text${longNameClass}">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>
                             </div>
                             <span class="zone-value">${controlledText}</span>
                             <span class="zone-value">${uncontrolledText}</span>
@@ -3678,14 +3647,12 @@
                     const followupText = !isNaN(phc.followup) ? phc.followup.toLocaleString() : '0';
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
-                    const isLongName = displayName.length > 18;
-                    const longNameClass = isLongName ? ' long-name' : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--predm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text${longNameClass}">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>
                             </div>
                             <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                             <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
