@@ -35,6 +35,8 @@
         /* Prevent white page flash */
         html {
             background: #f5f5f5;
+            height: 100%;
+            overflow: hidden;
         }
         
         html.dark-mode {
@@ -43,12 +45,17 @@
         
         body {
             background: #f5f5f5;
-            min-height: 100vh;
+            height: 100vh;
+            height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
             /* Account for safe areas (browser UI bars) - with fallback values */
             padding-top: env(safe-area-inset-top, 0);
             padding-bottom: env(safe-area-inset-bottom, 0);
             padding-left: env(safe-area-inset-left, 0);
             padding-right: env(safe-area-inset-right, 0);
+            box-sizing: border-box;
         }
         
         body.dark-mode {
