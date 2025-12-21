@@ -349,6 +349,39 @@
     box-sizing: border-box;
 }
 
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 5;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: #d0d0d0;
+    transition: width 0.2s ease, background 0.2s ease;
+}
+
+.carousel-dot.active {
+    width: 20px;
+    border-radius: 999px;
+    background: #666;
+}
+
+.dark-mode .carousel-dot {
+    background: #3a4250;
+}
+
+.dark-mode .carousel-dot.active {
+    background: #007aff;
+}
+
 .dark-mode .container,
 .dark-mode .carousel-wrapper,
 .dark-mode .carousel {
@@ -369,6 +402,11 @@
     gap: 12px;
     touch-action: pan-x;
     scrollbar-width: none;
+}
+
+.carousel-wrapper {
+    display: flex;
+    flex-direction: column;
 }
 .carousel::-webkit-scrollbar {
             display: none;
@@ -1848,8 +1886,8 @@
                         </div>
                     </div>
                 </div>
+                <div class="carousel-dots" id="carouselDots"></div>
             </div>
-            <div class="carousel-dots" id="carouselDots"></div>
         </div>
         </div>
         <div class="main-view" id="zoneDetailView" style="display: none;">
@@ -2060,6 +2098,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="carousel-dots" id="phcDetailCarouselDots"></div>
             </div>
         </div>
     </div>
@@ -2071,9 +2110,10 @@
             const carousel = document.getElementById('carousel');
             const dotsContainer = document.getElementById('carouselDots');
             const cards = Array.from(carousel.querySelectorAll('.card'));
-            const dots = [];
-
+            
+            // Only show dots if there are multiple cards (swipeable)
             if (dotsContainer && cards.length > 1) {
+                const dots = [];
                 cards.forEach((_, i) => {
                     const dot = document.createElement('button');
                     dot.type = 'button';
@@ -2109,6 +2149,9 @@
                 });
 
                 updateDots();
+            } else if (dotsContainer) {
+                // Hide dots if only one card (not swipeable)
+                dotsContainer.style.display = 'none';
             }
         })();
     </script>
@@ -3559,15 +3602,15 @@
                 }, 0);
             }
             
+            // Create dots for zone detail carousel if swipeable
             const zoneDotsContainer = document.getElementById('zoneDetailCarouselDots');
-            
             if (zoneCarousel && zoneDotsContainer) {
                 const zoneCards = Array.from(zoneCarousel.querySelectorAll('.card'));
                 
                 // Only show dots if there are multiple cards (swipeable)
                 if (zoneCards.length > 1) {
-                    // Clear existing dots
                     zoneDotsContainer.innerHTML = '';
+                    const dots = [];
                     zoneCards.forEach((_, i) => {
                         const dot = document.createElement('button');
                         dot.type = 'button';
@@ -3580,6 +3623,7 @@
                             });
                         });
                         zoneDotsContainer.appendChild(dot);
+                        dots.push(dot);
                     });
                     
                     // Update dots immediately based on context (if available)
@@ -3589,14 +3633,12 @@
                         else if (context === 'dm') cardIndex = 1;
                         else if (context === 'predm') cardIndex = 2;
                         
-                        const dots = zoneDotsContainer.querySelectorAll('.carousel-dot');
                         dots.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
                     }
                     
                     // Update dots on scroll
                     const updateZoneDots = () => {
                         const index = Math.round(zoneCarousel.scrollLeft / zoneCarousel.clientWidth);
-                        const dots = zoneDotsContainer.querySelectorAll('.carousel-dot');
                         dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
                     };
                     
@@ -3611,7 +3653,7 @@
                         updateZoneDots();
                     }
                 } else {
-                    // Hide dots container if only one card (not swipeable)
+                    // Hide dots if only one card (not swipeable)
                     zoneDotsContainer.style.display = 'none';
                 }
             }
@@ -3738,13 +3780,6 @@
                                 void carousel.offsetHeight;
                                 
                                 
-                                // Update dots
-                                const dots = document.getElementById('carouselDots');
-                                if (dots) {
-                                    const dotButtons = dots.querySelectorAll('.carousel-dot');
-                                    dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
-                                }
-                                
                                 // Restore smooth scrolling
                                 requestAnimationFrame(() => {
                                     carousel.style.scrollBehavior = '';
@@ -3785,6 +3820,15 @@
         // Populate PHC dashboard with data
         function populatePHCDashboard(phcName) {
             if (!globalSheetData) return;
+            
+            // Create dots for PHC carousel if swipeable (though it's vertical, so dots won't be very useful)
+            const phcCarousel = document.getElementById('phcDetailCarousel');
+            const phcDotsContainer = document.getElementById('phcDetailCarouselDots');
+            if (phcCarousel && phcDotsContainer) {
+                const phcCards = Array.from(phcCarousel.querySelectorAll('.card'));
+                // PHC carousel is vertical, so hide dots (dots are for horizontal carousels)
+                phcDotsContainer.style.display = 'none';
+            }
             
             // Get the zone for this PHC (use current zone if available, otherwise look it up)
             let phcZone = currentZoneName;
