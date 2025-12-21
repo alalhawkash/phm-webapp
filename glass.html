@@ -634,7 +634,7 @@
 
         .zone-header {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
             padding: 8px 10px;
             background: #ffffff;
@@ -740,7 +740,7 @@
 
         .zone-item--screening {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
 
@@ -804,10 +804,10 @@
             justify-content: center;
         }
 
-        /* DM zone rows with four columns: Zone | Controlled | Uncontrolled | Weekly */
+        /* DM zone rows with three columns: Zone | Controlled | Uncontrolled */
         .zone-item--dm {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
+            grid-template-columns: 1.2fr 1fr 1fr;
             gap: 12px;
         }
 
@@ -861,10 +861,10 @@
             text-align: center;
         }
 
-        /* DM headers: 4 columns aligned with rows */
+        /* DM headers: 3 columns aligned with rows */
         .zone-header--dm {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
+            grid-template-columns: 1.2fr 1fr 1fr;
             gap: 12px;
             align-items: center;
         }
@@ -879,7 +879,7 @@
 
         .zone-item--predm {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
 
@@ -2471,7 +2471,7 @@
             const container = document.getElementById('screeningZonesList');
             if (!container) return;
 
-            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+            let html = '<div class="zone-header"><div class="zone-header-item">Zone</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div></div>';
             let rank = 1;
             
             // Apply scope filtering
@@ -2503,25 +2503,11 @@
                 const oppRaw = (row[SCREENING_ZONE_OPP_COL] || '').trim();
                 const achievedRaw = (row[SCREENING_ZONE_VALUE_COL] || '').trim();
                 const targetRaw = (row[SCREENING_ZONE_TARGET_COL] || '').trim();
-                const indicatorRaw = (row[SCREENING_ZONE_INDICATOR_COL] || '').toString().trim();
-                const indicatorNum = parseFloat(indicatorRaw);
-
                 const oppNum = parseFloat(oppRaw.replace(/,/g, ''));
                 const achievedNum = parseFloat(achievedRaw.replace(/,/g, ''));
                 const targetNum = parseFloat(targetRaw.replace(/,/g, ''));
                 const oppText = oppRaw || (!isNaN(oppNum) ? oppNum.toLocaleString() : '0');
                 let zoneValueText = achievedRaw || (isNaN(achievedNum) ? '0' : achievedNum.toLocaleString());
-
-                let indicatorArrow = '-';
-                let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                let indicatorText = '';
-                if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                    indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                    indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                    indicatorText = Math.abs(indicatorNum).toLocaleString();
-                } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                    indicatorText = '0';
-                }
 
                 if (!zoneName) break;
                 
@@ -2536,12 +2522,7 @@
                         </div>
                         <span class="zone-value">${oppText}</span>
                         <span class="zone-value">${zoneValueText}</span>
-                        <div class="zone-7d-indicator">
-                            <span class="${indicatorClass}">
-                                ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                            </span>
-                        </div>
-                                </div>
+                    </div>
                 `;
 
                 rank++;
@@ -2559,7 +2540,7 @@
             const container = document.getElementById('dmZonesList');
             if (!container) return;
 
-            let html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div><div class="zone-header-item">Weekly</div></div>';
+            let html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div></div>';
             let rank = 1;
             
             // Apply scope filtering
@@ -2587,26 +2568,12 @@
                 const zoneName = (row[DM_ZONE_NAME_COL] || '').trim();
                 const totalRaw = (row[DM_ZONE_TOTAL_COL] || '').trim();
                 const controlledRaw = (row[DM_ZONE_CONTROLLED_COL] || '').trim();
-                const indicatorRaw = (row[DM_ZONE_INDICATOR_COL] || '').toString().trim();
-                const indicatorNum = parseFloat(indicatorRaw);
-
                 const totalNum = parseFloat(totalRaw.replace(/,/g, ''));
                 const controlledNum = parseFloat(controlledRaw.replace(/,/g, ''));
                 const uncontrolledNum = !isNaN(totalNum) && !isNaN(controlledNum) ? Math.max(0, totalNum - controlledNum) : 0;
                 
                 const controlledText = !isNaN(controlledNum) ? controlledNum.toLocaleString() : '0';
                 const uncontrolledText = uncontrolledNum.toLocaleString();
-
-                let indicatorArrow = '-';
-                let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                let indicatorText = '';
-                if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                    indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                    indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                    indicatorText = Math.abs(indicatorNum).toLocaleString();
-                } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                    indicatorText = '0';
-                }
 
                 if (!zoneName) break;
                 
@@ -2621,11 +2588,6 @@
                         </div>
                         <span class="zone-value">${controlledText}</span>
                         <span class="zone-value">${uncontrolledText}</span>
-                        <div class="zone-7d-indicator">
-                            <span class="${indicatorClass}">
-                                ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                            </span>
-                        </div>
                     </div>
                 `;
 
@@ -2644,7 +2606,7 @@
             const container = document.getElementById('predmZonesList');
             if (!container) return;
 
-            let html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div><div class="zone-header-item">Weekly</div></div>';
+            let html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">Zone</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div></div>';
             let rank = 1;
             
             // Apply scope filtering
@@ -2683,17 +2645,6 @@
                 const normalText = normalRaw || (!isNaN(normalNum) ? normalNum.toLocaleString() : '0');
                 const followupText = followupRaw || (!isNaN(followupNum) ? followupNum.toLocaleString() : '0');
 
-                let indicatorArrow = '-';
-                let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                let indicatorText = '';
-                if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                    indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                    indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                    indicatorText = Math.abs(indicatorNum).toLocaleString();
-                } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                    indicatorText = '0';
-                }
-
                 if (!zoneName) break;
                 
                 // Apply scope filter for Pre-DM
@@ -2707,11 +2658,6 @@
                         </div>
                         <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                         <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
-                        <div class="zone-7d-indicator">
-                            <span class="${indicatorClass}">
-                                ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                            </span>
-                        </div>
                     </div>
                 `;
 
@@ -3563,20 +3509,8 @@
             let html = '';
             
             if (context === 'screening') {
-                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div><div class="zone-header-item">Weekly</div></div>';
+                html = '<div class="zone-header"><div class="zone-header-item">PHC</div><div class="zone-header-item">Missed Pts</div><div class="zone-header-item">Screened</div></div>';
                 phcs.forEach(phc => {
-                    const indicatorNum = phc.indicator || 0;
-                    let indicatorArrow = '-';
-                    let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                    let indicatorText = '';
-                    if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                        indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                        indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                        indicatorText = Math.abs(indicatorNum).toLocaleString();
-                    } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                        indicatorText = '0';
-                    }
-                    
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
                     
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -3587,29 +3521,12 @@
                             </div>
                             <span class="zone-value">${phc.opportunities || '0'}</span>
                             <span class="zone-value">${phc.value}</span>
-                            <div class="zone-7d-indicator">
-                                <span class="${indicatorClass}">
-                                    ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                                </span>
-                            </div>
                         </div>
                     `;
                 });
             } else if (context === 'dm') {
-                html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div><div class="zone-header-item">Weekly</div></div>';
+                html = '<div class="zone-header zone-header--dm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Controlled</div><div class="zone-header-item">Uncontrolled</div></div>';
                 phcs.forEach(phc => {
-                    const indicatorNum = phc.indicator || 0;
-                    let indicatorArrow = '-';
-                    let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                    let indicatorText = '';
-                    if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                        indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                        indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                        indicatorText = Math.abs(indicatorNum).toLocaleString();
-                    } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                        indicatorText = '0';
-                    }
-                    
                     const controlledText = !isNaN(phc.controlled) ? phc.controlled.toLocaleString() : '0';
                     const uncontrolledText = !isNaN(phc.total) && !isNaN(phc.controlled) ? Math.max(0, phc.total - phc.controlled).toLocaleString() : '0';
 
@@ -3623,29 +3540,12 @@
                             </div>
                             <span class="zone-value">${controlledText}</span>
                             <span class="zone-value">${uncontrolledText}</span>
-                            <div class="zone-7d-indicator">
-                                <span class="${indicatorClass}">
-                                    ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                                </span>
-                            </div>
                         </div>
                     `;
                 });
             } else if (context === 'predm') {
-                html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div><div class="zone-header-item">Weekly</div></div>';
+                html = '<div class="zone-header zone-header--predm"><div class="zone-header-item">PHC</div><div class="zone-header-item">Normal</div><div class="zone-header-item">Follow-up</div></div>';
                 phcs.forEach(phc => {
-                    const indicatorNum = phc.indicator || 0;
-                    let indicatorArrow = '-';
-                    let indicatorClass = 'zone-arrow zone-arrow-neutral';
-                    let indicatorText = '';
-                    if (!isNaN(indicatorNum) && indicatorNum !== 0) {
-                        indicatorArrow = indicatorNum > 0 ? '↑' : '↓';
-                        indicatorClass = indicatorNum > 0 ? 'zone-arrow zone-arrow-up' : 'zone-arrow zone-arrow-down';
-                        indicatorText = Math.abs(indicatorNum).toLocaleString();
-                    } else if (!isNaN(indicatorNum) && indicatorNum === 0) {
-                        indicatorText = '0';
-                    }
-                    
                     const normalText = !isNaN(phc.normal) ? phc.normal.toLocaleString() : '0';
                     const followupText = !isNaN(phc.followup) ? phc.followup.toLocaleString() : '0';
 
@@ -3659,11 +3559,6 @@
                             </div>
                             <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                             <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
-                            <div class="zone-7d-indicator">
-                                <span class="${indicatorClass}">
-                                    ${indicatorArrow}${indicatorText ? ` ${indicatorText}` : ''}
-                                </span>
-                            </div>
                         </div>
                     `;
                 });
