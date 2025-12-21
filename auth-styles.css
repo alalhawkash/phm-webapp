@@ -70,10 +70,6 @@ body.dark-mode #login-screen {
     border: 1px solid #e8e8e8;
     width: 85%;
     max-width: 320px;
-    position: absolute;
-    left: 0px;
-    top: 250px;
-    z-index: 0;
 }
 
 body.dark-mode .login-container {
