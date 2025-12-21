@@ -751,49 +751,35 @@
             min-width: 0;
         }
 
+        .zone-item--screening .zone-name {
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin: -6px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .zone-item--screening:hover .zone-name {
+            background: rgba(0, 122, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
+        }
+        
         .zone-item--screening .zone-name-text {
             flex: 1;
             min-width: 0;
-            color: #007aff; /* iOS-style link color */
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: inline-block;
+            color: #007aff;
+            font-weight: 600;
         }
         
-        .zone-item--screening .zone-name-text:hover {
-            text-decoration: underline;
-            color: #0051d5; /* Darker blue on hover */
+        .dark-mode .zone-item--screening .zone-name {
+            background: rgba(90, 200, 250, 0.15);
+        }
+        
+        .dark-mode .zone-item--screening:hover .zone-name {
+            background: rgba(90, 200, 250, 0.25);
         }
         
         .dark-mode .zone-item--screening .zone-name-text {
-            color: #5ac8fa; /* Lighter blue for dark mode */
-        }
-        
-        .dark-mode .zone-item--screening .zone-name-text:hover {
-            color: #7dd3fc;
-            text-decoration: underline;
-        }
-        
-        /* Add chevron arrow after name */
-        .zone-item--screening .zone-name::after {
-            content: '→';
-            color: #999;
-            font-size: 16px;
-            margin-left: 4px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: inline-block;
-        }
-        
-        .zone-item--screening:hover .zone-name::after {
-            color: #007aff;
-            transform: translateX(2px);
-        }
-        
-        .dark-mode .zone-item--screening .zone-name::after {
-            color: #666;
-        }
-        
-        .dark-mode .zone-item--screening:hover .zone-name::after {
             color: #5ac8fa;
         }
 
@@ -825,49 +811,35 @@
             min-width: 0;
         }
 
+        .zone-item--dm .zone-name {
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin: -6px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .zone-item--dm:hover .zone-name {
+            background: rgba(0, 122, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
+        }
+        
         .zone-item--dm .zone-name-text {
             flex: 1;
             min-width: 0;
-            color: #007aff; /* iOS-style link color */
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: inline-block;
+            color: #007aff;
+            font-weight: 600;
         }
         
-        .zone-item--dm .zone-name-text:hover {
-            text-decoration: underline;
-            color: #0051d5; /* Darker blue on hover */
+        .dark-mode .zone-item--dm .zone-name {
+            background: rgba(90, 200, 250, 0.15);
+        }
+        
+        .dark-mode .zone-item--dm:hover .zone-name {
+            background: rgba(90, 200, 250, 0.25);
         }
         
         .dark-mode .zone-item--dm .zone-name-text {
-            color: #5ac8fa; /* Lighter blue for dark mode */
-        }
-        
-        .dark-mode .zone-item--dm .zone-name-text:hover {
-            color: #7dd3fc;
-            text-decoration: underline;
-        }
-        
-        /* Add chevron arrow after name */
-        .zone-item--dm .zone-name::after {
-            content: '→';
-            color: #999;
-            font-size: 16px;
-            margin-left: 4px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: inline-block;
-        }
-        
-        .zone-item--dm:hover .zone-name::after {
-            color: #007aff;
-            transform: translateX(2px);
-        }
-        
-        .dark-mode .zone-item--dm .zone-name::after {
-            color: #666;
-        }
-        
-        .dark-mode .zone-item--dm:hover .zone-name::after {
             color: #5ac8fa;
         }
 
@@ -904,49 +876,35 @@
             min-width: 0;
         }
 
+        .zone-item--predm .zone-name {
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin: -6px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .zone-item--predm:hover .zone-name {
+            background: rgba(0, 122, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
+        }
+        
         .zone-item--predm .zone-name-text {
             flex: 1;
             min-width: 0;
-            color: #007aff; /* iOS-style link color */
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: inline-block;
+            color: #007aff;
+            font-weight: 600;
         }
         
-        .zone-item--predm .zone-name-text:hover {
-            text-decoration: underline;
-            color: #0051d5; /* Darker blue on hover */
+        .dark-mode .zone-item--predm .zone-name {
+            background: rgba(90, 200, 250, 0.15);
+        }
+        
+        .dark-mode .zone-item--predm:hover .zone-name {
+            background: rgba(90, 200, 250, 0.25);
         }
         
         .dark-mode .zone-item--predm .zone-name-text {
-            color: #5ac8fa; /* Lighter blue for dark mode */
-        }
-        
-        .dark-mode .zone-item--predm .zone-name-text:hover {
-            color: #7dd3fc;
-            text-decoration: underline;
-        }
-        
-        /* Add chevron arrow after name */
-        .zone-item--predm .zone-name::after {
-            content: '→';
-            color: #999;
-            font-size: 16px;
-            margin-left: 4px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: inline-block;
-        }
-        
-        .zone-item--predm:hover .zone-name::after {
-            color: #007aff;
-            transform: translateX(2px);
-        }
-        
-        .dark-mode .zone-item--predm .zone-name::after {
-            color: #666;
-        }
-        
-        .dark-mode .zone-item--predm:hover .zone-name::after {
             color: #5ac8fa;
         }
 
