@@ -777,6 +777,11 @@
             white-space: normal;
             max-width: 100%;
             line-height: 1.4;
+            font-size: 14px;
+        }
+        
+        .zone-item--screening .zone-name-text.long-name {
+            font-size: 12px;
         }
         
         .dark-mode .zone-item--screening .zone-name {
@@ -845,6 +850,11 @@
             white-space: normal;
             max-width: 100%;
             line-height: 1.4;
+            font-size: 14px;
+        }
+        
+        .zone-item--dm .zone-name-text.long-name {
+            font-size: 12px;
         }
         
         .dark-mode .zone-item--dm .zone-name {
@@ -918,6 +928,11 @@
             white-space: normal;
             max-width: 100%;
             line-height: 1.4;
+            font-size: 14px;
+        }
+        
+        .zone-item--predm .zone-name-text.long-name {
+            font-size: 12px;
         }
         
         .dark-mode .zone-item--predm .zone-name {
@@ -2532,10 +2547,12 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const isLongName = zoneName.length > 18;
+                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--screening" onclick="navigateToZone('${escapedZoneName}', 'screening')">
                         <div class="zone-name">
-                            <span class="zone-name-text">${zoneName}</span>
+                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
                         </div>
                         <span class="zone-value">${oppText}</span>
                         <span class="zone-value">${zoneValueText}</span>
@@ -2617,10 +2634,12 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const isLongName = zoneName.length > 18;
+                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--dm" onclick="navigateToZone('${escapedZoneName}', 'dm')">
                         <div class="zone-name">
-                            <span class="zone-name-text">${zoneName}</span>
+                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
                         </div>
                         <span class="zone-value">${controlledText}</span>
                         <span class="zone-value">${uncontrolledText}</span>
@@ -2703,10 +2722,12 @@
                 if (!shouldShowZone(zoneName)) continue;
 
                 const escapedZoneName = zoneName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const isLongName = zoneName.length > 18;
+                const longNameClass = isLongName ? ' long-name' : '';
                 html += `
                     <div class="zone-item zone-item--predm" onclick="navigateToZone('${escapedZoneName}', 'predm')">
                         <div class="zone-name">
-                            <span class="zone-name-text">${zoneName}</span>
+                            <span class="zone-name-text${longNameClass}">${zoneName}</span>
                         </div>
                         <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                         <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
@@ -3581,12 +3602,14 @@
                     }
                     
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
+                    const isLongName = displayName.length > 18;
+                    const longNameClass = isLongName ? ' long-name' : '';
                     
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--screening" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text${longNameClass}">${displayName}</span>
                             </div>
                             <span class="zone-value">${phc.opportunities || '0'}</span>
                             <span class="zone-value">${phc.value}</span>
@@ -3617,12 +3640,14 @@
                     const uncontrolledText = !isNaN(phc.total) && !isNaN(phc.controlled) ? Math.max(0, phc.total - phc.controlled).toLocaleString() : '0';
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
+                    const isLongName = displayName.length > 18;
+                    const longNameClass = isLongName ? ' long-name' : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--dm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text${longNameClass}">${displayName}</span>
                             </div>
                             <span class="zone-value">${controlledText}</span>
                             <span class="zone-value">${uncontrolledText}</span>
@@ -3653,12 +3678,14 @@
                     const followupText = !isNaN(phc.followup) ? phc.followup.toLocaleString() : '0';
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
+                    const isLongName = displayName.length > 18;
+                    const longNameClass = isLongName ? ' long-name' : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--predm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text${longNameClass}">${displayName}</span>
                             </div>
                             <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                             <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
