@@ -1849,6 +1849,7 @@
                     </div>
                 </div>
             </div>
+            <div class="carousel-dots" id="carouselDots"></div>
         </div>
         </div>
         <div class="main-view" id="zoneDetailView" style="display: none;">
@@ -1966,6 +1967,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="carousel-dots" id="zoneDetailCarouselDots"></div>
             </div>
         <div class="main-view" id="phcDetailView" style="display: none;">
             <div class="zone-detail-header" style="padding: 16px 20px; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
@@ -2065,7 +2067,50 @@
         <p>2025 Alhaalha</p>
     </footer>
     <script>
-        // Carousel dots removed - swiping still works
+        (function() {
+            const carousel = document.getElementById('carousel');
+            const dotsContainer = document.getElementById('carouselDots');
+            const cards = Array.from(carousel.querySelectorAll('.card'));
+            const dots = [];
+
+            if (dotsContainer && cards.length > 1) {
+                cards.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'carousel-dot';
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => {
+                        carousel.scrollTo({
+                            left: i * carousel.clientWidth,
+                            behavior: 'smooth'
+                        });
+                    });
+                    dotsContainer.appendChild(dot);
+                    dots.push(dot);
+                });
+
+                const updateDots = () => {
+                    const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+                };
+
+                let scrollTimeout;
+                carousel.addEventListener('scroll', () => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(updateDots, 50);
+                }, { passive: true });
+
+                window.addEventListener('resize', () => {
+                    carousel.scrollTo({
+                        left: Math.round(carousel.scrollLeft / carousel.clientWidth) * carousel.clientWidth,
+                        behavior: 'auto'
+                    });
+                    updateDots();
+                });
+
+                updateDots();
+            }
+        })();
     </script>
     <script>
         // Zone full names
@@ -3514,7 +3559,62 @@
                 }, 0);
             }
             
-            // Zone carousel dots removed - swiping still works
+            const zoneDotsContainer = document.getElementById('zoneDetailCarouselDots');
+            
+            if (zoneCarousel && zoneDotsContainer) {
+                const zoneCards = Array.from(zoneCarousel.querySelectorAll('.card'));
+                
+                // Only show dots if there are multiple cards (swipeable)
+                if (zoneCards.length > 1) {
+                    // Clear existing dots
+                    zoneDotsContainer.innerHTML = '';
+                    zoneCards.forEach((_, i) => {
+                        const dot = document.createElement('button');
+                        dot.type = 'button';
+                        dot.className = 'carousel-dot';
+                        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                        dot.addEventListener('click', () => {
+                            zoneCarousel.scrollTo({
+                                left: i * zoneCarousel.clientWidth,
+                                behavior: 'smooth'
+                            });
+                        });
+                        zoneDotsContainer.appendChild(dot);
+                    });
+                    
+                    // Update dots immediately based on context (if available)
+                    if (context !== undefined) {
+                        let cardIndex = 0;
+                        if (context === 'screening') cardIndex = 0;
+                        else if (context === 'dm') cardIndex = 1;
+                        else if (context === 'predm') cardIndex = 2;
+                        
+                        const dots = zoneDotsContainer.querySelectorAll('.carousel-dot');
+                        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
+                    }
+                    
+                    // Update dots on scroll
+                    const updateZoneDots = () => {
+                        const index = Math.round(zoneCarousel.scrollLeft / zoneCarousel.clientWidth);
+                        const dots = zoneDotsContainer.querySelectorAll('.carousel-dot');
+                        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+                    };
+                    
+                    let zoneScrollTimeout;
+                    zoneCarousel.addEventListener('scroll', () => {
+                        clearTimeout(zoneScrollTimeout);
+                        zoneScrollTimeout = setTimeout(updateZoneDots, 50);
+                    }, { passive: true });
+                    
+                    // Only call updateZoneDots if context wasn't set (to avoid double update)
+                    if (context === undefined) {
+                        updateZoneDots();
+                    }
+                } else {
+                    // Hide dots container if only one card (not swipeable)
+                    zoneDotsContainer.style.display = 'none';
+                }
+            }
 
             // Populate PHCs for the selected zone
             if (globalSheetData) {
@@ -3637,6 +3737,13 @@
                                 // Force synchronous layout recalculation
                                 void carousel.offsetHeight;
                                 
+                                
+                                // Update dots
+                                const dots = document.getElementById('carouselDots');
+                                if (dots) {
+                                    const dotButtons = dots.querySelectorAll('.carousel-dot');
+                                    dotButtons.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
+                                }
                                 
                                 // Restore smooth scrolling
                                 requestAnimationFrame(() => {
