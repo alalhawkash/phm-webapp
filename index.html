@@ -2,36 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>PHM - Population Health Management</title>
     
     <!-- Apply dark mode immediately to prevent white flash -->
     <script>
         (function() {
-            // Set zoom to 90% immediately
+            // Reset zoom to default (100%) on page load
             if (document.body) {
-                document.body.style.zoom = '0.9';
+                document.body.style.zoom = '1';
             }
             
-            // Check if we should show loading (coming from login)
-            if (sessionStorage.getItem('showLoadingOnReload') === 'true') {
-                // Clear the flag
-                sessionStorage.removeItem('showLoadingOnReload');
-                
-                // Show loading overlay
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay) {
-                    loadingOverlay.classList.add('active');
-                }
-            }
-            
-            // Ensure viewport is set correctly
-            const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-            }
-            
-            // Apply dark mode
             const savedTheme = localStorage.getItem('phm-theme');
             if (savedTheme === 'dark') {
                 if (document.documentElement) {
@@ -63,6 +44,11 @@
         body {
             background: #f5f5f5;
             min-height: 100vh;
+            /* Account for safe areas (browser UI bars) - with fallback values */
+            padding-top: env(safe-area-inset-top, 0);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+            padding-left: env(safe-area-inset-left, 0);
+            padding-right: env(safe-area-inset-right, 0);
         }
         
         body.dark-mode {
@@ -513,77 +499,24 @@
         // Check last updated every 2 seconds
         setInterval(syncLastUpdated, 2000);
         
-        // Set zoom to 90% on page load/reload
+        // Reset zoom to default (100%) on page load/reload
         window.addEventListener('load', function() {
-            document.body.style.zoom = '0.9';
+            document.body.style.zoom = '1';
             if (document.documentElement) {
-                document.documentElement.style.zoom = '0.9';
+                document.documentElement.style.zoom = '1';
             }
         });
         
-        // Also set zoom to 90% on DOMContentLoaded for faster reset
+        // Also reset on DOMContentLoaded for faster reset
         document.addEventListener('DOMContentLoaded', function() {
             if (document.body) {
-                document.body.style.zoom = '0.9';
+                document.body.style.zoom = '1';
             }
             if (document.documentElement) {
-                document.documentElement.style.zoom = '0.9';
+                document.documentElement.style.zoom = '1';
             }
         });
     </script>
-    
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner">
-            <img src="loading-logo.gif" alt="Loading" class="loading-logo">
-            <p class="loading-text">Loading...</p>
-        </div>
-    </div>
-    
-    <style>
-        /* Loading Overlay Styles */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .loading-spinner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .loading-logo {
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-        }
-
-        .loading-text {
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 500;
-            margin: 0;
-        }
-    </style>
 </body>
 </html>
 
