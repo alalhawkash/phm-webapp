@@ -884,8 +884,8 @@
             background: transparent;
             border: none;
             padding: 0;
-            width: 44px;
-            height: 44px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -894,14 +894,14 @@
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
             position: relative;
-            color: #007aff;
+            color: #666;
+            font-size: 18px;
+            line-height: 1;
         }
 
         .back-button::before {
             content: '←';
-            font-size: 20px;
             font-weight: 400;
-            line-height: 1;
         }
 
         .back-button:hover {
@@ -913,7 +913,7 @@
         }
 
         .dark-mode .back-button {
-            color: #007aff;
+            color: #999;
         }
 
         /* Zone detail header (light and dark) */
@@ -1721,7 +1721,7 @@
             </div>
                             <div class="metrics-section">
                                 <div class="metric-row">
-                                    <span class="metric-label">Target</span>
+                                    <span class="metric-label">Population</span>
                                     <span class="metric-value target-value" id="targetValue">0</span>
         </div>
                                 <div class="metric-row">
@@ -1838,7 +1838,7 @@
                                 </div>
                                 <div class="metrics-section">
                                     <div class="metric-row">
-                                        <span class="metric-label">Target</span>
+                                        <span class="metric-label">Population</span>
                                         <span class="metric-value target-value" id="zoneDetailTargetValue">0</span>
                                     </div>
                                     <div class="metric-row">
@@ -1928,14 +1928,14 @@
                                     <div class="zone-item">
                                         <span class="zone-name">Loading...</span>
                                     </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="carousel-dots" id="zoneDetailCarouselDots"></div>
             </div>
-            <div class="carousel-dots" id="zoneDetailCarouselDots"></div>
-        </div>
         <div class="main-view" id="phcDetailView" style="display: none;">
             <div class="zone-detail-header" style="padding: 16px 20px; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
                 <button class="back-button" id="phcDetailBackButton" onclick="goBackToZone()" aria-label="Go back"></button>
@@ -2628,9 +2628,9 @@
         let scopeReceivedFromParent = false;
         
         function loadUserScope() {
-            try {
-                const scopeJson = localStorage.getItem('userScope');
-                if (scopeJson) {
+        try {
+            const scopeJson = localStorage.getItem('userScope');
+            if (scopeJson) {
                     const parsed = JSON.parse(scopeJson);
                     // Only update if scope data changed
                     if (JSON.stringify(parsed) !== JSON.stringify(userScopeData)) {
@@ -2638,10 +2638,10 @@
                         console.log('User scope loaded from localStorage:', userScopeData);
                         return true; // Scope data changed
                     }
-                }
-            } catch (e) {
-                console.error('Error loading user scope:', e);
             }
+        } catch (e) {
+            console.error('Error loading user scope:', e);
+        }
             return false; // No change
         }
         
@@ -2940,9 +2940,9 @@
                 // Re-populate zones if scope data changed or wasn't available before
                 if (scopeChanged || !userScopeData) {
                     // Scope data just became available, re-populate zones
-                    populateScreeningZones(data);
-                    populateDMZones(data);
-                    populatePreDMZones(data);
+                populateScreeningZones(data);
+                populateDMZones(data);
+                populatePreDMZones(data);
                 } else {
                     // Normal population
                     populateScreeningZones(data);
@@ -3003,8 +3003,8 @@
                             const backButton = document.getElementById('zoneDetailBackButton');
                             if (backButton) {
                                 backButton.style.display = 'none';
-                            }
-                        }
+                    }
+                }
                     }
                 }, 2000);
 
@@ -3198,14 +3198,14 @@
             
             // Fallback: If header not found in first row, search all rows
             if (!found) {
-                for (let i = 0; i < data.length; i++) {
-                    const row = data[i] || [];
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i] || [];
                     const headerCell = String(row[headerCol] || '').trim().toUpperCase();
                     
                     if (headerCell.includes('DM PHC') || headerCell.includes('PRE-DM PHC') || headerCell.includes('SCREENING PHC')) {
                         // Found header, look for data start
                         for (let j = i + 1; j < Math.min(i + 10, data.length); j++) {
-                            const nextRow = data[j] || [];
+                        const nextRow = data[j] || [];
                             const phcNameCell = String(nextRow[nameCol] || '').trim();
                             
                             if (phcNameCell && phcNameCell.length > 2 && 
@@ -3221,13 +3221,13 @@
                                 !phcNameCell.toUpperCase().includes('UNCONTROLLED')) {
                                 const hasData = nextRow[nameCol + 1] || nextRow[nameCol + 2];
                                 if (hasData) {
-                                    found = true;
-                                    startRow = j;
-                                    break;
+                            found = true;
+                                startRow = j;
+                            break;
                                 }
-                            }
                         }
-                        if (found) break;
+                    }
+                    if (found) break;
                     }
                 }
             }
@@ -3624,7 +3624,7 @@
 
             const titleEl = document.getElementById('zoneDetailTitle');
             if (titleEl) titleEl.textContent = fullZoneName;
-            
+
             // Restore smooth scrolling after view is shown
             if (zoneCarousel) {
                 setTimeout(() => {
@@ -3678,7 +3678,7 @@
                 
                 // Only call updateZoneDots if context wasn't set (to avoid double update)
                 if (context === undefined) {
-                    updateZoneDots();
+                updateZoneDots();
                 }
             }
 
