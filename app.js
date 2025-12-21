@@ -153,52 +153,25 @@ async function loadUserProfile(session) {
 // Handle login
 async function handleLogin(email, password) {
     try {
-        // Show loading overlay immediately
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        if (loadingOverlay) {
-            loadingOverlay.classList.add('active');
-        }
-        
-        // Set zoom to 90% and make responsive
-        document.body.style.zoom = '0.9';
-        const viewport = document.querySelector('meta[name="viewport"]');
-        if (viewport) {
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        }
-        
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
-        
-        if (error) {
-            // Hide loading on error
-            if (loadingOverlay) {
-                loadingOverlay.classList.remove('active');
-            }
-            return { success: false, error: error.message };
-        }
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+    
+    if (error) {
+        return { success: false, error: error.message };
+    }
         
         if (!data || !data.user) {
-            if (loadingOverlay) {
-                loadingOverlay.classList.remove('active');
-            }
             return { success: false, error: 'Login failed: No user data received' };
         }
         
-        // Store flag to show loading on reload
-        sessionStorage.setItem('showLoadingOnReload', 'true');
-        
-        // Reload immediately - loading will persist through reload
+        // Reload immediately - checkAuth() will handle profile loading on page load
         window.location.reload();
-        
-        return { success: true };
+    
+    return { success: true };
     } catch (err) {
         console.error('Unexpected login error:', err);
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        if (loadingOverlay) {
-            loadingOverlay.classList.remove('active');
-        }
         return { success: false, error: err.message || 'An unexpected error occurred during login' };
     }
 }
