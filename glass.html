@@ -894,16 +894,14 @@
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
             position: relative;
+            color: #007aff;
         }
 
         .back-button::before {
-            content: '';
-            width: 10px;
-            height: 10px;
-            border-left: 2px solid #007aff;
-            border-bottom: 2px solid #007aff;
-            transform: rotate(45deg);
-            margin-left: 3px;
+            content: '←';
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 1;
         }
 
         .back-button:hover {
@@ -914,9 +912,8 @@
             opacity: 0.5;
         }
 
-        .dark-mode .back-button::before {
-            border-left-color: #007aff;
-            border-bottom-color: #007aff;
+        .dark-mode .back-button {
+            color: #007aff;
         }
 
         /* Zone detail header (light and dark) */
