@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PHM">
@@ -1796,6 +1796,29 @@
             }
         }
     </style>
+    <script>
+        (function() {
+            // Set zoom to 90% immediately
+            if (document.body) {
+                document.body.style.zoom = '0.9';
+            }
+            
+            // Ensure viewport is responsive
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            }
+            
+            // Check if we should show loading (coming from login)
+            if (sessionStorage.getItem('showLoadingOnReload') === 'true') {
+                sessionStorage.removeItem('showLoadingOnReload');
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('active');
+                }
+            }
+        })();
+    </script>
 </head>
 <body>
     <!-- Loading Overlay -->
