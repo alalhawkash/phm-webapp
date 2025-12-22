@@ -2793,12 +2793,12 @@
         const PREDM_PHC_NO_APPT_90D_COL = 47; // PRE-DM Patients NO VISIT 90DAYS BY THE PHCS (column 47)
 
         // Future Appointments columns
-        const FUTURE_APPT_STATUS_COL = 51; // Future_Appt_statue (column 51)
-        const FUTURE_APPT_APPOINTMENT_COL = 52; // Future_Appt_Appointment (column 52)
-        const FUTURE_APPT_DATE_TIME_COL = 53; // Future_Appt_Date_and_time (column 53)
-        const FUTURE_APPT_MRN_COL = 54; // Future_Appt_mrn (column 54)
-        const FUTURE_APPT_PHC_COL = 55; // Future_Appt_phc (column 55)
-        const FUTURE_APPT_ZONE_COL = 56; // Future_Appt_zone (column 56)
+        const FUTURE_APPT_STATUS_COL = 50; // Future_Appt_statue (column 50/AY)
+        const FUTURE_APPT_APPOINTMENT_COL = 51; // Future_Appt_Appointment (column 51/AZ)
+        const FUTURE_APPT_DATE_TIME_COL = 52; // Future_Appt_Date_and_time (column 52/BA)
+        const FUTURE_APPT_MRN_COL = 53; // Future_Appt_mrn (column 53/BB)
+        const FUTURE_APPT_PHC_COL = 54; // Future_Appt_phc (column 54/BC)
+        const FUTURE_APPT_ZONE_COL = 55; // Future_Appt_zone (column 55/BD)
 
         const DM_ZONE_START_ROW = 98; // Will be found dynamically
         const DM_ZONE_NAME_COL = 18; // DM Zone
@@ -3942,11 +3942,15 @@
                 phcs.forEach(phc => {
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
                     
+                    // Get appointment count for this PHC
+                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
+                    
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--screening" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>${badgeHtml}
                             </div>
                             <span class="zone-value">${phc.opportunities || '0'}</span>
                             <span class="zone-value">${phc.value}</span>
@@ -3961,11 +3965,15 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
+                    // Get appointment count for this PHC
+                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
+
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--dm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>${badgeHtml}
                             </div>
                             <span class="zone-value">${controlledText}</span>
                             <span class="zone-value">${uncontrolledText}</span>
@@ -3980,11 +3988,15 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
+                    // Get appointment count for this PHC
+                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
+
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     html += `
                         <div class="zone-item zone-item--predm" onclick="navigateToPHC('${escapedPhcName}')">
                             <div class="zone-name">
-                                <span class="zone-name-text">${displayName}</span>
+                                <span class="zone-name-text">${displayName}</span>${badgeHtml}
                             </div>
                             <span class="zone-value" style="color: #4a9e5f;">${normalText}</span>
                             <span class="zone-value" style="color: #c85a5a;">${followupText}</span>
