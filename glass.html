@@ -1153,6 +1153,32 @@
             color: #7dd3fc;
         }
 
+        /* Appointment Count Badge */
+        .phc-appointment-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 6px;
+            background: #9C27B0;
+            color: #ffffff;
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+            line-height: 1;
+        }
+
+        .dark-mode .phc-appointment-badge {
+            background: #BA68C8;
+            color: #ffffff;
+        }
+
+        .phc-appointment-badge.zero {
+            display: none; /* Hide badge if count is 0 */
+        }
+
         .zone-item--predm .zone-rank {
             min-width: 24px;
         }
