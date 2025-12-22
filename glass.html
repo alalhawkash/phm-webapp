@@ -1749,6 +1749,112 @@
             border-left-color: #FF9800; /* برتقالي أفتح قليلاً في الوضع الداكن */
         }
         
+        /* شريط جانبي بنفسجي - Upcoming Appointments */
+        .phc-card-appointments {
+            border-left: 4px solid #9C27B0; /* بنفسجي */
+        }
+        
+        .dark-mode .phc-card-appointments {
+            border-left-color: #BA68C8; /* بنفسجي أفتح قليلاً في الوضع الداكن */
+        }
+        
+        /* Appointments List Styles */
+        .phc-appointments-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 100%;
+            max-height: calc(100% - 40px);
+            padding: 4px 0;
+        }
+        
+        .phc-appointment-item {
+            display: flex;
+            flex-direction: column;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            background: rgba(156, 39, 176, 0.08);
+            border-radius: 6px;
+            border-left: 3px solid #9C27B0;
+            font-size: 9px;
+            line-height: 1.4;
+        }
+        
+        .dark-mode .phc-appointment-item {
+            background: rgba(156, 39, 176, 0.12);
+            border-left-color: #BA68C8;
+        }
+        
+        .phc-appointment-status {
+            font-weight: 600;
+            color: #9C27B0;
+            margin-bottom: 2px;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .dark-mode .phc-appointment-status {
+            color: #BA68C8;
+        }
+        
+        .phc-appointment-status.not-screened {
+            color: #FF9800;
+        }
+        
+        .dark-mode .phc-appointment-status.not-screened {
+            color: #FFB74D;
+        }
+        
+        .phc-appointment-status.dm-followup {
+            color: #F57C00;
+        }
+        
+        .dark-mode .phc-appointment-status.dm-followup {
+            color: #FF9800;
+        }
+        
+        .phc-appointment-status.predm-followup {
+            color: #FF9800;
+        }
+        
+        .dark-mode .phc-appointment-status.predm-followup {
+            color: #FFB74D;
+        }
+        
+        .phc-appointment-date {
+            color: #666;
+            font-size: 8px;
+            margin-bottom: 2px;
+        }
+        
+        .dark-mode .phc-appointment-date {
+            color: #bfc7d1;
+        }
+        
+        .phc-appointment-mrn {
+            color: #888;
+            font-size: 7px;
+            font-family: monospace;
+        }
+        
+        .dark-mode .phc-appointment-mrn {
+            color: #a8b3c3;
+        }
+        
+        .phc-appointment-loading,
+        .phc-appointment-empty {
+            text-align: center;
+            color: #888;
+            font-size: 9px;
+            padding: 8px;
+        }
+        
+        .dark-mode .phc-appointment-loading,
+        .dark-mode .phc-appointment-empty {
+            color: #bfc7d1;
+        }
+        
         /* PHC carousel - vertical layout */
         #phcDetailCarousel {
             flex-direction: column;
@@ -2425,6 +2531,22 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Upcoming Appointments Card -->
+                    <div class="card phc-card-appointments">
+                        <div class="card-content">
+                            <div class="phc-watch-dashboard">
+                                <div class="phc-watch-header">
+                                    <h2>Upcoming Appointments</h2>
+                                </div>
+                                <div class="phc-appointments-list" id="phcAppointmentsList">
+                                    <div class="phc-appointment-item">
+                                        <span class="phc-appointment-loading">Loading appointments...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2669,6 +2791,14 @@
         const PREDM_PHC_FOLLOWUP_COL = 45; // Pre-DM No Follow-up (column 45)
         const PREDM_PHC_INDICATOR_COL = 46; // 7-Day Indicator PRE-DM (column 46)
         const PREDM_PHC_NO_APPT_90D_COL = 47; // PRE-DM Patients NO VISIT 90DAYS BY THE PHCS (column 47)
+
+        // Future Appointments columns
+        const FUTURE_APPT_STATUS_COL = 51; // Future_Appt_statue (column 51)
+        const FUTURE_APPT_APPOINTMENT_COL = 52; // Future_Appt_Appointment (column 52)
+        const FUTURE_APPT_DATE_TIME_COL = 53; // Future_Appt_Date_and_time (column 53)
+        const FUTURE_APPT_MRN_COL = 54; // Future_Appt_mrn (column 54)
+        const FUTURE_APPT_PHC_COL = 55; // Future_Appt_phc (column 55)
+        const FUTURE_APPT_ZONE_COL = 56; // Future_Appt_zone (column 56)
 
         const DM_ZONE_START_ROW = 98; // Will be found dynamically
         const DM_ZONE_NAME_COL = 18; // DM Zone
@@ -4144,6 +4274,82 @@
             populatePHCDashboard(phcName);
         }
         
+        // Parse and filter future appointments for a specific PHC
+        function getFutureAppointmentsForPHC(phcName, sheetData) {
+            if (!sheetData || !phcName) return [];
+            
+            const appointments = [];
+            const normalizedSearchName = normalizePHC(phcName);
+            
+            // Find the header row for future appointments
+            let startRow = -1;
+            for (let i = 0; i < sheetData.length; i++) {
+                const row = sheetData[i] || [];
+                const statusCell = String(row[FUTURE_APPT_STATUS_COL] || '').trim();
+                if (statusCell && (statusCell.includes('Future_Appt') || statusCell.includes('STATUE') || statusCell.includes('Status'))) {
+                    startRow = i + 1; // Start from row after header
+                    break;
+                }
+            }
+            
+            // If no header found, try to find data rows (rows with status values)
+            if (startRow === -1) {
+                for (let i = 0; i < sheetData.length; i++) {
+                    const row = sheetData[i] || [];
+                    const statusCell = String(row[FUTURE_APPT_STATUS_COL] || '').trim();
+                    const phcCell = String(row[FUTURE_APPT_PHC_COL] || '').trim();
+                    if (statusCell && phcCell && 
+                        (statusCell.includes('Not Screened') || 
+                         statusCell.includes('Pre-DM') || 
+                         statusCell.includes('Uncontrolled DM'))) {
+                        startRow = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (startRow === -1) return [];
+            
+            // Parse appointments
+            for (let i = startRow; i < sheetData.length; i++) {
+                const row = sheetData[i] || [];
+                const status = String(row[FUTURE_APPT_STATUS_COL] || '').trim();
+                const appointment = String(row[FUTURE_APPT_APPOINTMENT_COL] || '').trim();
+                const dateTime = String(row[FUTURE_APPT_DATE_TIME_COL] || '').trim();
+                const mrn = String(row[FUTURE_APPT_MRN_COL] || '').trim();
+                const phc = String(row[FUTURE_APPT_PHC_COL] || '').trim();
+                const zone = String(row[FUTURE_APPT_ZONE_COL] || '').trim();
+                
+                // Skip empty rows
+                if (!status && !phc && !mrn) continue;
+                
+                // Match PHC name (normalized)
+                const normalizedPHCName = normalizePHC(phc);
+                if (normalizedPHCName === normalizedSearchName) {
+                    appointments.push({
+                        status: status,
+                        appointment: appointment || dateTime,
+                        dateTime: dateTime || appointment,
+                        mrn: mrn,
+                        phc: phc,
+                        zone: zone
+                    });
+                }
+            }
+            
+            // Sort by date/time (most recent first, or upcoming first)
+            appointments.sort((a, b) => {
+                const dateA = new Date(a.dateTime);
+                const dateB = new Date(b.dateTime);
+                if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                if (isNaN(dateA.getTime())) return 1;
+                if (isNaN(dateB.getTime())) return -1;
+                return dateA - dateB; // Ascending order (earliest first)
+            });
+            
+            return appointments;
+        }
+        
         // Populate PHC dashboard with data
         function populatePHCDashboard(phcName) {
             if (!globalSheetData) return;
@@ -4296,6 +4502,56 @@
             } else {
                 document.getElementById('phcPreDMTotal').textContent = '0';
                 document.getElementById('phcFollowupPreDM90').textContent = '0';
+            }
+            
+            // UPCOMING APPOINTMENTS CARD: Display future appointments for this PHC
+            const appointmentsList = document.getElementById('phcAppointmentsList');
+            if (appointmentsList) {
+                const appointments = getFutureAppointmentsForPHC(phcName, globalSheetData);
+                
+                if (appointments.length === 0) {
+                    appointmentsList.innerHTML = '<div class="phc-appointment-empty">No upcoming appointments</div>';
+                } else {
+                    let html = '';
+                    appointments.forEach(appt => {
+                        // Determine status class
+                        let statusClass = '';
+                        if (appt.status.includes('Not Screened')) {
+                            statusClass = 'not-screened';
+                        } else if (appt.status.includes('Uncontrolled DM')) {
+                            statusClass = 'dm-followup';
+                        } else if (appt.status.includes('Pre-DM')) {
+                            statusClass = 'predm-followup';
+                        }
+                        
+                        // Format date/time
+                        let displayDateTime = appt.dateTime || appt.appointment || '--';
+                        // Try to format if it's a valid date string
+                        try {
+                            const dateObj = new Date(displayDateTime);
+                            if (!isNaN(dateObj.getTime())) {
+                                // Format as MM/DD/YYYY, HH:MM
+                                const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+                                const day = dateObj.getDate().toString().padStart(2, '0');
+                                const year = dateObj.getFullYear();
+                                const hours = dateObj.getHours().toString().padStart(2, '0');
+                                const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+                                displayDateTime = `${month}/${day}/${year}, ${hours}:${minutes}`;
+                            }
+                        } catch (e) {
+                            // Keep original format if parsing fails
+                        }
+                        
+                        html += `
+                            <div class="phc-appointment-item">
+                                <div class="phc-appointment-status ${statusClass}">${appt.status || '--'}</div>
+                                <div class="phc-appointment-date">${displayDateTime}</div>
+                                <div class="phc-appointment-mrn">MRN: ${appt.mrn || '--'}</div>
+                            </div>
+                        `;
+                    });
+                    appointmentsList.innerHTML = html;
+                }
             }
         }
 
