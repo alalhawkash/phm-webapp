@@ -4358,5 +4358,25 @@
         });
     })();
     </script>
+    
+    <script>
+        // Reset zoom to default (100%) on page load
+        window.addEventListener('load', function() {
+            document.body.style.zoom = '1';
+            if (document.documentElement) {
+                document.documentElement.style.zoom = '1';
+            }
+        });
+        
+        // Also reset on DOMContentLoaded for faster reset
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.body) {
+                document.body.style.zoom = '1';
+            }
+            if (document.documentElement) {
+                document.documentElement.style.zoom = '1';
+            }
+        });
+    </script>
 </body>
 </html>
