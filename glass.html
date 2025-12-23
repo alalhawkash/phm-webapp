@@ -1778,21 +1778,23 @@
         /* شريط جانبي بنفسجي - Upcoming Appointments */
         .phc-card-appointments {
             border-left: 4px solid #9C27B0; /* بنفسجي */
-            transition: height 0.3s ease, max-height 0.3s ease;
         }
         
         .dark-mode .phc-card-appointments {
             border-left-color: #BA68C8; /* بنفسجي أفتح قليلاً في الوضع الداكن */
         }
 
-        .phc-card-appointments.expanded {
-            height: auto;
+        #phcDetailCarousel .phc-card-appointments {
+            transition: max-height 0.3s ease;
+            overflow: visible;
+        }
+
+        #phcDetailCarousel .phc-card-appointments.expanded {
             max-height: 600px;
         }
         
-        #phcDetailCarousel .phc-card-appointments.expanded {
-            height: auto;
-            max-height: 600px;
+        #phcDetailCarousel .phc-card-appointments.expanded .card-content {
+            overflow-y: auto;
         }
         
         /* Calendar Container */
