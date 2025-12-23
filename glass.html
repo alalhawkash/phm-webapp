@@ -1793,26 +1793,31 @@
             min-height: 0;
         }
 
-        /* Calendar Week View */
+        /* Calendar Week View - 3 rows layout */
         .phc-calendar-week {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 4px;
             padding: 4px 0;
             flex: 1;
         }
 
+        .phc-calendar-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
         .phc-calendar-day {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 4px 2px;
             border-radius: 6px;
             background: rgba(156, 39, 176, 0.05);
             cursor: pointer;
             transition: background 0.2s ease;
-            min-height: 50px;
-            justify-content: space-between;
+            min-height: 40px;
         }
 
         .phc-calendar-day:hover {
@@ -1842,7 +1847,8 @@
             color: #888;
             text-transform: uppercase;
             font-weight: 500;
-            margin-bottom: 2px;
+            text-align: center;
+            padding: 2px 0;
         }
 
         .dark-mode .phc-calendar-day-label {
@@ -1853,7 +1859,6 @@
             font-size: 12px;
             font-weight: 600;
             color: #1a1a1a;
-            margin-bottom: 2px;
         }
 
         .dark-mode .phc-calendar-day-number {
@@ -1881,6 +1886,14 @@
 
         .phc-calendar-day-badge.zero {
             display: none;
+        }
+
+        .phc-calendar-day-badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 0;
+            min-height: 20px;
         }
 
         /* Appointments List Styles */
@@ -4913,7 +4926,11 @@
                 // Store appointments globally for date click handler
                 window.currentPHCAppointments = appointments;
                 
-                let html = '';
+                // Generate three rows: day labels, dates, badges
+                let dayLabelsHtml = '';
+                let datesHtml = '';
+                let badgesHtml = '';
+                
                 weekDates.forEach((date, index) => {
                     const dateKey = formatDateKey(date);
                     const count = appointmentCounts[dateKey] || 0;
@@ -4921,20 +4938,33 @@
                     const dayName = getDayName(date);
                     const dayNumber = date.getDate();
                     
-                    html += `
+                    // Day labels row
+                    dayLabelsHtml += `<div class="phc-calendar-day-label">${dayName}</div>`;
+                    
+                    // Dates row (clickable)
+                    datesHtml += `
                         <div class="phc-calendar-day ${isToday ? 'selected' : ''}" 
                              onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
-                            <div class="phc-calendar-day-label">${dayName}</div>
                             <div class="phc-calendar-day-number">${dayNumber}</div>
+                        </div>
+                    `;
+                    
+                    // Badges row
+                    badgesHtml += `
+                        <div class="phc-calendar-day-badge-container">
                             ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
                         </div>
                     `;
                 });
                 
-                calendarWeek.innerHTML = html;
+                calendarWeek.innerHTML = `
+                    <div class="phc-calendar-row">${dayLabelsHtml}</div>
+                    <div class="phc-calendar-row">${datesHtml}</div>
+                    <div class="phc-calendar-row">${badgesHtml}</div>
+                `;
                 
                 // Ensure calendar is visible and list is hidden
-                calendarWeek.style.display = 'grid';
+                calendarWeek.style.display = 'flex';
                 const appointmentsList = document.getElementById('phcAppointmentsList');
                 if (appointmentsList) {
                     appointmentsList.style.display = 'none';
