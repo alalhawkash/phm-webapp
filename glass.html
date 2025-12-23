@@ -4122,8 +4122,13 @@
                 phcs.forEach(phc => {
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
                     
-                    // Get appointment count for this PHC
-                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    // Get appointment count for this PHC (current week only)
+                    let appointmentCount = 0;
+                    if (globalSheetData) {
+                        const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
+                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        appointmentCount = weekAppointments.length;
+                    }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
                     
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -4145,8 +4150,13 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
-                    // Get appointment count for this PHC
-                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    // Get appointment count for this PHC (current week only)
+                    let appointmentCount = 0;
+                    if (globalSheetData) {
+                        const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
+                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        appointmentCount = weekAppointments.length;
+                    }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -4168,8 +4178,13 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
-                    // Get appointment count for this PHC
-                    const appointmentCount = globalSheetData ? getFutureAppointmentsForPHC(phc.name, globalSheetData).length : 0;
+                    // Get appointment count for this PHC (current week only)
+                    let appointmentCount = 0;
+                    if (globalSheetData) {
+                        const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
+                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        appointmentCount = weekAppointments.length;
+                    }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
 
                     const escapedPhcName = phc.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -4577,6 +4592,47 @@
         function getDayName(date) {
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             return days[date.getDay()];
+        }
+
+        // Check if a date is within the current week (Sunday to Saturday)
+        function isDateInCurrentWeek(date) {
+            const today = new Date();
+            const day = today.getDay(); // 0 = Sunday, 6 = Saturday
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - day); // Go to Sunday
+            startOfWeek.setHours(0, 0, 0, 0);
+            
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // Go to Saturday
+            endOfWeek.setHours(23, 59, 59, 999);
+            
+            return date >= startOfWeek && date <= endOfWeek;
+        }
+
+        // Filter appointments to only include those in the current week
+        function filterAppointmentsByCurrentWeek(appointments) {
+            return appointments.filter(appt => {
+                try {
+                    const dateStr = appt.dateTime || appt.appointment || '';
+                    if (!dateStr) return false;
+                    
+                    // Parse date (handle formats like "01/05/2026, 14:19" or "01/05/2026")
+                    const dateMatch = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                    if (dateMatch) {
+                        const month = parseInt(dateMatch[1], 10) - 1;
+                        const day = parseInt(dateMatch[2], 10);
+                        const year = parseInt(dateMatch[3], 10);
+                        const date = new Date(year, month, day);
+                        
+                        if (!isNaN(date.getTime())) {
+                            return isDateInCurrentWeek(date);
+                        }
+                    }
+                } catch (e) {
+                    // Skip if date parsing fails
+                }
+                return false;
+            });
         }
 
         // Count appointments by date
