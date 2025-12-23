@@ -1832,6 +1832,7 @@
             background: rgba(156, 39, 176, 0.2);
         }
 
+        /* Today highlight - stronger/darker */
         .phc-calendar-day.selected {
             background: rgba(156, 39, 176, 0.2);
             border: 2px solid #9C27B0;
@@ -1844,7 +1845,20 @@
             border-color: #BA68C8;
         }
 
-        /* When date is selected and has badge, connect the highlight */
+        /* Dates with appointments (but not today) - lighter highlight */
+        .phc-calendar-day.has-appointments {
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .dark-mode .phc-calendar-day.has-appointments {
+            background: rgba(156, 39, 176, 0.15);
+            border-color: rgba(186, 104, 200, 0.4);
+        }
+
+        /* When date is selected (today) and has badge, connect the highlight */
         .phc-calendar-day-badge-container.selected {
             background: rgba(156, 39, 176, 0.2);
             border: 2px solid #9C27B0;
@@ -1856,6 +1870,20 @@
         .dark-mode .phc-calendar-day-badge-container.selected {
             background: rgba(156, 39, 176, 0.25);
             border-color: #BA68C8;
+        }
+
+        /* When date has appointments (but not today) and has badge, connect with lighter highlight */
+        .phc-calendar-day-badge-container.has-appointments {
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            margin-top: -4px; /* Overlap with the gap to connect seamlessly */
+        }
+
+        .dark-mode .phc-calendar-day-badge-container.has-appointments {
+            background: rgba(156, 39, 176, 0.15);
+            border-color: rgba(186, 104, 200, 0.4);
         }
 
         .phc-calendar-day-label {
@@ -4967,19 +4995,27 @@
                     // Day labels row
                     dayLabelsHtml += `<div class="phc-calendar-day-label">${dayName}</div>`;
                     
-                    // Dates row (clickable) - highlight if today OR has appointments
-                    const dateSelected = isToday || count > 0 ? 'selected' : '';
+                    // Dates row (clickable)
+                    // Add classes: 'selected' for today, 'has-appointments' for dates with appointments
+                    const dateClasses = [];
+                    if (isToday) dateClasses.push('selected');
+                    if (count > 0 && !isToday) dateClasses.push('has-appointments');
+                    
                     datesHtml += `
-                        <div class="phc-calendar-day ${dateSelected}" 
+                        <div class="phc-calendar-day ${dateClasses.join(' ')}" 
                              onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
                             <div class="phc-calendar-day-number">${dayNumber}</div>
                         </div>
                     `;
                     
-                    // Badges row - add selected class if date has appointments (expand highlight)
-                    const badgeSelected = count > 0 ? 'selected' : '';
+                    // Badges row - add class if date has appointments
+                    // 'selected' for today with appointments, 'has-appointments' for non-today with appointments
+                    let badgeClass = '';
+                    if (count > 0) {
+                        badgeClass = isToday ? 'selected' : 'has-appointments';
+                    }
                     badgesHtml += `
-                        <div class="phc-calendar-day-badge-container ${badgeSelected}">
+                        <div class="phc-calendar-day-badge-container ${badgeClass}">
                             ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
                         </div>
                     `;
