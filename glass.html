@@ -1894,6 +1894,23 @@
             justify-content: center;
             padding: 2px 0;
             min-height: 20px;
+            border-radius: 6px;
+            background: rgba(156, 39, 176, 0.05);
+            transition: background 0.2s ease;
+        }
+
+        .phc-calendar-day-badge-container.selected {
+            background: rgba(156, 39, 176, 0.2);
+            border: 2px solid #9C27B0;
+        }
+
+        .dark-mode .phc-calendar-day-badge-container {
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .dark-mode .phc-calendar-day-badge-container.selected {
+            background: rgba(156, 39, 176, 0.25);
+            border-color: #BA68C8;
         }
 
         /* Appointments List Styles */
@@ -4944,14 +4961,16 @@
                     // Dates row (clickable)
                     datesHtml += `
                         <div class="phc-calendar-day ${isToday ? 'selected' : ''}" 
-                             onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
+                             onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])"
+                             data-date-key="${dateKey}">
                             <div class="phc-calendar-day-number">${dayNumber}</div>
                         </div>
                     `;
                     
                     // Badges row
                     badgesHtml += `
-                        <div class="phc-calendar-day-badge-container">
+                        <div class="phc-calendar-day-badge-container ${isToday ? 'selected' : ''}" 
+                             data-date-key="${dateKey}">
                             ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
                         </div>
                     `;
