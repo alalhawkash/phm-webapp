@@ -1815,9 +1815,17 @@
             padding: 4px 2px;
             border-radius: 6px;
             background: rgba(156, 39, 176, 0.05);
-            cursor: pointer;
             transition: background 0.2s ease;
             min-height: 40px;
+        }
+
+        .phc-calendar-day.clickable {
+            cursor: pointer;
+        }
+
+        .phc-calendar-day:not(.clickable) {
+            cursor: default;
+            opacity: 0.7;
         }
 
         .phc-calendar-day:hover {
@@ -5016,15 +5024,20 @@
                     // Day labels row - add selected class if today
                     dayLabelsHtml += `<div class="phc-calendar-day-label ${isToday ? 'selected' : ''}">${dayName}</div>`;
                     
-                    // Dates row (clickable)
-                    // Add classes: 'selected' for today, 'has-appointments' for dates with appointments
+                    // Dates row (clickable only if has appointments)
+                    // Add classes: 'selected' for today, 'has-appointments' for dates with appointments, 'clickable' if has appointments
                     const dateClasses = [];
                     if (isToday) dateClasses.push('selected');
                     if (count > 0 && !isToday) dateClasses.push('has-appointments');
+                    if (count > 0) dateClasses.push('clickable');
+                    
+                    // Only add onclick if there are appointments
+                    const onClickHandler = count > 0 
+                        ? `onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])"`
+                        : '';
                     
                     datesHtml += `
-                        <div class="phc-calendar-day ${dateClasses.join(' ')}" 
-                             onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
+                        <div class="phc-calendar-day ${dateClasses.join(' ')}" ${onClickHandler}>
                             <div class="phc-calendar-day-number">${dayNumber}</div>
                         </div>
                     `;
