@@ -1778,10 +1778,21 @@
         /* شريط جانبي بنفسجي - Upcoming Appointments */
         .phc-card-appointments {
             border-left: 4px solid #9C27B0; /* بنفسجي */
+            transition: height 0.3s ease, max-height 0.3s ease;
         }
         
         .dark-mode .phc-card-appointments {
             border-left-color: #BA68C8; /* بنفسجي أفتح قليلاً في الوضع الداكن */
+        }
+
+        .phc-card-appointments.expanded {
+            height: auto;
+            max-height: 600px;
+        }
+        
+        #phcDetailCarousel .phc-card-appointments.expanded {
+            height: auto;
+            max-height: 600px;
         }
         
         /* Calendar Container */
@@ -1985,10 +1996,26 @@
             overflow-y: auto;
             overflow-x: hidden;
             width: 100%;
-            max-height: calc(100% - 40px);
-            padding: 4px 0;
-            display: flex;
+            max-height: 400px;
+            padding: 8px 0 0 0;
+            display: none;
             flex-direction: column;
+            animation: slideDown 0.3s ease;
+        }
+
+        .phc-appointments-list.expanded {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .phc-appointments-list-header {
@@ -2810,9 +2837,9 @@
                                     <div class="phc-calendar-week" id="phcCalendarWeek">
                                         <!-- Calendar dates will be generated here -->
                                     </div>
-                                    <div class="phc-appointments-list" id="phcAppointmentsList" style="display: none;">
+                                    <div class="phc-appointments-list" id="phcAppointmentsList">
                                         <div class="phc-appointments-list-header">
-                                            <button class="phc-back-to-calendar" onclick="showCalendarView()">← Back to Calendar</button>
+                                            <button class="phc-back-to-calendar" onclick="showCalendarView()">← Collapse</button>
                                             <div class="phc-selected-date" id="phcSelectedDate"></div>
                                         </div>
                                         <div class="phc-appointments-slots" id="phcAppointmentsSlots">
@@ -4764,8 +4791,17 @@
         function showCalendarView() {
             const calendarWeek = document.getElementById('phcCalendarWeek');
             const appointmentsList = document.getElementById('phcAppointmentsList');
-            if (calendarWeek) calendarWeek.style.display = 'grid';
-            if (appointmentsList) appointmentsList.style.display = 'none';
+            const appointmentsCard = document.querySelector('.phc-card-appointments');
+            
+            // Collapse the card
+            if (appointmentsCard) {
+                appointmentsCard.classList.remove('expanded');
+            }
+            
+            // Hide list
+            if (appointmentsList) {
+                appointmentsList.classList.remove('expanded');
+            }
         }
 
         // Show appointments for selected date
@@ -4774,12 +4810,17 @@
             const appointmentsList = document.getElementById('phcAppointmentsList');
             const selectedDateEl = document.getElementById('phcSelectedDate');
             const appointmentsSlots = document.getElementById('phcAppointmentsSlots');
+            const appointmentsCard = document.querySelector('.phc-card-appointments');
             
             if (!appointmentsList || !appointmentsSlots) return;
             
-            // Hide calendar, show list
-            if (calendarWeek) calendarWeek.style.display = 'none';
-            appointmentsList.style.display = 'flex';
+            // Expand the card
+            if (appointmentsCard) {
+                appointmentsCard.classList.add('expanded');
+            }
+            
+            // Show list (keep calendar visible)
+            appointmentsList.classList.add('expanded');
             
             // Set selected date
             if (selectedDateEl) {
@@ -5064,8 +5105,12 @@
                 // Ensure calendar is visible and list is hidden
                 calendarWeek.style.display = 'flex';
                 const appointmentsList = document.getElementById('phcAppointmentsList');
+                const appointmentsCard = document.querySelector('.phc-card-appointments');
                 if (appointmentsList) {
-                    appointmentsList.style.display = 'none';
+                    appointmentsList.classList.remove('expanded');
+                }
+                if (appointmentsCard) {
+                    appointmentsCard.classList.remove('expanded');
                 }
             }
         }
