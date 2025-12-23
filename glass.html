@@ -1835,6 +1835,7 @@
         .phc-calendar-day.selected {
             background: rgba(156, 39, 176, 0.2);
             border: 2px solid #9C27B0;
+            border-bottom: none;
             border-radius: 6px 6px 0 0;
         }
 
@@ -1844,16 +1845,20 @@
         }
 
         /* When date is selected and has badge, connect the highlight */
-        .phc-calendar-day.selected + .phc-calendar-day-badge-container.selected {
-            border-top: 2px solid #9C27B0;
-            border-left: 2px solid #9C27B0;
-            border-right: 2px solid #9C27B0;
+        .phc-calendar-day.selected {
+            border-bottom: none;
         }
 
-        .dark-mode .phc-calendar-day.selected + .phc-calendar-day-badge-container.selected {
-            border-top-color: #BA68C8;
-            border-left-color: #BA68C8;
-            border-right-color: #BA68C8;
+        .phc-calendar-day-badge-container.selected {
+            background: rgba(156, 39, 176, 0.2);
+            border: 2px solid #9C27B0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .dark-mode .phc-calendar-day-badge-container.selected {
+            background: rgba(156, 39, 176, 0.25);
+            border-color: #BA68C8;
         }
 
         .phc-calendar-day-label {
@@ -4973,9 +4978,10 @@
                         </div>
                     `;
                     
-                    // Badges row
+                    // Badges row - add selected class if date is selected AND has appointments
+                    const badgeSelected = isToday && count > 0 ? 'selected' : '';
                     badgesHtml += `
-                        <div class="phc-calendar-day-badge-container">
+                        <div class="phc-calendar-day-badge-container ${badgeSelected}">
                             ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
                         </div>
                     `;
