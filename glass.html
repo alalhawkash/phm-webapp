@@ -4967,9 +4967,10 @@
                     // Day labels row
                     dayLabelsHtml += `<div class="phc-calendar-day-label">${dayName}</div>`;
                     
-                    // Dates row (clickable)
+                    // Dates row (clickable) - highlight if today OR has appointments
+                    const dateSelected = isToday || count > 0 ? 'selected' : '';
                     datesHtml += `
-                        <div class="phc-calendar-day ${isToday ? 'selected' : ''}" 
+                        <div class="phc-calendar-day ${dateSelected}" 
                              onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
                             <div class="phc-calendar-day-number">${dayNumber}</div>
                         </div>
