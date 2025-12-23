@@ -4975,8 +4975,8 @@
                         </div>
                     `;
                     
-                    // Badges row - add selected class if date is selected AND has appointments
-                    const badgeSelected = isToday && count > 0 ? 'selected' : '';
+                    // Badges row - add selected class if date has appointments (expand highlight)
+                    const badgeSelected = count > 0 ? 'selected' : '';
                     badgesHtml += `
                         <div class="phc-calendar-day-badge-container ${badgeSelected}">
                             ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
