@@ -1836,8 +1836,9 @@
         .phc-calendar-day.selected {
             background: rgba(156, 39, 176, 0.2);
             border: 2px solid #9C27B0;
+            border-top: none;
             border-bottom: none;
-            border-radius: 6px 6px 0 0;
+            border-radius: 0;
         }
 
         .dark-mode .phc-calendar-day.selected {
@@ -1893,6 +1894,23 @@
             font-weight: 500;
             text-align: center;
             padding: 2px 0;
+            border-radius: 6px 6px 0 0;
+            transition: background 0.2s ease;
+        }
+
+        /* Today highlight for day label */
+        .phc-calendar-day-label.selected {
+            background: rgba(156, 39, 176, 0.2);
+            border: 2px solid #9C27B0;
+            border-bottom: none;
+            color: #9C27B0;
+            font-weight: 600;
+        }
+
+        .dark-mode .phc-calendar-day-label.selected {
+            background: rgba(156, 39, 176, 0.25);
+            border-color: #BA68C8;
+            color: #BA68C8;
         }
 
         .dark-mode .phc-calendar-day-label {
@@ -4992,8 +5010,8 @@
                     const dayName = getDayName(date);
                     const dayNumber = date.getDate();
                     
-                    // Day labels row
-                    dayLabelsHtml += `<div class="phc-calendar-day-label">${dayName}</div>`;
+                    // Day labels row - add selected class if today
+                    dayLabelsHtml += `<div class="phc-calendar-day-label ${isToday ? 'selected' : ''}">${dayName}</div>`;
                     
                     // Dates row (clickable)
                     // Add classes: 'selected' for today, 'has-appointments' for dates with appointments
