@@ -1784,6 +1784,105 @@
             border-left-color: #BA68C8; /* بنفسجي أفتح قليلاً في الوضع الداكن */
         }
         
+        /* Calendar Container */
+        .phc-calendar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 0;
+        }
+
+        /* Calendar Week View */
+        .phc-calendar-week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            padding: 4px 0;
+            flex: 1;
+        }
+
+        .phc-calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 2px;
+            border-radius: 6px;
+            background: rgba(156, 39, 176, 0.05);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            min-height: 50px;
+            justify-content: space-between;
+        }
+
+        .phc-calendar-day:hover {
+            background: rgba(156, 39, 176, 0.15);
+        }
+
+        .dark-mode .phc-calendar-day {
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .dark-mode .phc-calendar-day:hover {
+            background: rgba(156, 39, 176, 0.2);
+        }
+
+        .phc-calendar-day.selected {
+            background: rgba(156, 39, 176, 0.2);
+            border: 2px solid #9C27B0;
+        }
+
+        .dark-mode .phc-calendar-day.selected {
+            background: rgba(156, 39, 176, 0.25);
+            border-color: #BA68C8;
+        }
+
+        .phc-calendar-day-label {
+            font-size: 7px;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .dark-mode .phc-calendar-day-label {
+            color: #bfc7d1;
+        }
+
+        .phc-calendar-day-number {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .dark-mode .phc-calendar-day-number {
+            color: #e8e8e8;
+        }
+
+        .phc-calendar-day-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            background: #9C27B0;
+            color: #ffffff;
+            border-radius: 8px;
+            font-size: 8px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .dark-mode .phc-calendar-day-badge {
+            background: #BA68C8;
+        }
+
+        .phc-calendar-day-badge.zero {
+            display: none;
+        }
+
         /* Appointments List Styles */
         .phc-appointments-list {
             flex: 1;
@@ -1791,6 +1890,52 @@
             overflow-x: hidden;
             width: 100%;
             max-height: calc(100% - 40px);
+            padding: 4px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phc-appointments-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0 8px 0;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .dark-mode .phc-appointments-list-header {
+            border-bottom-color: #2a323d;
+        }
+
+        .phc-back-to-calendar {
+            background: none;
+            border: none;
+            color: #9C27B0;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        .dark-mode .phc-back-to-calendar {
+            color: #BA68C8;
+        }
+
+        .phc-selected-date {
+            font-size: 9px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .dark-mode .phc-selected-date {
+            color: #bfc7d1;
+        }
+
+        .phc-appointments-slots {
+            flex: 1;
+            overflow-y: auto;
             padding: 4px 0;
         }
         
@@ -2565,9 +2710,18 @@
                                 <div class="phc-watch-header">
                                     <h2>Upcoming Appointments</h2>
                                 </div>
-                                <div class="phc-appointments-list" id="phcAppointmentsList">
-                                    <div class="phc-appointment-item">
-                                        <span class="phc-appointment-loading">Loading appointments...</span>
+                                <div class="phc-calendar-container">
+                                    <div class="phc-calendar-week" id="phcCalendarWeek">
+                                        <!-- Calendar dates will be generated here -->
+                                    </div>
+                                    <div class="phc-appointments-list" id="phcAppointmentsList" style="display: none;">
+                                        <div class="phc-appointments-list-header">
+                                            <button class="phc-back-to-calendar" onclick="showCalendarView()">← Back to Calendar</button>
+                                            <div class="phc-selected-date" id="phcSelectedDate"></div>
+                                        </div>
+                                        <div class="phc-appointments-slots" id="phcAppointmentsSlots">
+                                            <!-- Appointment slots will be shown here -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -4388,6 +4542,157 @@
             return appointments;
         }
         
+        // Get current week dates (Sunday to Saturday)
+        function getCurrentWeekDates() {
+            const today = new Date();
+            const day = today.getDay(); // 0 = Sunday, 6 = Saturday
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - day); // Go to Sunday
+            
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                weekDates.push(date);
+            }
+            return weekDates;
+        }
+
+        // Format date as YYYY-MM-DD for comparison
+        function formatDateKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Format date for display
+        function formatDateDisplay(date) {
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}/${day}`;
+        }
+
+        // Get day name abbreviation
+        function getDayName(date) {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            return days[date.getDay()];
+        }
+
+        // Count appointments by date
+        function countAppointmentsByDate(appointments) {
+            const counts = {};
+            appointments.forEach(appt => {
+                try {
+                    // Try to parse the date from dateTime or appointment field
+                    const dateStr = appt.dateTime || appt.appointment || '';
+                    if (!dateStr) return;
+                    
+                    // Parse date (handle formats like "01/05/2026, 14:19" or "01/05/2026")
+                    const dateMatch = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                    if (dateMatch) {
+                        const month = parseInt(dateMatch[1], 10) - 1;
+                        const day = parseInt(dateMatch[2], 10);
+                        const year = parseInt(dateMatch[3], 10);
+                        const date = new Date(year, month, day);
+                        
+                        if (!isNaN(date.getTime())) {
+                            const dateKey = formatDateKey(date);
+                            counts[dateKey] = (counts[dateKey] || 0) + 1;
+                        }
+                    }
+                } catch (e) {
+                    // Skip if date parsing fails
+                }
+            });
+            return counts;
+        }
+
+        // Show calendar view
+        function showCalendarView() {
+            const calendarWeek = document.getElementById('phcCalendarWeek');
+            const appointmentsList = document.getElementById('phcAppointmentsList');
+            if (calendarWeek) calendarWeek.style.display = 'grid';
+            if (appointmentsList) appointmentsList.style.display = 'none';
+        }
+
+        // Show appointments for selected date
+        function showAppointmentsForDate(date, appointments) {
+            const calendarWeek = document.getElementById('phcCalendarWeek');
+            const appointmentsList = document.getElementById('phcAppointmentsList');
+            const selectedDateEl = document.getElementById('phcSelectedDate');
+            const appointmentsSlots = document.getElementById('phcAppointmentsSlots');
+            
+            if (!appointmentsList || !appointmentsSlots) return;
+            
+            // Hide calendar, show list
+            if (calendarWeek) calendarWeek.style.display = 'none';
+            appointmentsList.style.display = 'flex';
+            
+            // Set selected date
+            if (selectedDateEl) {
+                selectedDateEl.textContent = formatDateDisplay(date) + ' - ' + getDayName(date);
+            }
+            
+            // Filter appointments for this date
+            const dateKey = formatDateKey(date);
+            const dateAppointments = appointments.filter(appt => {
+                try {
+                    const dateStr = appt.dateTime || appt.appointment || '';
+                    const dateMatch = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                    if (dateMatch) {
+                        const month = parseInt(dateMatch[1], 10) - 1;
+                        const day = parseInt(dateMatch[2], 10);
+                        const year = parseInt(dateMatch[3], 10);
+                        const apptDate = new Date(year, month, day);
+                        return formatDateKey(apptDate) === dateKey;
+                    }
+                } catch (e) {
+                    return false;
+                }
+                return false;
+            });
+            
+            // Display appointments
+            if (dateAppointments.length === 0) {
+                appointmentsSlots.innerHTML = '<div class="phc-appointment-empty">No appointments for this date</div>';
+            } else {
+                let html = '';
+                dateAppointments.forEach(appt => {
+                    // Determine status class
+                    let statusClass = '';
+                    if (appt.status && appt.status.includes('Not Screened')) {
+                        statusClass = 'not-screened';
+                    } else if (appt.status && appt.status.includes('Uncontrolled DM')) {
+                        statusClass = 'dm-followup';
+                    } else if (appt.status && appt.status.includes('Pre-DM')) {
+                        statusClass = 'predm-followup';
+                    }
+                    
+                    // Format time
+                    let displayTime = '';
+                    try {
+                        const dateStr = appt.dateTime || appt.appointment || '';
+                        const timeMatch = dateStr.match(/(\d{1,2}):(\d{2})/);
+                        if (timeMatch) {
+                            displayTime = `${timeMatch[1]}:${timeMatch[2]}`;
+                        }
+                    } catch (e) {
+                        // Keep empty if parsing fails
+                    }
+                    
+                    html += `
+                        <div class="phc-appointment-item">
+                            <div class="phc-appointment-status ${statusClass}">${appt.status || '--'}</div>
+                            <div class="phc-appointment-date">${displayTime || '--'}</div>
+                            <div class="phc-appointment-mrn">MRN: ${appt.mrn || '--'}</div>
+                        </div>
+                    `;
+                });
+                appointmentsSlots.innerHTML = html;
+            }
+        }
+
         // Populate PHC dashboard with data
         function populatePHCDashboard(phcName) {
             if (!globalSheetData) return;
@@ -4542,53 +4847,41 @@
                 document.getElementById('phcFollowupPreDM90').textContent = '0';
             }
             
-            // UPCOMING APPOINTMENTS CARD: Display future appointments for this PHC
-            const appointmentsList = document.getElementById('phcAppointmentsList');
-            if (appointmentsList) {
+            // UPCOMING APPOINTMENTS CARD: Display calendar week view with appointment counts
+            const calendarWeek = document.getElementById('phcCalendarWeek');
+            if (calendarWeek) {
                 const appointments = getFutureAppointmentsForPHC(phcName, globalSheetData);
+                const weekDates = getCurrentWeekDates();
+                const appointmentCounts = countAppointmentsByDate(appointments);
                 
-                if (appointments.length === 0) {
-                    appointmentsList.innerHTML = '<div class="phc-appointment-empty">No upcoming appointments</div>';
-                } else {
-                    let html = '';
-                    appointments.forEach(appt => {
-                        // Determine status class
-                        let statusClass = '';
-                        if (appt.status.includes('Not Screened')) {
-                            statusClass = 'not-screened';
-                        } else if (appt.status.includes('Uncontrolled DM')) {
-                            statusClass = 'dm-followup';
-                        } else if (appt.status.includes('Pre-DM')) {
-                            statusClass = 'predm-followup';
-                        }
-                        
-                        // Format date/time
-                        let displayDateTime = appt.dateTime || appt.appointment || '--';
-                        // Try to format if it's a valid date string
-                        try {
-                            const dateObj = new Date(displayDateTime);
-                            if (!isNaN(dateObj.getTime())) {
-                                // Format as MM/DD/YYYY, HH:MM
-                                const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                                const day = dateObj.getDate().toString().padStart(2, '0');
-                                const year = dateObj.getFullYear();
-                                const hours = dateObj.getHours().toString().padStart(2, '0');
-                                const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-                                displayDateTime = `${month}/${day}/${year}, ${hours}:${minutes}`;
-                            }
-                        } catch (e) {
-                            // Keep original format if parsing fails
-                        }
-                        
-                        html += `
-                            <div class="phc-appointment-item">
-                                <div class="phc-appointment-status ${statusClass}">${appt.status || '--'}</div>
-                                <div class="phc-appointment-date">${displayDateTime}</div>
-                                <div class="phc-appointment-mrn">MRN: ${appt.mrn || '--'}</div>
-                            </div>
-                        `;
-                    });
-                    appointmentsList.innerHTML = html;
+                // Store appointments globally for date click handler
+                window.currentPHCAppointments = appointments;
+                
+                let html = '';
+                weekDates.forEach((date, index) => {
+                    const dateKey = formatDateKey(date);
+                    const count = appointmentCounts[dateKey] || 0;
+                    const isToday = formatDateKey(new Date()) === dateKey;
+                    const dayName = getDayName(date);
+                    const dayNumber = date.getDate();
+                    
+                    html += `
+                        <div class="phc-calendar-day ${isToday ? 'selected' : ''}" 
+                             onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])">
+                            <div class="phc-calendar-day-label">${dayName}</div>
+                            <div class="phc-calendar-day-number">${dayNumber}</div>
+                            ${count > 0 ? `<span class="phc-calendar-day-badge">${count}</span>` : '<span class="phc-calendar-day-badge zero">0</span>'}
+                        </div>
+                    `;
+                });
+                
+                calendarWeek.innerHTML = html;
+                
+                // Ensure calendar is visible and list is hidden
+                calendarWeek.style.display = 'grid';
+                const appointmentsList = document.getElementById('phcAppointmentsList');
+                if (appointmentsList) {
+                    appointmentsList.style.display = 'none';
                 }
             }
         }
