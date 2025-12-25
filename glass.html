@@ -4277,11 +4277,12 @@
                 phcs.forEach(phc => {
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
                     
-                    // Get appointment count for this PHC (current week only)
+                    // Get appointment count for this PHC (filtered by status and current week)
                     let appointmentCount = 0;
                     if (globalSheetData) {
                         const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
-                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        const statusFiltered = filterAppointmentsByStatus(allAppointments, 'screening');
+                        const weekAppointments = filterAppointmentsByCurrentWeek(statusFiltered);
                         appointmentCount = weekAppointments.length;
                     }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
