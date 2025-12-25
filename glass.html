@@ -5095,13 +5095,13 @@
                     const dayName = getDayName(date);
                     const dayNumber = date.getDate();
                     
-                    // Day labels row - add selected class if today
-                    dayLabelsHtml += `<div class="phc-calendar-day-label ${isToday ? 'selected' : ''}">${dayName}</div>`;
+                    // Day labels row - add today class if today
+                    dayLabelsHtml += `<div class="phc-calendar-day-label ${isToday ? 'today' : ''}">${dayName}</div>`;
                     
                     // Dates row (clickable only if has appointments)
-                    // Add classes: 'selected' for today, 'has-appointments' for dates with appointments, 'clickable' if has appointments
+                    // Add classes: 'today' for today, 'has-appointments' for dates with appointments, 'clickable' if has appointments
                     const dateClasses = [];
-                    if (isToday) dateClasses.push('selected');
+                    if (isToday) dateClasses.push('today');
                     if (count > 0 && !isToday) dateClasses.push('has-appointments');
                     if (count > 0) dateClasses.push('clickable');
                     
@@ -5110,17 +5110,21 @@
                         ? `onclick="showAppointmentsForDate(new Date(${date.getTime()}), window.currentPHCAppointments || [])"`
                         : '';
                     
+                    // Add today indicator symbol if it's today
+                    const todayIndicator = isToday ? '<div class="phc-calendar-today-indicator"></div>' : '';
+                    
                     datesHtml += `
                         <div class="phc-calendar-day ${dateClasses.join(' ')}" ${onClickHandler}>
                             <div class="phc-calendar-day-number">${dayNumber}</div>
+                            ${todayIndicator}
                         </div>
                     `;
                     
                     // Badges row - add class if date has appointments
-                    // 'selected' for today with appointments, 'has-appointments' for non-today with appointments
+                    // 'today' for today with appointments, 'has-appointments' for non-today with appointments
                     let badgeClass = '';
                     if (count > 0) {
-                        badgeClass = isToday ? 'selected' : 'has-appointments';
+                        badgeClass = isToday ? 'today' : 'has-appointments';
                     }
                     badgesHtml += `
                         <div class="phc-calendar-day-badge-container ${badgeClass}">
