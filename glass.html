@@ -1886,19 +1886,19 @@
 
         /* Today indicator - no highlight, just a symbol (handled by indicator dot) */
         
-        /* Today indicator dot */
+        /* Today indicator dot - next to day name */
         .phc-calendar-today-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
+            display: inline-block;
             width: 6px;
             height: 6px;
-            background: #9C27B0;
+            background: #4caf50;
             border-radius: 50%;
+            margin-left: 4px;
+            vertical-align: middle;
         }
         
         .dark-mode .phc-calendar-today-indicator {
-            background: #BA68C8;
+            background: #66bb6a;
         }
 
         /* Dates with appointments (but not today) - lighter highlight */
