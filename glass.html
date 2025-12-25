@@ -4305,11 +4305,12 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
-                    // Get appointment count for this PHC (current week only)
+                    // Get appointment count for this PHC (filtered by status and current week)
                     let appointmentCount = 0;
                     if (globalSheetData) {
                         const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
-                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        const statusFiltered = filterAppointmentsByStatus(allAppointments, 'dm');
+                        const weekAppointments = filterAppointmentsByCurrentWeek(statusFiltered);
                         appointmentCount = weekAppointments.length;
                     }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
@@ -4333,11 +4334,12 @@
 
                     const displayName = PHC_DISPLAY_NAMES[phc.name] || PHC_DISPLAY_NAMES[phc.name?.toLowerCase()] || phc.name;
 
-                    // Get appointment count for this PHC (current week only)
+                    // Get appointment count for this PHC (filtered by status and current week)
                     let appointmentCount = 0;
                     if (globalSheetData) {
                         const allAppointments = getFutureAppointmentsForPHC(phc.name, globalSheetData);
-                        const weekAppointments = filterAppointmentsByCurrentWeek(allAppointments);
+                        const statusFiltered = filterAppointmentsByStatus(allAppointments, 'predm');
+                        const weekAppointments = filterAppointmentsByCurrentWeek(statusFiltered);
                         appointmentCount = weekAppointments.length;
                     }
                     const badgeHtml = appointmentCount > 0 ? `<span class="phc-appointment-badge">${appointmentCount}</span>` : '';
@@ -4762,6 +4764,28 @@
             endOfWeek.setHours(23, 59, 59, 999);
             
             return date >= startOfWeek && date <= endOfWeek;
+        }
+
+        // Filter appointments by status type based on card context
+        function filterAppointmentsByStatus(appointments, context) {
+            if (!appointments || appointments.length === 0) return [];
+            
+            return appointments.filter(appt => {
+                const status = String(appt.status || '').trim();
+                
+                if (context === 'screening') {
+                    // Show badges for "Not Screened" appointments
+                    return status.includes('Not Screened');
+                } else if (context === 'dm') {
+                    // Show badges for "Uncontrolled DM - Needs Follow-up (30+ days)" appointments
+                    return status.includes('Uncontrolled DM') && status.includes('30+');
+                } else if (context === 'predm') {
+                    // Show badges for "Pre-DM - Needs Follow-up (90+ days)" appointments
+                    return status.includes('Pre-DM') && status.includes('90+');
+                }
+                
+                return false;
+            });
         }
 
         // Filter appointments to only include those in the current week
