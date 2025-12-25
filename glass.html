@@ -1884,14 +1884,7 @@
             background: rgba(156, 39, 176, 0.2);
         }
 
-        /* Today indicator - no highlight, just a symbol */
-        .phc-calendar-day.today {
-            /* No background or border highlight */
-        }
-
-        .dark-mode .phc-calendar-day.today {
-            /* No background or border highlight */
-        }
+        /* Today indicator - no highlight, just a symbol (handled by indicator dot) */
         
         /* Today indicator dot */
         .phc-calendar-today-indicator {
@@ -1921,14 +1914,7 @@
             border-color: rgba(186, 104, 200, 0.4);
         }
 
-        /* When date is today and has badge - no special highlight */
-        .phc-calendar-day-badge-container.today {
-            /* No special styling */
-        }
-
-        .dark-mode .phc-calendar-day-badge-container.today {
-            /* No special styling */
-        }
+        /* When date is today and has badge - no special highlight needed */
 
         /* When date has appointments (but not today) and has badge, connect with lighter highlight */
         .phc-calendar-day-badge-container.has-appointments {
@@ -1955,14 +1941,7 @@
             transition: background 0.2s ease;
         }
 
-        /* Today indicator for day label - no highlight */
-        .phc-calendar-day-label.today {
-            /* No special styling, just keep normal appearance */
-        }
-
-        .dark-mode .phc-calendar-day-label.today {
-            /* No special styling */
-        }
+        /* Today indicator for day label - no special styling needed */
 
         .dark-mode .phc-calendar-day-label {
             color: #bfc7d1;
