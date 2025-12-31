@@ -2554,21 +2554,27 @@
                                 <div class="subtitle">Performance Overview</div>
             </div>
                             <div class="metrics-section">
-                                <div class="metric-row">
-                                    <span class="metric-label">Population</span>
-                                    <span class="metric-value target-value" id="targetValue">0</span>
+                                <div class="dm-metric-row">
+                                    <span class="dm-metric-label">Population</span>
+                                    <span class="dm-metric-value dm-value" id="targetValue">0</span>
         </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Screened</span>
-                                    <span class="metric-value percentage-value" id="currentValue">0</span>
+                                <div class="dm-metric-row">
+                                    <span class="dm-metric-label">Screened</span>
+                                    <div class="dm-metric-value-container">
+                                        <span class="dm-metric-value dm-percent" id="currentValuePercent">0%</span>
+                                        <span class="dm-metric-value dm-count" id="currentValue">0</span>
+                                    </div>
     </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Remaining</span>
-                                    <span class="metric-value percentage-value" id="percentageValue">0</span>
+                                <div class="dm-metric-row">
+                                    <span class="dm-metric-label">Remaining</span>
+                                    <div class="dm-metric-value-container">
+                                        <span class="dm-metric-value dm-percent" id="percentageValuePercent">0%</span>
+                                        <span class="dm-metric-value dm-count" id="percentageValue">0</span>
+                                    </div>
         </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Missed Screening Opportunities</span>
-                                    <span class="metric-value percentage-value" id="opportunitiesValue">0</span>
+                                <div class="dm-metric-row">
+                                    <span class="dm-metric-label">Missed Screening Opportunities</span>
+                                    <span class="dm-metric-value dm-value" id="opportunitiesValue">0</span>
                                 </div>
         </div>
                             <div class="zones-ranking" id="screeningZonesList">
@@ -2671,21 +2677,27 @@
                                     <div class="subtitle">Performance Overview</div>
                                 </div>
                                 <div class="metrics-section">
-                                    <div class="metric-row">
-                                        <span class="metric-label">Population</span>
-                                        <span class="metric-value target-value" id="zoneDetailTargetValue">0</span>
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label">Population</span>
+                                        <span class="dm-metric-value dm-value" id="zoneDetailTargetValue">0</span>
                                     </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label">Screened</span>
-                                        <span class="metric-value percentage-value" id="zoneDetailScreenedValue">0</span>
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label">Screened</span>
+                                        <div class="dm-metric-value-container">
+                                            <span class="dm-metric-value dm-percent" id="zoneDetailScreenedValuePercent">0%</span>
+                                            <span class="dm-metric-value dm-count" id="zoneDetailScreenedValue">0</span>
+                                        </div>
                                     </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label">Remaining</span>
-                                        <span class="metric-value percentage-value" id="zoneDetailRemainingValue">0</span>
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label">Remaining</span>
+                                        <div class="dm-metric-value-container">
+                                            <span class="dm-metric-value dm-percent" id="zoneDetailRemainingValuePercent">0%</span>
+                                            <span class="dm-metric-value dm-count" id="zoneDetailRemainingValue">0</span>
+                                        </div>
                                     </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label">Missed Screening Opportunities</span>
-                                        <span class="metric-value percentage-value" id="zoneDetailOpportunitiesValue">0</span>
+                                    <div class="dm-metric-row">
+                                        <span class="dm-metric-label">Missed Screening Opportunities</span>
+                                        <span class="dm-metric-value dm-value" id="zoneDetailOpportunitiesValue">0</span>
                                     </div>
                                 </div>
                                 <div class="zones-ranking" id="zoneDetailScreeningPHCs">
@@ -3188,10 +3200,12 @@
         let lastClusterContext = null; // Store which card was active when navigating to zone view
 
         function updateScreeningPercentage() {
+            const screenedPercentEl = document.getElementById('currentValuePercent');
             const screenedEl = document.getElementById('currentValue');
+            const remainingPercentEl = document.getElementById('percentageValuePercent');
             const remainingEl = document.getElementById('percentageValue');
             const opportunitiesEl = document.getElementById('opportunitiesValue');
-            if (!screenedEl || !remainingEl) return;
+            if (!screenedEl || !remainingEl || !screenedPercentEl || !remainingPercentEl) return;
 
             const hasTarget = screeningTargetTotal !== null && screeningTargetTotal !== undefined;
             const hasCurrent = screeningCurrentTotal !== null && screeningCurrentTotal !== undefined;
@@ -3203,19 +3217,23 @@
             const remaining = Math.max(0, target - current);
             const remainingPct = target > 0 ? (remaining / target) * 100 : 0;
 
-            screenedEl.innerHTML = `<span class="metric-percent">${screenedPct.toFixed(1)}%</span><span class="metric-count">${current.toLocaleString()}</span>`;
-            remainingEl.innerHTML = `<span class="metric-percent">${remainingPct.toFixed(1)}%</span><span class="metric-count">${remaining.toLocaleString()}</span>`;
+            screenedPercentEl.textContent = `${screenedPct.toFixed(1)}%`;
+            screenedEl.textContent = current.toLocaleString();
+            remainingPercentEl.textContent = `${remainingPct.toFixed(1)}%`;
+            remainingEl.textContent = remaining.toLocaleString();
             if (opportunitiesEl) {
-                opportunitiesEl.innerHTML = `<span class="metric-count">${opportunities.toLocaleString()}</span>`;
+                opportunitiesEl.textContent = opportunities.toLocaleString();
             }
         }
 
         function updateZoneDetailScreeningPercentage() {
             const targetEl = document.getElementById('zoneDetailTargetValue');
+            const screenedPercentEl = document.getElementById('zoneDetailScreenedValuePercent');
             const screenedEl = document.getElementById('zoneDetailScreenedValue');
+            const remainingPercentEl = document.getElementById('zoneDetailRemainingValuePercent');
             const remainingEl = document.getElementById('zoneDetailRemainingValue');
             const opportunitiesEl = document.getElementById('zoneDetailOpportunitiesValue');
-            if (!targetEl || !screenedEl || !remainingEl) return;
+            if (!targetEl || !screenedEl || !remainingEl || !screenedPercentEl || !remainingPercentEl) return;
 
             // Get the values from the elements (they might have been set as textContent)
             const targetText = targetEl.textContent || targetEl.innerText || '0';
@@ -3230,10 +3248,12 @@
             const remainingPct = target > 0 ? (remaining / target) * 100 : 0;
 
             targetEl.textContent = target.toLocaleString();
-            screenedEl.innerHTML = `<span class="metric-percent">${screenedPct.toFixed(1)}%</span><span class="metric-count">${current.toLocaleString()}</span>`;
-            remainingEl.innerHTML = `<span class="metric-percent">${remainingPct.toFixed(1)}%</span><span class="metric-count">${remaining.toLocaleString()}</span>`;
+            screenedPercentEl.textContent = `${screenedPct.toFixed(1)}%`;
+            screenedEl.textContent = current.toLocaleString();
+            remainingPercentEl.textContent = `${remainingPct.toFixed(1)}%`;
+            remainingEl.textContent = remaining.toLocaleString();
             if (opportunitiesEl) {
-                opportunitiesEl.innerHTML = `<span class="metric-count">${opportunities.toLocaleString()}</span>`;
+                opportunitiesEl.textContent = opportunities.toLocaleString();
             }
         }
 
@@ -4533,7 +4553,7 @@
                 document.getElementById('zoneDetailRemainingValue').textContent = zoneRemainingTotal.toLocaleString();
                 document.getElementById('zoneDetailOpportunitiesValue').textContent = zoneOpportunitiesTotal.toLocaleString();
                 
-                // Update with percentages
+                // Update with percentages (this will update the percent elements)
                 updateZoneDetailScreeningPercentage();
                 
                 // Hide back button for zone/PHC scoped users
