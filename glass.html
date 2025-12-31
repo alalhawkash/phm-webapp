@@ -3189,6 +3189,33 @@
             }
         }
 
+        function updateZoneDetailScreeningPercentage() {
+            const targetEl = document.getElementById('zoneDetailTargetValue');
+            const screenedEl = document.getElementById('zoneDetailScreenedValue');
+            const remainingEl = document.getElementById('zoneDetailRemainingValue');
+            const opportunitiesEl = document.getElementById('zoneDetailOpportunitiesValue');
+            if (!targetEl || !screenedEl || !remainingEl) return;
+
+            // Get the values from the elements (they might have been set as textContent)
+            const targetText = targetEl.textContent || targetEl.innerText || '0';
+            const screenedText = screenedEl.textContent || screenedEl.innerText || '0';
+            const target = parseFloat(targetText.replace(/,/g, '')) || 0;
+            const current = parseFloat(screenedText.replace(/,/g, '')) || 0;
+            const opportunitiesText = opportunitiesEl ? (opportunitiesEl.textContent || opportunitiesEl.innerText || '0') : '0';
+            const opportunities = parseFloat(opportunitiesText.replace(/,/g, '')) || 0;
+
+            const screenedPct = target > 0 ? (current / target) * 100 : 0;
+            const remaining = Math.max(0, target - current);
+            const remainingPct = target > 0 ? (remaining / target) * 100 : 0;
+
+            targetEl.textContent = target.toLocaleString();
+            screenedEl.innerHTML = `<span class="metric-percent">${screenedPct.toFixed(1)}%</span><span class="metric-count">${current.toLocaleString()}</span>`;
+            remainingEl.innerHTML = `<span class="metric-percent">${remainingPct.toFixed(1)}%</span><span class="metric-count">${remaining.toLocaleString()}</span>`;
+            if (opportunitiesEl) {
+                opportunitiesEl.innerHTML = `<span class="metric-count">${opportunities.toLocaleString()}</span>`;
+            }
+        }
+
         function updateDMPercentages() {
             const patients = dmPatientsTotal ?? 0;
             const controlled = controlledDMTotal ?? 0;
@@ -3675,7 +3702,6 @@
                         const currentNum = parseInt((row[1] || '').replace(/,/g, ''), 10);
                         if (!isNaN(currentNum)) {
                             screeningCurrentTotal = currentNum;
-                            document.getElementById('currentValue').textContent = currentNum.toLocaleString();
                             updateScreeningPercentage();
                         }
                     } else if (firstCell.startsWith('SCREENING Remaining') && row[1]) {
@@ -3817,7 +3843,6 @@
                     const val = parseInt((data[SCREENING_CURRENT_ROW][1] || '').replace(/,/g, ''), 10);
                     if (!isNaN(val)) {
                         screeningCurrentTotal = val;
-                        document.getElementById('currentValue').textContent = val.toLocaleString();
                     }
                 }
                 updateScreeningPercentage();
@@ -4482,9 +4507,13 @@
                 const zoneRemainingTotal = Math.max(0, zoneTargetTotal - zoneScreenedTotal);
                 
                 document.getElementById('zoneDetailTargetValue').textContent = zoneTargetTotal.toLocaleString();
+                // Set values temporarily, then format with percentages
                 document.getElementById('zoneDetailScreenedValue').textContent = zoneScreenedTotal.toLocaleString();
                 document.getElementById('zoneDetailRemainingValue').textContent = zoneRemainingTotal.toLocaleString();
                 document.getElementById('zoneDetailOpportunitiesValue').textContent = zoneOpportunitiesTotal.toLocaleString();
+                
+                // Update with percentages
+                updateZoneDetailScreeningPercentage();
                 
                 // Hide back button for zone/PHC scoped users
                 const backButton = document.getElementById('zoneDetailBackButton');
