@@ -459,11 +459,35 @@
 
         #carousel .template-header {
             padding-bottom: 6.4px;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode #carousel .template-header {
+            background: rgba(24, 28, 36, 0.9);
+        }
+        
+        #carousel .template-header.scrolled {
+            padding-bottom: 4px;
+            border-bottom-width: 1px;
         }
 
         #carousel .template-header h2 {
             font-size: 13.6px;
             margin-bottom: 3.2px;
+            transition: font-size 0.3s ease, margin-bottom 0.3s ease;
+        }
+        
+        #carousel .template-header.scrolled h2 {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        
+        #carousel .template-header.scrolled .subtitle {
+            font-size: 7px;
         }
 
         #carousel .template-header .subtitle {
@@ -595,11 +619,35 @@
 
         #zoneDetailCarousel .template-header {
             padding-bottom: 6.4px;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode #zoneDetailCarousel .template-header {
+            background: rgba(24, 28, 36, 0.9);
+        }
+        
+        #zoneDetailCarousel .template-header.scrolled {
+            padding-bottom: 4px;
+            border-bottom-width: 1px;
         }
 
         #zoneDetailCarousel .template-header h2 {
             font-size: 13.6px;
             margin-bottom: 3.2px;
+            transition: font-size 0.3s ease, margin-bottom 0.3s ease;
+        }
+        
+        #zoneDetailCarousel .template-header.scrolled h2 {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        
+        #zoneDetailCarousel .template-header.scrolled .subtitle {
+            font-size: 7px;
         }
 
         #zoneDetailCarousel .template-header .subtitle {
@@ -3822,6 +3870,9 @@
                     populateDMZones(data);
                     populatePreDMZones(data);
                 }
+                
+                // Setup sticky headers after cards are populated
+                setTimeout(setupStickyHeaders, 100);
 
                 // Auto-navigate zone-scoped users to their zone detail view
                 if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
@@ -5307,7 +5358,43 @@
             if (document.documentElement) {
                 document.documentElement.style.zoom = '1';
             }
+            
+            // Setup scroll handlers for sticky headers
+            setupStickyHeaders();
         });
+        
+        // Setup sticky headers that shrink on scroll
+        function setupStickyHeaders() {
+            // Handle cluster view cards
+            const clusterCards = document.querySelectorAll('#carousel .card');
+            clusterCards.forEach(card => {
+                const header = card.querySelector('.template-header');
+                if (header) {
+                    card.addEventListener('scroll', function() {
+                        if (card.scrollTop > 10) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                    }, { passive: true });
+                }
+            });
+            
+            // Handle zone view cards
+            const zoneCards = document.querySelectorAll('#zoneDetailCarousel .card');
+            zoneCards.forEach(card => {
+                const header = card.querySelector('.template-header');
+                if (header) {
+                    card.addEventListener('scroll', function() {
+                        if (card.scrollTop > 10) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                    }, { passive: true });
+                }
+            });
+        }
         
         // Also reset on DOMContentLoaded for faster reset
         document.addEventListener('DOMContentLoaded', function() {
@@ -5317,6 +5404,9 @@
             if (document.documentElement) {
                 document.documentElement.style.zoom = '1';
             }
+            
+            // Setup sticky headers
+            setupStickyHeaders();
         });
     </script>
 </body>
