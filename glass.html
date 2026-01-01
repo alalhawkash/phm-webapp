@@ -350,11 +350,11 @@
 }
 
 .carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
     padding: 8px 0 12px 0;
-    position: relative;
+            position: relative;
     flex-shrink: 0;
     z-index: 5;
 }
@@ -363,7 +363,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    border: none;
+            border: none;
     background: #d0d0d0;
     transition: width 0.2s ease, background 0.2s ease;
 }
@@ -494,7 +494,7 @@
         }
         
         .dark-mode #carousel .template-header {
-            background: #ffffff;
+            background: rgba(24, 28, 36, 1);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
@@ -669,7 +669,7 @@
         }
         
         .dark-mode #zoneDetailCarousel .template-header {
-            background: #ffffff;
+            background: rgba(24, 28, 36, 1);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
@@ -2651,8 +2651,8 @@
                                     <div class="dm-metric-value-container">
                                         <span class="dm-metric-value dm-percent" id="currentValuePercent">0%</span>
                                         <span class="dm-metric-value dm-count" id="currentValue">0</span>
-                                    </div>
     </div>
+        </div>
                                 <div class="dm-metric-row">
                                     <span class="dm-metric-label">Remaining</span>
                                     <div class="dm-metric-value-container">
@@ -2774,7 +2774,7 @@
                                         <div class="dm-metric-value-container">
                                             <span class="dm-metric-value dm-percent" id="zoneDetailScreenedValuePercent">0%</span>
                                             <span class="dm-metric-value dm-count" id="zoneDetailScreenedValue">0</span>
-                                        </div>
+                                    </div>
                                     </div>
                                     <div class="dm-metric-row">
                                         <span class="dm-metric-label">Remaining</span>
@@ -2862,11 +2862,11 @@
                                     <div class="zone-item">
                                         <span class="zone-name">Loading...</span>
                                     </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         <div class="main-view" id="phcDetailView" style="display: none;">
@@ -2997,7 +2997,7 @@
             const carousel = document.getElementById('carousel');
             const dotsContainer = document.getElementById('carouselDots');
             const cards = Array.from(carousel.querySelectorAll('.card'));
-            
+
             // Only show dots if there are multiple cards (swipeable)
             if (dotsContainer && cards.length > 1) {
                 const dots = [];
@@ -3016,26 +3016,26 @@
                     dots.push(dot);
                 });
 
-                const updateDots = () => {
-                    const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
-                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
-                };
+            const updateDots = () => {
+                const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+            };
 
-                let scrollTimeout;
-                carousel.addEventListener('scroll', () => {
-                    clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(updateDots, 50);
-                }, { passive: true });
+            let scrollTimeout;
+            carousel.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(updateDots, 50);
+            }, { passive: true });
 
-                window.addEventListener('resize', () => {
-                    carousel.scrollTo({
-                        left: Math.round(carousel.scrollLeft / carousel.clientWidth) * carousel.clientWidth,
-                        behavior: 'auto'
-                    });
-                    updateDots();
+            window.addEventListener('resize', () => {
+                carousel.scrollTo({
+                    left: Math.round(carousel.scrollLeft / carousel.clientWidth) * carousel.clientWidth,
+                    behavior: 'auto'
                 });
-
                 updateDots();
+            });
+
+            updateDots();
             } else if (dotsContainer) {
                 // Hide dots if only one card (not swipeable)
                 dotsContainer.style.display = 'none';
@@ -3425,7 +3425,7 @@
                         </div>
                         <span class="zone-value">${oppText}</span>
                         <span class="zone-value">${zoneValueText}</span>
-                    </div>
+                                </div>
                 `;
 
                 rank++;
@@ -4573,18 +4573,18 @@
                 if (zoneCards.length > 1) {
                     zoneDotsContainer.innerHTML = '';
                     const dots = [];
-                    zoneCards.forEach((_, i) => {
-                        const dot = document.createElement('button');
-                        dot.type = 'button';
-                        dot.className = 'carousel-dot';
-                        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-                        dot.addEventListener('click', () => {
-                            zoneCarousel.scrollTo({
-                                left: i * zoneCarousel.clientWidth,
-                                behavior: 'smooth'
-                            });
+                zoneCards.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'carousel-dot';
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => {
+                        zoneCarousel.scrollTo({
+                            left: i * zoneCarousel.clientWidth,
+                            behavior: 'smooth'
                         });
-                        zoneDotsContainer.appendChild(dot);
+                    });
+                    zoneDotsContainer.appendChild(dot);
                         dots.push(dot);
                     });
                     
@@ -4597,22 +4597,22 @@
                         
                         dots.forEach((dot, idx) => dot.classList.toggle('active', idx === cardIndex));
                     }
-                    
-                    // Update dots on scroll
-                    const updateZoneDots = () => {
-                        const index = Math.round(zoneCarousel.scrollLeft / zoneCarousel.clientWidth);
-                        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
-                    };
-                    
-                    let zoneScrollTimeout;
-                    zoneCarousel.addEventListener('scroll', () => {
-                        clearTimeout(zoneScrollTimeout);
-                        zoneScrollTimeout = setTimeout(updateZoneDots, 50);
-                    }, { passive: true });
-                    
+                
+                // Update dots on scroll
+                const updateZoneDots = () => {
+                    const index = Math.round(zoneCarousel.scrollLeft / zoneCarousel.clientWidth);
+                    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === index));
+                };
+                
+                let zoneScrollTimeout;
+                zoneCarousel.addEventListener('scroll', () => {
+                    clearTimeout(zoneScrollTimeout);
+                    zoneScrollTimeout = setTimeout(updateZoneDots, 50);
+                }, { passive: true });
+                
                     // Only call updateZoneDots if context wasn't set (to avoid double update)
                     if (context === undefined) {
-                        updateZoneDots();
+                updateZoneDots();
                     }
                 } else {
                     // Hide dots if only one card (not swipeable)
