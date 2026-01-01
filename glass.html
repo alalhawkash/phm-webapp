@@ -2171,6 +2171,16 @@
             color: #a8b3c3;
         }
         
+        .phc-appointment-department {
+            color: #666;
+            font-size: 8px;
+            margin-top: 2px;
+        }
+        
+        .dark-mode .phc-appointment-department {
+            color: #bfc7d1;
+        }
+        
         .phc-appointment-loading,
         .phc-appointment-empty {
             text-align: center;
@@ -3149,6 +3159,7 @@
         const FUTURE_APPT_MRN_COL = 53; // Future_Appt_mrn (column 53/BB)
         const FUTURE_APPT_PHC_COL = 54; // Future_Appt_phc (column 54/BC)
         const FUTURE_APPT_ZONE_COL = 55; // Future_Appt_zone (column 55/BD)
+        const FUTURE_APPT_DEPARTMENT_COL = 56; // Future_Appt_department (column 56/BE)
 
         const DM_ZONE_START_ROW = 98; // Will be found dynamically
         const DM_ZONE_NAME_COL = 18; // DM Zone
@@ -4736,6 +4747,7 @@
                 const mrn = String(row[FUTURE_APPT_MRN_COL] || '').trim();
                 const phc = String(row[FUTURE_APPT_PHC_COL] || '').trim();
                 const zone = String(row[FUTURE_APPT_ZONE_COL] || '').trim();
+                const department = String(row[FUTURE_APPT_DEPARTMENT_COL] || '').trim();
                 
                 // Skip empty rows
                 if (!status && !phc && !mrn) continue;
@@ -4749,7 +4761,8 @@
                         dateTime: dateTime || appointment,
                         mrn: mrn,
                         phc: phc,
-                        zone: zone
+                        zone: zone,
+                        department: department
                     });
                 }
             }
@@ -4988,6 +5001,7 @@
                             <div class="phc-appointment-status ${statusClass}">${appt.status || '--'}</div>
                             <div class="phc-appointment-date">${displayTime || '--'}</div>
                             <div class="phc-appointment-mrn">MRN: ${appt.mrn || '--'}</div>
+                            ${appt.department ? `<div class="phc-appointment-department">Department: ${appt.department}</div>` : ''}
                         </div>
                     `;
                 });
