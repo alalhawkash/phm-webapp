@@ -464,7 +464,7 @@
             top: 0;
             background: #ffffff;
             z-index: 10;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             margin-top: -16px;
             margin-left: -16px;
             margin-right: -16px;
@@ -476,29 +476,16 @@
         .dark-mode #carousel .template-header {
             background: rgba(24, 28, 36, 1);
         }
-        
-        #carousel .template-header.scrolled {
-            padding-bottom: 4px;
-            border-bottom-width: 1px;
-        }
 
         #carousel .template-header h2 {
             font-size: 13.6px;
             margin-bottom: 3.2px;
-            transition: font-size 0.3s ease, margin-bottom 0.3s ease;
-        }
-        
-        #carousel .template-header.scrolled h2 {
-            font-size: 11px;
-            margin-bottom: 2px;
-        }
-        
-        #carousel .template-header.scrolled .subtitle {
-            font-size: 7px;
+            transition: font-size 0.2s ease, margin-bottom 0.2s ease;
         }
 
         #carousel .template-header .subtitle {
             font-size: 8.8px;
+            transition: font-size 0.2s ease;
         }
 
         #carousel .metrics-section {
@@ -631,7 +618,7 @@
             top: 0;
             background: #ffffff;
             z-index: 10;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             margin-top: -16px;
             margin-left: -16px;
             margin-right: -16px;
@@ -643,29 +630,16 @@
         .dark-mode #zoneDetailCarousel .template-header {
             background: rgba(24, 28, 36, 1);
         }
-        
-        #zoneDetailCarousel .template-header.scrolled {
-            padding-bottom: 4px;
-            border-bottom-width: 1px;
-        }
 
         #zoneDetailCarousel .template-header h2 {
             font-size: 13.6px;
             margin-bottom: 3.2px;
-            transition: font-size 0.3s ease, margin-bottom 0.3s ease;
-        }
-        
-        #zoneDetailCarousel .template-header.scrolled h2 {
-            font-size: 11px;
-            margin-bottom: 2px;
-        }
-        
-        #zoneDetailCarousel .template-header.scrolled .subtitle {
-            font-size: 7px;
+            transition: font-size 0.2s ease, margin-bottom 0.2s ease;
         }
 
         #zoneDetailCarousel .template-header .subtitle {
             font-size: 8.8px;
+            transition: font-size 0.2s ease;
         }
 
         #zoneDetailCarousel .metrics-section {
@@ -5379,23 +5353,42 @@
         
         // Setup sticky headers that shrink on scroll
         function setupStickyHeaders() {
+            const SHRINK_THRESHOLD = 40; // Pixels to scroll before header is fully shrunk
+            
             // Handle cluster view cards
             const clusterCards = document.querySelectorAll('#carousel .card');
             clusterCards.forEach(card => {
                 const header = card.querySelector('.template-header');
-                if (header) {
-                    // Check initial state
-                    if (card.scrollTop > 0) {
-                        header.classList.add('scrolled');
+                const h2 = header?.querySelector('h2');
+                const subtitle = header?.querySelector('.subtitle');
+                
+                if (header && h2) {
+                    // Initialize on load
+                    function updateHeader() {
+                        const scrollTop = card.scrollTop;
+                        const progress = Math.min(scrollTop / SHRINK_THRESHOLD, 1); // 0 to 1
+                        
+                        // Interpolate between normal and small sizes
+                        const h2Size = 13.6 - (13.6 - 11) * progress;
+                        const h2Margin = 3.2 - (3.2 - 2) * progress;
+                        const subtitleSize = 8.8 - (8.8 - 7) * progress;
+                        const paddingBottom = 6.4 - (6.4 - 4) * progress;
+                        const borderWidth = 2 - (2 - 1) * progress;
+                        
+                        h2.style.fontSize = h2Size + 'px';
+                        h2.style.marginBottom = h2Margin + 'px';
+                        if (subtitle) {
+                            subtitle.style.fontSize = subtitleSize + 'px';
+                        }
+                        header.style.paddingBottom = paddingBottom + 'px';
+                        header.style.borderBottomWidth = borderWidth + 'px';
                     }
                     
-                    card.addEventListener('scroll', function() {
-                        if (card.scrollTop > 0) {
-                            header.classList.add('scrolled');
-                        } else {
-                            header.classList.remove('scrolled');
-                        }
-                    }, { passive: true });
+                    // Update on scroll
+                    card.addEventListener('scroll', updateHeader, { passive: true });
+                    
+                    // Initial update
+                    updateHeader();
                 }
             });
             
@@ -5403,19 +5396,36 @@
             const zoneCards = document.querySelectorAll('#zoneDetailCarousel .card');
             zoneCards.forEach(card => {
                 const header = card.querySelector('.template-header');
-                if (header) {
-                    // Check initial state
-                    if (card.scrollTop > 0) {
-                        header.classList.add('scrolled');
+                const h2 = header?.querySelector('h2');
+                const subtitle = header?.querySelector('.subtitle');
+                
+                if (header && h2) {
+                    // Initialize on load
+                    function updateHeader() {
+                        const scrollTop = card.scrollTop;
+                        const progress = Math.min(scrollTop / SHRINK_THRESHOLD, 1);
+                        
+                        // Interpolate between normal and small sizes
+                        const h2Size = 13.6 - (13.6 - 11) * progress;
+                        const h2Margin = 3.2 - (3.2 - 2) * progress;
+                        const subtitleSize = 8.8 - (8.8 - 7) * progress;
+                        const paddingBottom = 6.4 - (6.4 - 4) * progress;
+                        const borderWidth = 2 - (2 - 1) * progress;
+                        
+                        h2.style.fontSize = h2Size + 'px';
+                        h2.style.marginBottom = h2Margin + 'px';
+                        if (subtitle) {
+                            subtitle.style.fontSize = subtitleSize + 'px';
+                        }
+                        header.style.paddingBottom = paddingBottom + 'px';
+                        header.style.borderBottomWidth = borderWidth + 'px';
                     }
                     
-                    card.addEventListener('scroll', function() {
-                        if (card.scrollTop > 0) {
-                            header.classList.add('scrolled');
-                        } else {
-                            header.classList.remove('scrolled');
-                        }
-                    }, { passive: true });
+                    // Update on scroll
+                    card.addEventListener('scroll', updateHeader, { passive: true });
+                    
+                    // Initial update
+                    updateHeader();
                 }
             });
         }
