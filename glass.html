@@ -5384,8 +5384,13 @@
             clusterCards.forEach(card => {
                 const header = card.querySelector('.template-header');
                 if (header) {
+                    // Check initial state
+                    if (card.scrollTop > 0) {
+                        header.classList.add('scrolled');
+                    }
+                    
                     card.addEventListener('scroll', function() {
-                        if (card.scrollTop > 10) {
+                        if (card.scrollTop > 0) {
                             header.classList.add('scrolled');
                         } else {
                             header.classList.remove('scrolled');
@@ -5399,8 +5404,13 @@
             zoneCards.forEach(card => {
                 const header = card.querySelector('.template-header');
                 if (header) {
+                    // Check initial state
+                    if (card.scrollTop > 0) {
+                        header.classList.add('scrolled');
+                    }
+                    
                     card.addEventListener('scroll', function() {
-                        if (card.scrollTop > 10) {
+                        if (card.scrollTop > 0) {
                             header.classList.add('scrolled');
                         } else {
                             header.classList.remove('scrolled');
