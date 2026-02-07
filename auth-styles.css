@@ -68,8 +68,8 @@ body.dark-mode #login-screen {
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8e8e8;
-    width: 85%;
-    max-width: 320px;
+    width: 100%;
+    max-width: 480px;
 }
 
 body.dark-mode .login-container {
@@ -140,6 +140,30 @@ body.dark-mode .logo-dark {
 .login-header {
     text-align: center;
     margin-bottom: 32px;
+}
+
+/* Desktop Login Screen */
+@media (min-width: 1024px) {
+    #login-screen {
+        padding: 48px;
+    }
+
+    .login-container {
+        max-width: 520px;
+        padding: 32px 28px;
+    }
+
+    .login-header-wrapper {
+        gap: 14px;
+    }
+
+    .login-title {
+        font-size: 20px;
+    }
+
+    .login-subtitle {
+        font-size: 12px;
+    }
 }
 
 
@@ -868,6 +892,45 @@ body:not(.dark-mode) .sidebar-btn-danger:hover {
         width: 36px;
         height: 36px;
         font-size: 18px;
+    }
+}
+
+/* Desktop App Screen — fit all PC screens */
+@media (min-width: 1024px) {
+    #app-screen {
+        display: none; /* overridden by JS when logged in */
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .app-header {
+        padding: 12px 24px;
+        gap: 16px;
+    }
+
+    .header-logo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .header-title {
+        font-size: 20px;
+    }
+
+    /* Sidebar stays the same — just make sure it's on top */
+    .user-sidebar {
+        z-index: 12000;
+    }
+
+    .sidebar-backdrop {
+        z-index: 11990;
+    }
+
+    /* Admin panel desktop */
+    .admin-container {
+        max-width: 900px;
+        padding: 32px 40px;
     }
 }
 

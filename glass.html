@@ -12,6 +12,7 @@
     <title>PHM - Population Health Management</title>
     <!-- Supabase JS from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Map is loaded via iframe from map.html -->
     <style>
         * {
             margin: 0;
@@ -1330,38 +1331,48 @@
 
         .back-button {
             background: transparent;
-            border: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             padding: 0;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: opacity 0.2s ease;
+            transition: all 0.2s ease;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
             position: relative;
             color: #666;
             font-size: 18px;
             line-height: 1;
+            z-index: 25;
         }
 
         .back-button::before {
             content: '←';
-            font-weight: 400;
+            font-weight: 500;
         }
 
         .back-button:hover {
-            opacity: 0.7;
+            background: rgba(0, 0, 0, 0.04);
+            border-color: #ccc;
         }
 
         .back-button:active {
             opacity: 0.5;
+            transform: scale(0.95);
         }
 
         .dark-mode .back-button {
-            color: #999;
+            color: #bbb;
+            border-color: #3a4351;
+        }
+
+        .dark-mode .back-button:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: #4a5361;
         }
 
         /* Zone detail header (light and dark) */
@@ -2500,6 +2511,684 @@
             color: #ffffff;
         }
 
+        /* ===== Cluster Dashboard (desktop/tablet only) ===== */
+        .cluster-dashboard {
+            display: none; /* hidden on mobile, shown via media query */
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 4px 12px 4px;
+        }
+
+        /* --- Summary Metrics Bar --- */
+        .dash-summary {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 2px 0;
+            flex-shrink: 0;
+        }
+
+        .dash-metric-card {
+            flex: 1 1 0;
+            min-width: 100px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .dash-mc-blue::before { background: #42a5f5; }
+        .dash-mc-green::before { background: #66bb6a; }
+        .dash-mc-amber::before { background: #ffa726; }
+        .dash-mc-teal::before { background: #26a69a; }
+        .dash-mc-rose::before { background: #ec407a; }
+        .dash-mc-purple::before { background: #ab47bc; }
+        .dash-mc-red::before { background: #ef5350; }
+
+        .dash-mc-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.2;
+        }
+
+        .dash-mc-label {
+            font-size: 10px;
+            color: #888;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .dash-mc-top {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dash-mc-pct {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .dark-mode .dash-metric-card {
+            background: #1d222b;
+            border-color: #2a323d;
+        }
+
+        .dark-mode .dash-mc-value { color: #e8e8e8; }
+        .dark-mode .dash-mc-label { color: #8a94a6; }
+        .dark-mode .dash-mc-pct { color: #a8b3c3; }
+
+        /* --- Panels (Map + Chart) --- */
+        .dash-panels {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .dash-panel {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .dash-panel-map {
+            flex: 1 1 45%;
+            min-width: 0;
+        }
+
+        .dash-panel-chart {
+            flex: 1 1 55%;
+            min-width: 0;
+        }
+
+        .dash-panel-header {
+            padding: 12px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .dark-mode .dash-panel {
+            background: #1d222b;
+            border-color: #2a323d;
+        }
+
+        .dark-mode .dash-panel-header {
+            color: #e8e8e8;
+            border-bottom-color: #2a323d;
+        }
+
+        /* Map (iframe) */
+        .dash-map {
+            flex: 1;
+            min-height: 200px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Chart */
+        .dash-chart-tabs, .dash-table-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dash-tab {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: transparent;
+            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .dash-tab.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .dark-mode .dash-tab {
+            border-color: #3a4351;
+            color: #a8b3c3;
+        }
+
+        .dark-mode .dash-tab.active {
+            background: #42a5f5;
+            color: #fff;
+            border-color: #42a5f5;
+        }
+
+        .dash-chart-legend {
+            display: flex;
+            gap: 16px;
+            padding: 8px 16px 4px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .dash-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dash-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .dash-chart-bars {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dash-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .dash-bar-zone {
+            width: 44px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .dash-bar-total {
+            width: 50px;
+            font-weight: 600;
+            color: #666;
+            text-align: right;
+            flex-shrink: 0;
+            font-size: 11px;
+        }
+
+        .dash-bar-track {
+            flex: 1;
+            height: 22px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dash-bar-seg {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: #fff;
+            transition: width 0.4s ease;
+            position: relative;
+            min-width: 0;
+        }
+
+        .dash-bar-seg span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 4px;
+        }
+
+        .dash-bar-val {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 11px;
+            color: #ef5350;
+            flex-shrink: 0;
+        }
+
+        .dark-mode .dash-bar-zone { color: #e8e8e8; }
+        .dark-mode .dash-bar-total { color: #a8b3c3; }
+        .dark-mode .dash-bar-track { background: #252b35; }
+        .dark-mode .dash-bar-val { color: #ef9a9a; }
+
+        /* --- Bottom Table --- */
+        .dash-table-section {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            max-height: 360px;
+        }
+
+        .dash-table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .dash-table-search input {
+            padding: 5px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12px;
+            background: #fafafa;
+            color: #333;
+            width: 140px;
+        }
+
+        .dark-mode .dash-table-search input {
+            background: #252b35;
+            border-color: #3a4351;
+            color: #e8e8e8;
+        }
+
+        .dash-table-wrap {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .dash-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .dash-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .dash-table th {
+            background: #fafafa;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #e8e8e8;
+            cursor: pointer;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .dash-table th:hover { background: #f0f0f0; }
+
+        .dash-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .dash-table tbody tr {
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .dash-table tbody tr:hover { background: #f8f9fc; }
+
+        .dash-zone-link {
+            color: #007aff;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .dark-mode .dash-table-section {
+            background: #1d222b;
+            border-color: #2a323d;
+        }
+
+        .dark-mode .dash-table-header { border-bottom-color: #2a323d; }
+        .dark-mode .dash-table th { background: #252b35; color: #8a94a6; border-bottom-color: #2a323d; }
+        .dark-mode .dash-table th:hover { background: #2a323d; }
+        .dark-mode .dash-table td { color: #e0e6ee; border-bottom-color: #252b35; }
+        .dark-mode .dash-table tbody tr:hover { background: #252b35; }
+        .dark-mode .dash-zone-link { color: #5ac8fa; }
+
+        /* --- AI Insights Panel --- */
+        .insights-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .insights-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .insights-tabs::-webkit-scrollbar { height: 0; }
+        .insight-tab {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background: transparent;
+            color: #666;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .insight-tab .tab-icon {
+            font-size: 13px;
+            line-height: 1;
+        }
+        .insight-tab.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+        .insight-tab:hover:not(.active) {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+        .insights-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+        }
+        .insight-content { display: none; }
+        .insight-content.active { display: block; }
+
+        /* Summary paragraph */
+        .insight-summary {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #444;
+        }
+        .insight-summary strong { color: #1a1a1a; }
+        .insight-summary .hl-red { color: #ef5350; font-weight: 600; }
+        .insight-summary .hl-green { color: #4caf93; font-weight: 600; }
+        .insight-summary .hl-blue { color: #007aff; font-weight: 600; }
+        .insight-summary .hl-orange { color: #fb8c00; font-weight: 600; }
+
+        /* Alert cards */
+        .insight-alerts { display: flex; flex-direction: column; gap: 8px; }
+        .alert-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .alert-card.critical { background: #fef2f2; border-left: 3px solid #ef5350; }
+        .alert-card.warning  { background: #fff8e1; border-left: 3px solid #fb8c00; }
+        .alert-card.positive { background: #f1f8f4; border-left: 3px solid #4caf93; }
+        .alert-card.info     { background: #f0f7ff; border-left: 3px solid #42a5f5; }
+        .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .alert-text { color: #333; }
+        .alert-text strong { font-weight: 700; }
+
+        /* Recommendation items */
+        .insight-recs { display: flex; flex-direction: column; gap: 8px; }
+        .rec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .rec-num {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #007aff;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Trend rows */
+        .insight-trends { display: flex; flex-direction: column; gap: 8px; }
+        .trend-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #333;
+        }
+        .trend-icon { font-size: 18px; flex-shrink: 0; }
+        .trend-label { flex: 1; line-height: 1.5; }
+        .trend-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .trend-badge.up   { background: #e8f5e9; color: #2e7d32; }
+        .trend-badge.down { background: #ffebee; color: #c62828; }
+        .trend-badge.flat { background: #f5f5f5; color: #888; }
+
+        /* Comparison bars */
+        .insight-compare { display: flex; flex-direction: column; gap: 10px; }
+        .compare-row {
+            font-size: 12px;
+            color: #333;
+        }
+        .compare-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .compare-label span:last-child { font-weight: 700; }
+        .compare-bar-track {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .compare-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        .compare-best  { color: #4caf93; font-weight: 700; }
+        .compare-worst { color: #ef5350; font-weight: 700; }
+        .compare-avg-line {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #333;
+            text-align: center;
+        }
+        .compare-avg-line strong { color: #007aff; }
+
+        /* Dark mode for insights */
+        .dark-mode .insights-tabs { border-bottom-color: #2a323d; }
+        .dark-mode .insight-tab { border-color: #3a4351; color: #8a94a6; }
+        .dark-mode .insight-tab.active { background: #e0e6ee; color: #1a1a1a; border-color: #e0e6ee; }
+        .dark-mode .insight-tab:hover:not(.active) { background: #252b35; border-color: #4a5568; }
+        .dark-mode .insight-summary { color: #c8d0dc; }
+        .dark-mode .insight-summary strong { color: #e8edf4; }
+        .dark-mode .alert-card.critical { background: #2d1b1b; border-left-color: #ef5350; }
+        .dark-mode .alert-card.warning  { background: #2d2518; border-left-color: #fb8c00; }
+        .dark-mode .alert-card.positive { background: #1b2d22; border-left-color: #4caf93; }
+        .dark-mode .alert-card.info     { background: #1b2333; border-left-color: #42a5f5; }
+        .dark-mode .alert-text { color: #d0d8e4; }
+        .dark-mode .rec-item { background: #252b35; color: #d0d8e4; }
+        .dark-mode .trend-row { background: #252b35; color: #d0d8e4; }
+        .dark-mode .trend-badge.up   { background: #1b3324; color: #66bb6a; }
+        .dark-mode .trend-badge.down { background: #331b1b; color: #ef9a9a; }
+        .dark-mode .trend-badge.flat { background: #2a323d; color: #8a94a6; }
+        .dark-mode .compare-row { color: #d0d8e4; }
+        .dark-mode .compare-bar-track { background: #2a323d; }
+        .dark-mode .compare-avg-line { background: #1b2333; color: #d0d8e4; }
+
+        /* --- Insight List Table --- */
+        .insight-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .insight-list-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .insight-list-table th {
+            background: #f5f6f8;
+            padding: 7px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #888;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #e8e8e8;
+            white-space: nowrap;
+        }
+        .insight-list-table td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #f3f3f3;
+            color: #333;
+            white-space: nowrap;
+        }
+        .insight-list-table tbody tr {
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .insight-list-table tbody tr:hover { background: #f0f4ff; }
+        .insight-list-link {
+            color: #007aff;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .insight-list-search {
+            margin-bottom: 8px;
+        }
+        .insight-list-search input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12px;
+            background: #fafafa;
+            color: #333;
+            box-sizing: border-box;
+        }
+        .dark-mode .insight-list-table th { background: #252b35; color: #8a94a6; border-bottom-color: #2a323d; }
+        .dark-mode .insight-list-table td { color: #e0e6ee; border-bottom-color: #252b35; }
+        .dark-mode .insight-list-table tbody tr:hover { background: #252b35; }
+        .dark-mode .insight-list-link { color: #5ac8fa; }
+        .dark-mode .insight-list-search input { background: #252b35; border-color: #3a4351; color: #e8e8e8; }
+
+        /* ===== Tablet + Desktop ===== */
+        @media screen and (min-width: 768px) {
+            /* Show cluster dashboard, hide carousel in main cluster view */
+            .cluster-dashboard {
+                display: flex !important;
+            }
+
+            #mainView > .carousel-wrapper {
+                display: none !important;
+            }
+
+            /* --- Global layout --- */
+            header { padding: 14px 24px; gap: 16px; flex-wrap: nowrap; }
+            .header-title { font-size: 22px; }
+            .header-meta { flex-direction: row; gap: 12px; align-items: center; }
+            .container { padding: 12px 16px; width: 100%; max-width: 100%; margin: 0 auto; }
+            footer { padding: 14px 24px; }
+
+            /* --- Zone detail: dashboard on desktop, carousel on mobile --- */
+            #zoneDetailView { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+            #zoneDetailView .zone-detail-header { padding: 14px 24px; }
+            #zoneDashboard { display: flex !important; }
+            #zoneDetailView > .carousel-wrapper { display: none !important; }
+
+            /* --- PHC detail: cards side-by-side --- */
+            #phcDetailView { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+            #phcDetailView .zone-detail-header { padding: 14px 24px; }
+            #phcDetailView .carousel-wrapper { flex: 1; min-height: 0; overflow: visible; }
+            #phcDetailView .carousel-dots { display: none !important; }
+            #phcDetailCarousel { overflow-x: visible !important; overflow-y: visible !important; flex-wrap: wrap; }
+            #phcDetailCarousel .card {
+                flex: 1 1 calc(50% - 8px); width: auto; min-width: 200px;
+                max-height: calc(100vh - 200px); scroll-snap-align: none;
+            }
+        }
+
+        /* ===== Desktop 1024px+ ===== */
+        @media screen and (min-width: 1024px) {
+            .container { padding: 16px 24px; }
+            .dash-summary { gap: 10px; }
+            .dash-panels { gap: 16px; }
+        }
+
         /* iPhone and Android specific adjustments */
         @media screen and (max-width: 480px) {
             header {
@@ -2631,6 +3320,54 @@
     </header>
     <div class="container">
         <div class="main-view" id="mainView">
+            <!-- ===== Desktop Cluster Dashboard ===== -->
+            <div id="clusterDashboard" class="cluster-dashboard">
+                <!-- Middle Panels: Map + Chart -->
+                <div class="dash-panels">
+                    <div class="dash-panel dash-panel-map">
+                        <div class="dash-panel-header">Najran Health Cluster</div>
+                        <iframe id="clusterMapFrame" src="map.html" class="dash-map" style="border:none;width:100%;height:100%;"></iframe>
+                    </div>
+                    <div class="dash-panel dash-panel-chart">
+                        <div class="dash-panel-header">
+                            <span>Diabetes Management</span>
+                            <div class="dash-chart-tabs">
+                                <button class="dash-tab active" data-chart="dm" onclick="switchDashChart('dm')">DM Patients</button>
+                                <button class="dash-tab" data-chart="predm" onclick="switchDashChart('predm')">Pre-DM Patients</button>
+                            </div>
+                        </div>
+                        <div class="dash-chart-legend">
+                            <span class="dash-legend-item"><span class="dash-legend-dot" style="background:#4caf93"></span>Controlled DM</span>
+                            <span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ef5350"></span>Uncontrolled DM</span>
+                        </div>
+                        <div id="dashChart" class="dash-chart-bars"></div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Panel -->
+                <div class="dash-table-section" id="clusterBottomSection" style="max-height:360px;">
+                    <div class="insights-panel">
+                        <div class="insights-tabs" id="cInsightTabs">
+                            <button class="insight-tab active" data-insight="summary" onclick="switchClusterInsight('summary')"><span class="tab-icon">💡</span> Summary</button>
+                            <button class="insight-tab" data-insight="alerts" onclick="switchClusterInsight('alerts')"><span class="tab-icon">🚨</span> Alerts</button>
+                            <button class="insight-tab" data-insight="recs" onclick="switchClusterInsight('recs')"><span class="tab-icon">📋</span> Actions</button>
+                            <button class="insight-tab" data-insight="trends" onclick="switchClusterInsight('trends')"><span class="tab-icon">📈</span> Trends</button>
+                            <button class="insight-tab" data-insight="compare" onclick="switchClusterInsight('compare')"><span class="tab-icon">⚖️</span> Compare</button>
+                            <button class="insight-tab" data-insight="list" onclick="switchClusterInsight('list')"><span class="tab-icon">📊</span> Zones</button>
+                        </div>
+                        <div class="insights-body">
+                            <div class="insight-content active" id="cInsight-summary"></div>
+                            <div class="insight-content" id="cInsight-alerts"></div>
+                            <div class="insight-content" id="cInsight-recs"></div>
+                            <div class="insight-content" id="cInsight-trends"></div>
+                            <div class="insight-content" id="cInsight-compare"></div>
+                            <div class="insight-content" id="cInsight-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ===== End Desktop Cluster Dashboard ===== -->
+
             <div class="carousel-wrapper">
                 <div class="carousel-dots" id="carouselDots"></div>
                 <div class="carousel" id="carousel">
@@ -2748,12 +3485,61 @@
         </div>
         <div class="main-view" id="zoneDetailView" style="display: none;">
             <div class="zone-detail-header" style="padding: 16px 20px; background: #ffffff; border-bottom: 1px solid #e0e0e0;">
-                <button class="back-button" id="zoneDetailBackButton" onclick="goBackToMain()" aria-label="Go back" style="display: none;"></button>
+                <button class="back-button" id="zoneDetailBackButton" onclick="goBackToMain()" aria-label="Go back"></button>
                 <div class="zone-detail-title" style="flex: 1; text-align: left;">
                     <h2 id="zoneDetailTitle" style="margin: 0; font-size: 20px; font-weight: 600; color: #1a1a1a;">Zone Details</h2>
                     <div class="subtitle" style="font-size: 10px; color: #888; margin-top: 2px;">PHC Performance</div>
                 </div>
             </div>
+
+            <!-- ===== Zone Desktop Dashboard ===== -->
+            <div id="zoneDashboard" class="cluster-dashboard">
+                <!-- Middle: Zone Map + DM Chart -->
+                <div class="dash-panels">
+                    <div class="dash-panel dash-panel-map">
+                        <div class="dash-panel-header" id="zDashMapTitle">Zone Map</div>
+                        <iframe id="zoneMapFrame" src="map.html" class="dash-map" style="border:none;width:100%;height:100%;border-radius:0 0 10px 10px;"></iframe>
+                    </div>
+                    <div class="dash-panel dash-panel-chart">
+                        <div class="dash-panel-header">
+                            <span>PHC Performance</span>
+                            <div class="dash-chart-tabs">
+                                <button class="dash-tab active" data-zchart="dm" onclick="switchZoneDashChart('dm')">DM Patients</button>
+                                <button class="dash-tab" data-zchart="predm" onclick="switchZoneDashChart('predm')">Pre-DM</button>
+                            </div>
+                        </div>
+                        <div class="dash-chart-legend" id="zDashChartLegend">
+                            <span class="dash-legend-item"><span class="dash-legend-dot" style="background:#4caf93"></span>Controlled</span>
+                            <span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ef5350"></span>Uncontrolled</span>
+                        </div>
+                        <div id="zDashChart" class="dash-chart-bars"></div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Panel -->
+                <div class="dash-table-section" id="zoneBottomSection" style="max-height:360px;">
+                    <div class="insights-panel">
+                        <div class="insights-tabs" id="zInsightTabs">
+                            <button class="insight-tab active" data-insight="summary" onclick="switchZoneInsight('summary')"><span class="tab-icon">💡</span> Summary</button>
+                            <button class="insight-tab" data-insight="alerts" onclick="switchZoneInsight('alerts')"><span class="tab-icon">🚨</span> Alerts</button>
+                            <button class="insight-tab" data-insight="recs" onclick="switchZoneInsight('recs')"><span class="tab-icon">📋</span> Actions</button>
+                            <button class="insight-tab" data-insight="trends" onclick="switchZoneInsight('trends')"><span class="tab-icon">📈</span> Trends</button>
+                            <button class="insight-tab" data-insight="compare" onclick="switchZoneInsight('compare')"><span class="tab-icon">⚖️</span> Compare</button>
+                            <button class="insight-tab" data-insight="list" onclick="switchZoneInsight('list')"><span class="tab-icon">📊</span> PHCs</button>
+                        </div>
+                        <div class="insights-body">
+                            <div class="insight-content active" id="zInsight-summary"></div>
+                            <div class="insight-content" id="zInsight-alerts"></div>
+                            <div class="insight-content" id="zInsight-recs"></div>
+                            <div class="insight-content" id="zInsight-trends"></div>
+                            <div class="insight-content" id="zInsight-compare"></div>
+                            <div class="insight-content" id="zInsight-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ===== End Zone Desktop Dashboard ===== -->
+
             <div class="carousel-wrapper">
                 <div class="carousel-dots" id="zoneDetailCarouselDots"></div>
                 <div class="carousel" id="zoneDetailCarousel">
@@ -3630,6 +4416,17 @@
         // Initial load from localStorage
         loadUserScope();
 
+        // Reset to main view — hide zone/PHC overlays
+        function ensureMainViewVisible() {
+            const mainView = document.getElementById('mainView');
+            const zoneDetailView = document.getElementById('zoneDetailView');
+            const phcDetailView = document.getElementById('phcDetailView');
+
+            if (mainView) mainView.classList.remove('hidden');
+            if (zoneDetailView) zoneDetailView.style.display = 'none';
+            if (phcDetailView) phcDetailView.style.display = 'none';
+        }
+
         // Load data from Supabase (or fallback to Google Sheets)
         (function() {
             const SHEET_ID = '1v5hh2tu53eVMPRLE3tCk_Gf39Rb2Rt1sseZHCdyGzvE';
@@ -3711,6 +4508,7 @@
             function loadDataFromGoogleSheets() {
                 showLoading();
                 hideLoadError();
+                ensureMainViewVisible();
                 
                 // Use CSV export which is more reliable for CORS
                 const publishedUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
@@ -3760,6 +4558,7 @@
                             if (index + 1 >= sources.length) {
                                 showLoadError('Unable to load data. Please check your connection and try again.');
                                 hideLoading();
+                                ensureMainViewVisible();
                             }
                             trySource(index + 1);
                         });
@@ -3903,6 +4702,11 @@
                 
                 // Setup sticky headers after cards are populated
                 setTimeout(setupStickyHeaders, 100);
+
+                // Populate desktop cluster dashboard
+                if (typeof populateClusterDashboard === 'function') {
+                    setTimeout(populateClusterDashboard, 150);
+                }
 
                 // Auto-navigate zone-scoped users to their zone detail view
                 if (userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc') && userScopeData.zone_id) {
@@ -4516,9 +5320,15 @@
             // Hide main view
             const mainView = document.getElementById('mainView');
             const zoneDetailView = document.getElementById('zoneDetailView');
+            const phcDetailView = document.getElementById('phcDetailView');
             
             if (mainView) mainView.classList.add('hidden');
             if (zoneDetailView) zoneDetailView.style.display = 'flex';
+            if (phcDetailView) phcDetailView.style.display = 'none';
+            
+            // Always show back button (hide only for zone/PHC scoped users later)
+            const backBtn = document.getElementById('zoneDetailBackButton');
+            if (backBtn) backBtn.style.display = 'flex';
             
             // Set scroll position using requestAnimationFrame to ensure it happens before paint
             const zoneCarousel = document.getElementById('zoneDetailCarousel');
@@ -4653,7 +5463,7 @@
                 if (backButton && userScopeData && (userScopeData.scope === 'zone' || userScopeData.scope === 'phc')) {
                     backButton.style.display = 'none';
                 } else if (backButton) {
-                    backButton.style.display = 'block';
+                    backButton.style.display = 'flex';
                 }
                 
                 // Calculate and display zone overview metrics for DM
@@ -4707,15 +5517,16 @@
                 renderZonePHCList('zoneDetailScreeningPHCs', screeningPHCs, 'screening');
                 renderZonePHCList('zoneDetailDMPHCs', dmPHCs, 'dm');
                 renderZonePHCList('zoneDetailPreDMPHCs', predmPHCs, 'predm');
+
+                // Populate zone desktop dashboard
+                if (typeof populateZoneDashboard === 'function') {
+                    populateZoneDashboard(zoneName);
+                }
             }
         }
 
         function goBackToMain() {
-            const mainView = document.getElementById('mainView');
-            const zoneDetailView = document.getElementById('zoneDetailView');
-            
-            if (mainView) mainView.classList.remove('hidden');
-            if (zoneDetailView) zoneDetailView.style.display = 'none';
+            ensureMainViewVisible();
             
             // Scroll to the card that matches the context we came from
             if (lastClusterContext) {
@@ -5389,6 +6200,9 @@
                 document.documentElement.style.zoom = '1';
             }
             
+            // Always start on the main view (hide detail overlays)
+            ensureMainViewVisible();
+            
             // Setup scroll handlers for sticky headers
             setupStickyHeaders();
         });
@@ -5485,5 +6299,522 @@
             setupStickyHeaders();
         });
     </script>
-</body>
+
+    <!-- ===== Cluster Dashboard Logic ===== -->
+    <script>
+    let currentDashChart = 'dm';
+    let dashZoneData = {};
+
+    // Listen for zone clicks from the map iframe
+    window.addEventListener('message', function (e) {
+        if (!e.data || e.data.type !== 'zoneClick') return;
+        if (e.data.zone) {
+            navigateToZone(e.data.zone, 'screening');
+        }
+    });
+
+    function populateClusterDashboard() {
+        if (!globalSheetData) return;
+        // Gather zone data from existing populate functions' results
+        const zones = Object.keys(ZONE_FULL_NAMES);
+        let totalPop = 0, totalScreened = 0, totalMissedOps = 0;
+        let totalDM = 0, totalControlled = 0;
+        let totalPreDM = 0, totalPreDMNormal = 0, totalPreDMFollow = 0;
+        dashZoneData = {};
+
+        zones.forEach(z => {
+            const sPHCs = populateZonePHCs(globalSheetData, z, 'screening');
+            const dPHCs = populateZonePHCs(globalSheetData, z, 'dm');
+            const pPHCs = populateZonePHCs(globalSheetData, z, 'predm');
+
+            let zPop = 0, zScr = 0, zOps = 0;
+            sPHCs.forEach(p => {
+                zPop += (p.target || 0);
+                zScr += (p.achieved || 0);
+                zOps += parseFloat(String(p.opportunities || '0').replace(/,/g, '')) || 0;
+            });
+            const zRem = Math.max(0, zPop - zScr);
+
+            let zDM = 0, zCtrl = 0;
+            dPHCs.forEach(p => { zDM += (p.total || 0); zCtrl += (p.controlled || 0); });
+            const zUnctrl = Math.max(0, zDM - zCtrl);
+
+            let zPreDM = 0, zNorm = 0, zFollow = 0;
+            pPHCs.forEach(p => { zPreDM += (p.total || 0); zNorm += (p.normal || 0); zFollow += (p.followup || 0); });
+
+            dashZoneData[z] = { pop: zPop, screened: zScr, remaining: zRem, missedOps: zOps,
+                dm: zDM, controlled: zCtrl, uncontrolled: zUnctrl,
+                predm: zPreDM, normal: zNorm, followup: zFollow };
+
+            totalPop += zPop; totalScreened += zScr; totalMissedOps += zOps;
+            totalDM += zDM; totalControlled += zCtrl;
+            totalPreDM += zPreDM; totalPreDMNormal += zNorm; totalPreDMFollow += zFollow;
+        });
+
+        const totalRemaining = Math.max(0, totalPop - totalScreened);
+        const scrPct = totalPop > 0 ? ((totalScreened / totalPop) * 100).toFixed(1) : 0;
+        const remPct = totalPop > 0 ? ((totalRemaining / totalPop) * 100).toFixed(1) : 0;
+        const ctrlPct = totalDM > 0 ? ((totalControlled / totalDM) * 100).toFixed(1) : 0;
+        const normPct = totalPreDM > 0 ? ((totalPreDMNormal / totalPreDM) * 100).toFixed(1) : 0;
+
+        // Summary cards removed – data used by insights
+
+        // Chart
+        renderDashChart(currentDashChart);
+
+        // Map is handled by map.html iframe
+
+        // AI Insights
+        generateClusterInsights();
+    }
+
+    function renderDashChart(type) {
+        currentDashChart = type;
+        const container = document.getElementById('dashChart');
+        const legendEl = document.querySelector('.dash-chart-legend');
+        if (!container) return;
+        let html = '';
+
+        // Update tab active state
+        document.querySelectorAll('.dash-chart-tabs .dash-tab').forEach(t => t.classList.toggle('active', t.dataset.chart === type));
+
+        const zones = Object.keys(dashZoneData);
+        if (type === 'dm') {
+            legendEl.innerHTML = '<span class="dash-legend-item"><span class="dash-legend-dot" style="background:#4caf93"></span>Controlled DM</span><span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ef5350"></span>Uncontrolled DM</span>';
+            zones.forEach(z => {
+                const d = dashZoneData[z];
+                const total = d.dm || 1;
+                const cPct = ((d.controlled / total) * 100).toFixed(1);
+                const uPct = ((d.uncontrolled / total) * 100).toFixed(1);
+                html += `<div class="dash-bar-row">
+                    <span class="dash-bar-zone">${z}</span>
+                    <span class="dash-bar-total">${d.dm.toLocaleString()}</span>
+                    <div class="dash-bar-track">
+                        <div class="dash-bar-seg" style="width:${cPct}%;background:#4caf93"><span>${cPct}%</span></div>
+                        <div class="dash-bar-seg" style="width:${uPct}%;background:#ef5350"><span>${d.uncontrolled}</span></div>
+                    </div>
+                    <span class="dash-bar-val">${d.uncontrolled}</span>
+                </div>`;
+            });
+        } else {
+            legendEl.innerHTML = '<span class="dash-legend-item"><span class="dash-legend-dot" style="background:#66bb6a"></span>Pre-DM Normal</span><span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ffa726"></span>No Follow-up</span>';
+            zones.forEach(z => {
+                const d = dashZoneData[z];
+                const total = d.predm || 1;
+                const nPct = ((d.normal / total) * 100).toFixed(1);
+                const fPct = ((d.followup / total) * 100).toFixed(1);
+                html += `<div class="dash-bar-row">
+                    <span class="dash-bar-zone">${z}</span>
+                    <span class="dash-bar-total">${d.predm.toLocaleString()}</span>
+                    <div class="dash-bar-track">
+                        <div class="dash-bar-seg" style="width:${nPct}%;background:#66bb6a"><span>${nPct}%</span></div>
+                        <div class="dash-bar-seg" style="width:${fPct}%;background:#ffa726"><span>${d.followup}</span></div>
+                    </div>
+                    <span class="dash-bar-val">${d.followup}</span>
+                </div>`;
+            });
+        }
+        container.innerHTML = html;
+    }
+
+    function switchDashChart(type) { renderDashChart(type); }
+
+    /* ============================================================
+       CLUSTER AI INSIGHTS
+       ============================================================ */
+    function switchClusterInsight(tab) {
+        document.querySelectorAll('#cInsightTabs .insight-tab').forEach(t => t.classList.toggle('active', t.dataset.insight === tab));
+        document.querySelectorAll('#clusterBottomSection .insight-content').forEach(c => c.classList.toggle('active', c.id === 'cInsight-' + tab));
+    }
+
+    function generateClusterInsights() {
+        const zones = Object.keys(dashZoneData);
+        if (!zones.length) return;
+
+        // Pre-compute totals
+        let tPop = 0, tScr = 0, tOps = 0, tDM = 0, tCtrl = 0, tPreDM = 0, tNorm = 0;
+        zones.forEach(z => { const d = dashZoneData[z]; tPop += d.pop; tScr += d.screened; tOps += d.missedOps; tDM += d.dm; tCtrl += d.controlled; tPreDM += d.predm; tNorm += d.normal; });
+        const tRem = tPop - tScr;
+        const scrPct = tPop > 0 ? ((tScr / tPop) * 100) : 0;
+        const ctrlPct = tDM > 0 ? ((tCtrl / tDM) * 100) : 0;
+
+        // Sorted helpers
+        const byScrCov = [...zones].sort((a, b) => {
+            const ra = dashZoneData[a].pop > 0 ? dashZoneData[a].screened / dashZoneData[a].pop : 0;
+            const rb = dashZoneData[b].pop > 0 ? dashZoneData[b].screened / dashZoneData[b].pop : 0;
+            return ra - rb;
+        });
+        const byCtrl = [...zones].sort((a, b) => {
+            const ra = dashZoneData[a].dm > 0 ? dashZoneData[a].controlled / dashZoneData[a].dm : 0;
+            const rb = dashZoneData[b].dm > 0 ? dashZoneData[b].controlled / dashZoneData[b].dm : 0;
+            return ra - rb;
+        });
+        const byOps = [...zones].sort((a, b) => dashZoneData[b].missedOps - dashZoneData[a].missedOps);
+
+        const worst = byScrCov[0]; const best = byScrCov[byScrCov.length - 1];
+        const worstD = dashZoneData[worst]; const bestD = dashZoneData[best];
+        const worstPct = (worstD.pop > 0 ? (worstD.screened / worstD.pop * 100) : 0).toFixed(1);
+        const bestPct = (bestD.pop > 0 ? (bestD.screened / bestD.pop * 100) : 0).toFixed(1);
+        const worstCtrlZ = byCtrl[0]; const worstCtrlPct = (dashZoneData[worstCtrlZ].dm > 0 ? (dashZoneData[worstCtrlZ].controlled / dashZoneData[worstCtrlZ].dm * 100) : 0).toFixed(1);
+        const topOpsZ = byOps[0];
+
+        // 1) SUMMARY
+        document.getElementById('cInsight-summary').innerHTML = `<div class="insight-summary">
+            Overall cluster screening stands at <strong class="hl-blue">${scrPct.toFixed(1)}%</strong> with <strong>${tScr.toLocaleString()}</strong> out of <strong>${tPop.toLocaleString()}</strong> screened.
+            <strong class="hl-red">${tRem.toLocaleString()}</strong> patients remain unscreened.
+            <br><br>
+            <strong>${worst}</strong> has the <span class="hl-red">lowest screening coverage</span> at <strong class="hl-red">${worstPct}%</strong>, while <strong>${best}</strong> leads at <strong class="hl-green">${bestPct}%</strong>.
+            DM control rate across the cluster is <strong class="hl-${ctrlPct >= 50 ? 'green' : 'red'}">${ctrlPct.toFixed(1)}%</strong>.
+            <strong>${worstCtrlZ}</strong> has the weakest DM control at <strong class="hl-red">${worstCtrlPct}%</strong>.
+            <br><br>
+            Total missed opportunities: <strong class="hl-orange">${tOps.toLocaleString()}</strong> — <strong>${topOpsZ}</strong> accounts for the highest share with <strong>${dashZoneData[topOpsZ].missedOps.toLocaleString()}</strong>.
+        </div>`;
+
+        // 2) ALERTS
+        let alertHtml = '<div class="insight-alerts">';
+        const lowCovZones = zones.filter(z => dashZoneData[z].pop > 0 && (dashZoneData[z].screened / dashZoneData[z].pop) < 0.30);
+        if (lowCovZones.length) alertHtml += `<div class="alert-card critical"><span class="alert-icon">🔴</span><span class="alert-text"><strong>${lowCovZones.length} zone(s) below 30% screening</strong> — ${lowCovZones.join(', ')}. Immediate outreach needed.</span></div>`;
+        const lowCtrlZones = zones.filter(z => dashZoneData[z].dm > 0 && (dashZoneData[z].controlled / dashZoneData[z].dm) < 0.40);
+        if (lowCtrlZones.length) alertHtml += `<div class="alert-card critical"><span class="alert-icon">🔴</span><span class="alert-text"><strong>${lowCtrlZones.length} zone(s) with DM control &lt; 40%</strong> — ${lowCtrlZones.join(', ')}. Review treatment plans.</span></div>`;
+        const highOpsZones = zones.filter(z => dashZoneData[z].missedOps > (tOps / zones.length * 1.5));
+        if (highOpsZones.length) alertHtml += `<div class="alert-card warning"><span class="alert-icon">🟠</span><span class="alert-text"><strong>${highOpsZones.length} zone(s) with above-avg missed opportunities</strong> — ${highOpsZones.join(', ')}.</span></div>`;
+        const goodZones = zones.filter(z => dashZoneData[z].pop > 0 && (dashZoneData[z].screened / dashZoneData[z].pop) >= 0.60);
+        if (goodZones.length) alertHtml += `<div class="alert-card positive"><span class="alert-icon">🟢</span><span class="alert-text"><strong>${goodZones.length} zone(s) above 60% coverage</strong> — ${goodZones.join(', ')}. Keep momentum.</span></div>`;
+        if (alertHtml === '<div class="insight-alerts">') alertHtml += `<div class="alert-card info"><span class="alert-icon">ℹ️</span><span class="alert-text">No critical alerts at this time. Cluster metrics are within expected ranges.</span></div>`;
+        alertHtml += '</div>';
+        document.getElementById('cInsight-alerts').innerHTML = alertHtml;
+
+        // 3) RECOMMENDATIONS
+        let recHtml = '<div class="insight-recs">';
+        let recN = 1;
+        if (lowCovZones.length) { recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Prioritize screening outreach in <strong>${lowCovZones[0]}</strong> — currently the lowest coverage zone. Deploy mobile units or community health workers.</span></div>`; }
+        recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Address <strong>${tOps.toLocaleString()}</strong> missed opportunities cluster-wide. Focus on <strong>${topOpsZ}</strong> which has the highest count (${dashZoneData[topOpsZ].missedOps.toLocaleString()}).</span></div>`;
+        if (lowCtrlZones.length) { recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Review DM management protocols in <strong>${lowCtrlZones[0]}</strong> — control rate at ${worstCtrlPct}%. Consider specialist referrals or medication audits.</span></div>`; }
+        const noFollowTotal = tPreDM - tNorm;
+        if (noFollowTotal > 0) { recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Schedule follow-up for <strong>${noFollowTotal.toLocaleString()}</strong> Pre-DM patients without follow-up to prevent progression to diabetes.</span></div>`; }
+        recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Ensure <strong>${best}</strong> (${bestPct}% coverage) shares best practices with lower-performing zones for knowledge transfer.</span></div>`;
+        recHtml += '</div>';
+        document.getElementById('cInsight-recs').innerHTML = recHtml;
+
+        // 4) TRENDS (simulated from current data — no historical data yet)
+        let trendHtml = '<div class="insight-trends">';
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🏥</span><span class="trend-label">Screening coverage at <strong>${scrPct.toFixed(1)}%</strong> — ${scrPct >= 50 ? 'on track to target' : 'below midpoint, acceleration needed'}</span><span class="trend-badge ${scrPct >= 50 ? 'up' : 'down'}">${scrPct >= 50 ? '▲ On Track' : '▼ Behind'}</span></div>`;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">💊</span><span class="trend-label">DM control rate: <strong>${ctrlPct.toFixed(1)}%</strong> — ${ctrlPct >= 50 ? 'above 50% threshold' : 'needs improvement'}</span><span class="trend-badge ${ctrlPct >= 50 ? 'up' : 'down'}">${ctrlPct >= 50 ? '▲ Good' : '▼ Low'}</span></div>`;
+        const avgOps = tOps / zones.length;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🎯</span><span class="trend-label">Avg missed ops per zone: <strong>${Math.round(avgOps).toLocaleString()}</strong> — total <strong>${tOps.toLocaleString()}</strong></span><span class="trend-badge ${avgOps < 500 ? 'up' : 'down'}">${avgOps < 500 ? '▲ Low' : '▼ High'}</span></div>`;
+        const normPct2 = tPreDM > 0 ? ((tNorm / tPreDM) * 100) : 0;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🩺</span><span class="trend-label">Pre-DM normal rate: <strong>${normPct2.toFixed(1)}%</strong> of ${tPreDM.toLocaleString()} patients</span><span class="trend-badge ${normPct2 >= 40 ? 'up' : 'down'}">${normPct2 >= 40 ? '▲ Stable' : '▼ Needs F/U'}</span></div>`;
+        trendHtml += `<div style="margin-top:8px;padding:8px 12px;background:#f8f5ff;border-radius:8px;font-size:11px;color:#666;text-align:center">📊 Historical trend data will appear here once multiple reporting periods are recorded.</div>`;
+        trendHtml += '</div>';
+        document.getElementById('cInsight-trends').innerHTML = trendHtml;
+
+        // 5) COMPARISON
+        let compHtml = '<div class="insight-compare">';
+        const maxPct = Math.max(...zones.map(z => dashZoneData[z].pop > 0 ? (dashZoneData[z].screened / dashZoneData[z].pop * 100) : 0));
+        byScrCov.reverse().forEach(z => {
+            const d = dashZoneData[z];
+            const pct = d.pop > 0 ? (d.screened / d.pop * 100) : 0;
+            const barW = maxPct > 0 ? (pct / maxPct * 100) : 0;
+            const color = pct >= 60 ? '#4caf93' : pct >= 30 ? '#ffa726' : '#ef5350';
+            const tag = z === byScrCov[0] ? ' <span class="compare-best">★ Best</span>' : (z === byScrCov[byScrCov.length - 1] ? ' <span class="compare-worst">⚠ Lowest</span>' : '');
+            compHtml += `<div class="compare-row"><div class="compare-label"><span>${z}${tag}</span><span>${pct.toFixed(1)}%</span></div><div class="compare-bar-track"><div class="compare-bar-fill" style="width:${barW.toFixed(1)}%;background:${color}"></div></div></div>`;
+        });
+        compHtml += `<div class="compare-avg-line">Cluster average: <strong>${scrPct.toFixed(1)}%</strong> screening coverage</div>`;
+        compHtml += '</div>';
+        document.getElementById('cInsight-compare').innerHTML = compHtml;
+
+        // 6) ZONE LIST
+        let listHtml = '<div class="insight-list-search"><input type="text" placeholder="Search zones..." oninput="filterClusterList(this.value)"></div>';
+        listHtml += '<div style="overflow-y:auto;max-height:240px"><table class="insight-list-table"><thead><tr><th>Zone</th><th>Population</th><th>Screened</th><th>Coverage</th><th>DM</th><th>Ctrl %</th><th>Missed Ops</th></tr></thead><tbody id="cListBody">';
+        [...zones].sort((a, b) => a.localeCompare(b)).forEach(z => {
+            const d = dashZoneData[z];
+            const covPct = d.pop > 0 ? ((d.screened / d.pop) * 100).toFixed(1) : '0.0';
+            const cPct = d.dm > 0 ? ((d.controlled / d.dm) * 100).toFixed(1) : '0.0';
+            const covColor = parseFloat(covPct) >= 60 ? '#4caf93' : parseFloat(covPct) >= 30 ? '#fb8c00' : '#ef5350';
+            const ctrlColor = parseFloat(cPct) >= 50 ? '#4caf93' : '#ef5350';
+            listHtml += `<tr onclick="navigateToZone('${z}','screening')">
+                <td><span class="insight-list-link">${z}</span></td>
+                <td>${d.pop.toLocaleString()}</td>
+                <td>${d.screened.toLocaleString()}</td>
+                <td style="color:${covColor};font-weight:600">${covPct}%</td>
+                <td>${d.dm.toLocaleString()}</td>
+                <td style="color:${ctrlColor};font-weight:600">${cPct}%</td>
+                <td>${d.missedOps.toLocaleString()}</td>
+            </tr>`;
+        });
+        listHtml += '</tbody></table></div>';
+        document.getElementById('cInsight-list').innerHTML = listHtml;
+    }
+
+    function filterClusterList(q) {
+        q = q.toLowerCase();
+        document.querySelectorAll('#cListBody tr').forEach(r => {
+            r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    /* ============================================================
+       ZONE DASHBOARD (PHC-level detail)
+       ============================================================ */
+    let currentZoneDashChart = 'dm';
+    let zoneDashPhcData = {};
+    let zoneDashCurrentZone = '';
+
+    function populateZoneDashboard(zoneName) {
+        if (!globalSheetData) return;
+        zoneDashCurrentZone = zoneName;
+
+        const sPHCs = populateZonePHCs(globalSheetData, zoneName, 'screening');
+        const dPHCs = populateZonePHCs(globalSheetData, zoneName, 'dm');
+        const pPHCs = populateZonePHCs(globalSheetData, zoneName, 'predm');
+
+        // Build per-PHC data keyed by name
+        zoneDashPhcData = {};
+        let totalPop = 0, totalScr = 0, totalOps = 0;
+        let totalDM = 0, totalCtrl = 0;
+        let totalPreDM = 0, totalNorm = 0, totalFollow = 0;
+
+        sPHCs.forEach(p => {
+            const key = p.name;
+            if (!zoneDashPhcData[key]) zoneDashPhcData[key] = { name: key };
+            zoneDashPhcData[key].pop = p.target || 0;
+            zoneDashPhcData[key].screened = p.achieved || 0;
+            zoneDashPhcData[key].remaining = Math.max(0, (p.target || 0) - (p.achieved || 0));
+            zoneDashPhcData[key].ops = parseFloat(String(p.opportunities || '0').replace(/,/g, '')) || 0;
+            totalPop += p.target || 0;
+            totalScr += p.achieved || 0;
+            totalOps += zoneDashPhcData[key].ops;
+        });
+
+        dPHCs.forEach(p => {
+            const key = p.name;
+            if (!zoneDashPhcData[key]) zoneDashPhcData[key] = { name: key };
+            zoneDashPhcData[key].dm = p.total || 0;
+            zoneDashPhcData[key].controlled = p.controlled || 0;
+            zoneDashPhcData[key].uncontrolled = Math.max(0, (p.total || 0) - (p.controlled || 0));
+            totalDM += p.total || 0;
+            totalCtrl += p.controlled || 0;
+        });
+
+        pPHCs.forEach(p => {
+            const key = p.name;
+            if (!zoneDashPhcData[key]) zoneDashPhcData[key] = { name: key };
+            zoneDashPhcData[key].predm = p.total || 0;
+            zoneDashPhcData[key].normal = p.normal || 0;
+            zoneDashPhcData[key].followup = p.followup || 0;
+            totalPreDM += p.total || 0;
+            totalNorm += p.normal || 0;
+            totalFollow += p.followup || 0;
+        });
+
+        const totalRem = Math.max(0, totalPop - totalScr);
+        const scrPct = totalPop > 0 ? ((totalScr / totalPop) * 100).toFixed(1) : 0;
+        const remPct = totalPop > 0 ? ((totalRem / totalPop) * 100).toFixed(1) : 0;
+        const ctrlPct = totalDM > 0 ? ((totalCtrl / totalDM) * 100).toFixed(1) : 0;
+        const normPct = totalPreDM > 0 ? ((totalNorm / totalPreDM) * 100).toFixed(1) : 0;
+
+        // Summary cards removed – data used by insights
+
+        // Map title
+        const fullName = ZONE_FULL_NAMES[zoneName] || zoneName;
+        document.getElementById('zDashMapTitle').textContent = fullName;
+
+        // Focus the zone map iframe on this zone
+        const zoneFrame = document.getElementById('zoneMapFrame');
+        if (zoneFrame && zoneFrame.contentWindow) {
+            setTimeout(() => {
+                zoneFrame.contentWindow.postMessage({ type: 'focusZone', zone: zoneName }, '*');
+            }, 300);
+        }
+
+        // Render chart
+        renderZoneDashChart(currentZoneDashChart);
+
+        // AI Insights
+        generateZoneInsights();
+    }
+
+    function renderZoneDashChart(type) {
+        currentZoneDashChart = type;
+        const container = document.getElementById('zDashChart');
+        const legendEl = document.getElementById('zDashChartLegend');
+        if (!container) return;
+
+        document.querySelectorAll('.dash-chart-tabs .dash-tab[data-zchart]').forEach(t => t.classList.toggle('active', t.dataset.zchart === type));
+
+        const phcs = Object.values(zoneDashPhcData);
+        let html = '';
+
+        if (type === 'dm') {
+            legendEl.innerHTML = '<span class="dash-legend-item"><span class="dash-legend-dot" style="background:#4caf93"></span>Controlled</span><span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ef5350"></span>Uncontrolled</span>';
+            phcs.forEach(p => {
+                const total = p.dm || 1;
+                const ctrl = p.controlled || 0;
+                const unctrl = p.uncontrolled || 0;
+                const cPct = ((ctrl / total) * 100).toFixed(1);
+                const uPct = ((unctrl / total) * 100).toFixed(1);
+                html += `<div class="dash-bar-row">
+                    <span class="dash-bar-zone" style="width:90px;font-size:11px">${p.name}</span>
+                    <span class="dash-bar-total">${(p.dm || 0).toLocaleString()}</span>
+                    <div class="dash-bar-track">
+                        <div class="dash-bar-seg" style="width:${cPct}%;background:#4caf93"><span>${cPct}%</span></div>
+                        <div class="dash-bar-seg" style="width:${uPct}%;background:#ef5350"><span>${unctrl}</span></div>
+                    </div>
+                    <span class="dash-bar-val">${unctrl}</span>
+                </div>`;
+            });
+        } else {
+            legendEl.innerHTML = '<span class="dash-legend-item"><span class="dash-legend-dot" style="background:#66bb6a"></span>Normal</span><span class="dash-legend-item"><span class="dash-legend-dot" style="background:#ffa726"></span>No Follow-up</span>';
+            phcs.forEach(p => {
+                const total = p.predm || 1;
+                const norm = p.normal || 0;
+                const follow = p.followup || 0;
+                const nPct = ((norm / total) * 100).toFixed(1);
+                const fPct = ((follow / total) * 100).toFixed(1);
+                html += `<div class="dash-bar-row">
+                    <span class="dash-bar-zone" style="width:90px;font-size:11px">${p.name}</span>
+                    <span class="dash-bar-total">${(p.predm || 0).toLocaleString()}</span>
+                    <div class="dash-bar-track">
+                        <div class="dash-bar-seg" style="width:${nPct}%;background:#66bb6a"><span>${nPct}%</span></div>
+                        <div class="dash-bar-seg" style="width:${fPct}%;background:#ffa726"><span>${follow}</span></div>
+                    </div>
+                    <span class="dash-bar-val">${follow}</span>
+                </div>`;
+            });
+        }
+        container.innerHTML = html;
+    }
+
+    function switchZoneDashChart(type) { renderZoneDashChart(type); }
+
+    /* ============================================================
+       ZONE AI INSIGHTS
+       ============================================================ */
+    function switchZoneInsight(tab) {
+        document.querySelectorAll('#zInsightTabs .insight-tab').forEach(t => t.classList.toggle('active', t.dataset.insight === tab));
+        document.querySelectorAll('#zoneBottomSection .insight-content').forEach(c => c.classList.toggle('active', c.id === 'zInsight-' + tab));
+    }
+
+    function generateZoneInsights() {
+        const phcs = Object.values(zoneDashPhcData);
+        if (!phcs.length) return;
+        const zone = zoneDashCurrentZone;
+
+        let tPop = 0, tScr = 0, tOps = 0, tDM = 0, tCtrl = 0, tPreDM = 0, tNorm = 0, tFollow = 0;
+        phcs.forEach(p => { tPop += (p.pop || 0); tScr += (p.screened || 0); tOps += (p.ops || 0); tDM += (p.dm || 0); tCtrl += (p.controlled || 0); tPreDM += (p.predm || 0); tNorm += (p.normal || 0); tFollow += (p.followup || 0); });
+        const tRem = tPop - tScr;
+        const scrPct = tPop > 0 ? ((tScr / tPop) * 100) : 0;
+        const ctrlPct = tDM > 0 ? ((tCtrl / tDM) * 100) : 0;
+
+        const byScrCov = [...phcs].sort((a, b) => {
+            const ra = (a.pop || 0) > 0 ? (a.screened || 0) / a.pop : 0;
+            const rb = (b.pop || 0) > 0 ? (b.screened || 0) / b.pop : 0;
+            return ra - rb;
+        });
+        const byCtrl = [...phcs].sort((a, b) => {
+            const ra = (a.dm || 0) > 0 ? (a.controlled || 0) / a.dm : 0;
+            const rb = (b.dm || 0) > 0 ? (b.controlled || 0) / b.dm : 0;
+            return ra - rb;
+        });
+        const byOps = [...phcs].sort((a, b) => (b.ops || 0) - (a.ops || 0));
+
+        const worst = byScrCov[0]; const best = byScrCov[byScrCov.length - 1];
+        const worstPct = ((worst.pop || 0) > 0 ? ((worst.screened || 0) / worst.pop * 100) : 0).toFixed(1);
+        const bestPct = ((best.pop || 0) > 0 ? ((best.screened || 0) / best.pop * 100) : 0).toFixed(1);
+        const worstCtrl = byCtrl[0];
+        const worstCtrlPct = ((worstCtrl.dm || 0) > 0 ? ((worstCtrl.controlled || 0) / worstCtrl.dm * 100) : 0).toFixed(1);
+        const topOps = byOps[0];
+
+        // 1) SUMMARY
+        document.getElementById('zInsight-summary').innerHTML = `<div class="insight-summary">
+            <strong>${zone}</strong> zone screening is at <strong class="hl-blue">${scrPct.toFixed(1)}%</strong> — <strong>${tScr.toLocaleString()}</strong> out of <strong>${tPop.toLocaleString()}</strong> screened, with <strong class="hl-red">${tRem.toLocaleString()}</strong> remaining.
+            <br><br>
+            <strong>${worst.name}</strong> has the <span class="hl-red">lowest coverage</span> at <strong class="hl-red">${worstPct}%</strong>, while <strong>${best.name}</strong> leads at <strong class="hl-green">${bestPct}%</strong>.
+            DM control across the zone is <strong class="hl-${ctrlPct >= 50 ? 'green' : 'red'}">${ctrlPct.toFixed(1)}%</strong>.
+            <strong>${worstCtrl.name}</strong> has the weakest control at <strong class="hl-red">${worstCtrlPct}%</strong>.
+            <br><br>
+            Missed opportunities: <strong class="hl-orange">${tOps.toLocaleString()}</strong> — <strong>${topOps.name}</strong> has the most (${(topOps.ops || 0).toLocaleString()}).
+        </div>`;
+
+        // 2) ALERTS
+        let alertHtml = '<div class="insight-alerts">';
+        const lowCov = phcs.filter(p => (p.pop || 0) > 0 && ((p.screened || 0) / p.pop) < 0.30);
+        if (lowCov.length) alertHtml += `<div class="alert-card critical"><span class="alert-icon">🔴</span><span class="alert-text"><strong>${lowCov.length} PHC(s) below 30% screening</strong> — ${lowCov.map(p => p.name).join(', ')}.</span></div>`;
+        const lowCtrl = phcs.filter(p => (p.dm || 0) > 0 && ((p.controlled || 0) / p.dm) < 0.40);
+        if (lowCtrl.length) alertHtml += `<div class="alert-card critical"><span class="alert-icon">🔴</span><span class="alert-text"><strong>${lowCtrl.length} PHC(s) with DM control &lt; 40%</strong> — ${lowCtrl.map(p => p.name).join(', ')}.</span></div>`;
+        const highOps = phcs.filter(p => (p.ops || 0) > (tOps / phcs.length * 1.5));
+        if (highOps.length) alertHtml += `<div class="alert-card warning"><span class="alert-icon">🟠</span><span class="alert-text"><strong>${highOps.length} PHC(s) with above-avg missed opportunities</strong> — ${highOps.map(p => p.name).join(', ')}.</span></div>`;
+        const good = phcs.filter(p => (p.pop || 0) > 0 && ((p.screened || 0) / p.pop) >= 0.60);
+        if (good.length) alertHtml += `<div class="alert-card positive"><span class="alert-icon">🟢</span><span class="alert-text"><strong>${good.length} PHC(s) above 60% coverage</strong> — ${good.map(p => p.name).join(', ')}.</span></div>`;
+        if (alertHtml === '<div class="insight-alerts">') alertHtml += `<div class="alert-card info"><span class="alert-icon">ℹ️</span><span class="alert-text">No critical alerts for this zone.</span></div>`;
+        alertHtml += '</div>';
+        document.getElementById('zInsight-alerts').innerHTML = alertHtml;
+
+        // 3) RECOMMENDATIONS
+        let recHtml = '<div class="insight-recs">';
+        let recN = 1;
+        if (lowCov.length) recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Deploy outreach teams to <strong>${lowCov[0].name}</strong> — only ${worstPct}% screened. Use mobile clinics to reach unscreened population.</span></div>`;
+        recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Reduce missed opportunities in <strong>${topOps.name}</strong> (${(topOps.ops || 0).toLocaleString()} missed). Review patient flow and appointment scheduling.</span></div>`;
+        if (lowCtrl.length) recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Audit DM treatment at <strong>${worstCtrl.name}</strong> — ${worstCtrlPct}% control rate. Consider medication adjustments or specialist support.</span></div>`;
+        if (tFollow > 0) recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Follow up with <strong>${tFollow.toLocaleString()}</strong> Pre-DM patients without follow-up to prevent diabetes progression.</span></div>`;
+        recHtml += `<div class="rec-item"><span class="rec-num">${recN++}</span><span>Share best practices from <strong>${best.name}</strong> (${bestPct}% coverage) with lower-performing PHCs in this zone.</span></div>`;
+        recHtml += '</div>';
+        document.getElementById('zInsight-recs').innerHTML = recHtml;
+
+        // 4) TRENDS
+        let trendHtml = '<div class="insight-trends">';
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🏥</span><span class="trend-label">Zone screening: <strong>${scrPct.toFixed(1)}%</strong> — ${scrPct >= 50 ? 'on track' : 'needs acceleration'}</span><span class="trend-badge ${scrPct >= 50 ? 'up' : 'down'}">${scrPct >= 50 ? '▲ On Track' : '▼ Behind'}</span></div>`;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">💊</span><span class="trend-label">DM control: <strong>${ctrlPct.toFixed(1)}%</strong> — ${ctrlPct >= 50 ? 'above threshold' : 'below 50% target'}</span><span class="trend-badge ${ctrlPct >= 50 ? 'up' : 'down'}">${ctrlPct >= 50 ? '▲ Good' : '▼ Low'}</span></div>`;
+        const avgOps = tOps / phcs.length;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🎯</span><span class="trend-label">Avg missed ops/PHC: <strong>${Math.round(avgOps).toLocaleString()}</strong></span><span class="trend-badge ${avgOps < 300 ? 'up' : 'down'}">${avgOps < 300 ? '▲ Low' : '▼ High'}</span></div>`;
+        const normPct2 = tPreDM > 0 ? ((tNorm / tPreDM) * 100) : 0;
+        trendHtml += `<div class="trend-row"><span class="trend-icon">🩺</span><span class="trend-label">Pre-DM normal: <strong>${normPct2.toFixed(1)}%</strong> of ${tPreDM.toLocaleString()} patients</span><span class="trend-badge ${normPct2 >= 40 ? 'up' : 'down'}">${normPct2 >= 40 ? '▲ Stable' : '▼ Watch'}</span></div>`;
+        trendHtml += `<div style="margin-top:8px;padding:8px 12px;background:#f8f5ff;border-radius:8px;font-size:11px;color:#666;text-align:center">📊 Historical trends will appear once multiple periods are recorded.</div>`;
+        trendHtml += '</div>';
+        document.getElementById('zInsight-trends').innerHTML = trendHtml;
+
+        // 5) COMPARISON
+        let compHtml = '<div class="insight-compare">';
+        const maxPct = Math.max(...phcs.map(p => (p.pop || 0) > 0 ? ((p.screened || 0) / p.pop * 100) : 0));
+        [...byScrCov].reverse().forEach(p => {
+            const pct = (p.pop || 0) > 0 ? ((p.screened || 0) / p.pop * 100) : 0;
+            const barW = maxPct > 0 ? (pct / maxPct * 100) : 0;
+            const color = pct >= 60 ? '#4caf93' : pct >= 30 ? '#ffa726' : '#ef5350';
+            const isBest = p.name === best.name; const isWorst = p.name === worst.name;
+            const tag = isBest ? ' <span class="compare-best">★ Best</span>' : (isWorst ? ' <span class="compare-worst">⚠ Lowest</span>' : '');
+            compHtml += `<div class="compare-row"><div class="compare-label"><span>${p.name}${tag}</span><span>${pct.toFixed(1)}%</span></div><div class="compare-bar-track"><div class="compare-bar-fill" style="width:${barW.toFixed(1)}%;background:${color}"></div></div></div>`;
+        });
+        compHtml += `<div class="compare-avg-line">Zone average: <strong>${scrPct.toFixed(1)}%</strong> screening coverage</div>`;
+        compHtml += '</div>';
+        document.getElementById('zInsight-compare').innerHTML = compHtml;
+
+        // 6) PHC LIST
+        let listHtml = '<div class="insight-list-search"><input type="text" placeholder="Search PHCs..." oninput="filterZoneList(this.value)"></div>';
+        listHtml += '<div style="overflow-y:auto;max-height:240px"><table class="insight-list-table"><thead><tr><th>PHC</th><th>Population</th><th>Screened</th><th>Coverage</th><th>DM</th><th>Ctrl %</th><th>Missed Ops</th></tr></thead><tbody id="zListBody">';
+        [...phcs].sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(p => {
+            const covPct = (p.pop || 0) > 0 ? (((p.screened || 0) / p.pop) * 100).toFixed(1) : '0.0';
+            const cPct = (p.dm || 0) > 0 ? (((p.controlled || 0) / p.dm) * 100).toFixed(1) : '0.0';
+            const covColor = parseFloat(covPct) >= 60 ? '#4caf93' : parseFloat(covPct) >= 30 ? '#fb8c00' : '#ef5350';
+            const ctrlColor = parseFloat(cPct) >= 50 ? '#4caf93' : '#ef5350';
+            listHtml += `<tr onclick="navigateToPHC('${(p.name || '').replace(/'/g, "\\'")}')">
+                <td><span class="insight-list-link">${p.name}</span></td>
+                <td>${(p.pop || 0).toLocaleString()}</td>
+                <td>${(p.screened || 0).toLocaleString()}</td>
+                <td style="color:${covColor};font-weight:600">${covPct}%</td>
+                <td>${(p.dm || 0).toLocaleString()}</td>
+                <td style="color:${ctrlColor};font-weight:600">${cPct}%</td>
+                <td>${(p.ops || 0).toLocaleString()}</td>
+            </tr>`;
+        });
+        listHtml += '</tbody></table></div>';
+        document.getElementById('zInsight-list').innerHTML = listHtml;
+    }
+
+    function filterZoneList(q) {
+        q = q.toLowerCase();
+        document.querySelectorAll('#zListBody tr').forEach(r => {
+            r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+    </script></body>
 </html>
